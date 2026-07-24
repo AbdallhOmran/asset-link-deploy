@@ -1,0 +1,39 @@
+<div class="bg-white rounded-xl border border-slate-200 p-6">
+  <h2 class="text-xl font-bold text-slate-900 mb-5">Current Offer</h2>
+
+  <div class="space-y-3">
+    <div class="flex justify-between">
+      <span class="text-slate-500">Asset</span>
+      <span class="font-semibold">Excavator CAT 320</span>
+    </div>
+
+    <div class="flex justify-between">
+      <span class="text-slate-500">Rent Price</span>
+      <span class="font-semibold text-blue-600">$1000 / day</span>
+    </div>
+
+    <div class="flex justify-between">
+      <span class="text-slate-500">Deposit</span>
+      <span class="font-semibold">$3000</span>
+    </div>
+
+    <div class="flex justify-between">
+      <span class="text-slate-500">Duration</span>
+      <span class="font-semibold">7 Days</span>
+    </div>
+  </div>
+
+  <hr class="my-6" />
+
+  <div class="space-y-3">
+    <app-button variant="success" (click)="acceptOffer()">
+      Accept Offer
+    </app-button>
+
+    <app-button variant="primary"> Counter Offer </app-button>
+
+    <app-button variant="danger" (click)="rejectOffer()">
+      Reject Offer
+    </app-button>
+  </div>
+</div>

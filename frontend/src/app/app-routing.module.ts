@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
 import { AssetDashboardComponent } from './pages/asset-dashboard/asset-dashboard.component';
 import { DeliveryTrackingComponent } from './pages/delivery-tracking/delivery-tracking.component';
+import { NegotiationRoomComponent } from './pages/negotiation-room/negotiation-room.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -25,6 +26,10 @@ const routes: Routes = [
   {
     path: 'delivery-tracking',
     component: DeliveryTrackingComponent
+  },
+  {
+    path: 'negotiation-room',
+    component: NegotiationRoomComponent
   },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' } 
