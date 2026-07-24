@@ -25,11 +25,12 @@ import { ReviewsComponent } from './pages/company/company-profile/components/rev
 import { HttpClientModule } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { PaymentsEscrowComponent } from './pages/payments-escrow/payments-escrow.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    
+    PaymentsEscrowComponent,
     CompanyProfileComponent,
     ProfileHeaderComponent,
     CompanyStatsComponent,
