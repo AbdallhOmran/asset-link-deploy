@@ -1,0 +1,47 @@
+.shipment-card {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.shipment-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #9ca3af;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.shipment-item h4 {
+  margin: 0;
+  font-size: 18px;
+  color: #111827;
+}
+
+.shipment-item p {
+  margin-top: 6px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+@media (max-width: 992px) {
+  .shipment-card {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .shipment-card {
+    grid-template-columns: 1fr;
+  }
+}
