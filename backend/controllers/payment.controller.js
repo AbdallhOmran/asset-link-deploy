@@ -17,10 +17,28 @@ const createPayment = async (req, res) => {
         });
     }
 };
+
+const completePayment = async (req, res) => {
+    try {
+        const { bookingId } = req.body;
+        const result = await paymentService.completePayment(bookingId);
+
+        res.status(200).json({
+            success: true,
+            message: "Payment completed successfully",
+            data: result
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
 const getDashboard = async (req, res) => {
     try {
         console.log("Dashboard API called");
-
         const dashboard = await paymentService.getDashboard();
 
         console.log("Dashboard Result:", dashboard);
@@ -31,7 +49,6 @@ const getDashboard = async (req, res) => {
         });
 
     } catch (err) {
-
         console.log("========== ERROR ==========");
         console.log(err);
         console.log(err.stack);
@@ -43,4 +60,8 @@ const getDashboard = async (req, res) => {
     }
 };
 
-module.exports = {createPayment, getDashboard};
+module.exports = { 
+    createPayment, 
+    completePayment, 
+    getDashboard 
+};
