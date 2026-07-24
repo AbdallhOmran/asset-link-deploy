@@ -107,6 +107,67 @@ const getDashboard = async () => {
         status: item.status
 
     }));
+    // ===========================
+// Timeline
+// ===========================
+
+const timeline = ledger.map(item => {
+
+    let title = "";
+    let status = "";
+    let color = "";
+
+    switch (item.status) {
+
+        case "Held":
+            title = `Escrow ${item.escrowCode} created — ${item.totalHeld} ${item.currency} deposited`;
+            status = "In Escrow";
+            color = "bg-orange-400";
+            break;
+
+        case "Frozen":
+            title = `Escrow ${item.escrowCode} frozen due to dispute`;
+            status = "Frozen";
+            color = "bg-blue-500";
+            break;
+
+        case "Released":
+            title = `Funds released to ${item.ownerCompanyId?.companyName || "Owner Company"}`;
+            status = "Released";
+            color = "bg-emerald-500";
+            break;
+
+        case "Refunded":
+            title = `Escrow refunded to renter`;
+            status = "Refunded";
+            color = "bg-purple-500";
+            break;
+
+        case "Cancelled":
+            title = `Escrow cancelled`;
+            status = "Cancelled";
+            color = "bg-red-500";
+            break;
+
+        default:
+            title = item.escrowCode;
+            status = item.status;
+            color = "bg-slate-400";
+    }
+
+    return {
+
+        title,
+
+        date: item.createdAt,
+
+        status,
+
+        color
+
+    };
+
+});
 
     return {
 
@@ -122,7 +183,8 @@ const getDashboard = async () => {
 
         },
 
-        ledger: ledgerData
+        ledger: ledgerData,
+        timeline
 
     };
 
