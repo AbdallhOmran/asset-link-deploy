@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { StatusBadgeComponent } from './components/status-badge/status-badge.component';
 import { ButtonComponent } from './components/button/button.component';
 import { StepperComponent } from './components/stepper/stepper.component';
 import { ImageGalleryComponent } from './components/image-gallery/image-gallery.component';
@@ -32,7 +32,8 @@ import { DateRangePickerComponent } from './components/date-range-picker/date-ra
     FilterPanelComponent,
     ModalComponent,
     PaginationComponent,
-    DateRangePickerComponent
+    DateRangePickerComponent,
+    StatusBadgeComponent
   ],
   imports: [
     CommonModule,
@@ -54,7 +55,8 @@ import { DateRangePickerComponent } from './components/date-range-picker/date-ra
     FilterPanelComponent,
     ModalComponent,
     PaginationComponent,
-    DateRangePickerComponent
+    DateRangePickerComponent,
+    StatusBadgeComponent
   ]
 })
 export class SharedModule {}
