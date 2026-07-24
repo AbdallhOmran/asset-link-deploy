@@ -1,0 +1,103 @@
+<div class="min-h-screen bg-slate-100 p-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-slate-900">Asset Dashboard</h1>
+
+        <p class="text-slate-500 mt-2">
+          Manage and monitor all company assets.
+        </p>
+      </div>
+
+      <app-button variant="primary"> + Add Asset </app-button>
+    </div>
+
+    <!-- Search & Tabs -->
+    <div class="bg-white rounded-xl border border-slate-200 p-5 mb-6">
+      <div
+        class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
+      >
+        <input
+          type="text"
+          placeholder="Search assets..."
+          class="border border-slate-300 rounded-lg px-4 py-3 w-full lg:w-96 outline-none"
+        />
+
+        <app-tabs
+          [tabs]="['All Assets', 'Available', 'Rented', 'Maintenance']"
+          [activeTab]="0"
+        >
+        </app-tabs>
+      </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
+      <app-stat-card title="Total Assets" value="128" icon="📦">
+      </app-stat-card>
+
+      <app-stat-card title="Available Assets" value="94" icon="✅">
+      </app-stat-card>
+
+      <app-stat-card title="Currently Rented" value="22" icon="🚚">
+      </app-stat-card>
+
+      <app-stat-card title="Maintenance" value="12" icon="🔧"> </app-stat-card>
+    </div>
+
+    <!-- Asset Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <app-card
+        *ngFor="let asset of assets"
+        [title]="asset.name"
+        [subtitle]="asset.category"
+      >
+        <!-- Image -->
+        <div class="mb-4">
+          <div
+            class="h-44 rounded-xl bg-slate-200 flex items-center justify-center text-6xl"
+          >
+            🚜
+          </div>
+        </div>
+
+        <!-- Price -->
+        <div class="flex justify-between items-center mb-4">
+          <div>
+            <p class="text-xs text-slate-500">Daily Rate</p>
+
+            <p class="text-2xl font-bold text-blue-600">
+              {{ asset.price }}
+            </p>
+          </div>
+
+          <span
+            class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold"
+          >
+            {{ asset.status }}
+          </span>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex justify-between items-center">
+          <span class="text-sm text-slate-500"> 📍 Cairo </span>
+
+          <app-button variant="primary"> View </app-button>
+        </div>
+      </app-card>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-10 flex justify-center">
+      <app-pagination
+        [currentPage]="1"
+        [totalPages]="5"
+        [showing]="6"
+        [total]="32"
+        itemName="assets"
+      >
+      </app-pagination>
+    </div>
+  </div>
+</div>

@@ -1,16 +1,18 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LucideAngularModule, CheckCircle2, Clock3 } from 'lucide-angular';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
-import { ButtonComponent } from './shared/components/button/button.component';
-import { StepperComponent } from './shared/components/stepper/stepper.component';
-import { ImageGalleryComponent } from './shared/components/image-gallery/image-gallery.component';
-import { ModalComponent } from './shared/components/modal/modal.component';
-import { PaginationComponent } from './shared/components/pagination/pagination.component';
-import { DateRangePickerComponent } from './shared/components/date-range-picker/date-range-picker.component';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
+
+// Pages & Components Imports
+import { LoginComponent } from './pages/login/login.component';
+import { AssetDashboardComponent } from './pages/asset-dashboard/asset-dashboard.component';
+import { PaymentsEscrowComponent } from './pages/payments-escrow/payments-escrow.component';
 import { CompanyProfileComponent } from './pages/company/company-profile/company-profile.component';
 import { ProfileHeaderComponent } from './pages/company/company-profile/components/profile-header/profile-header.component';
 import { CompanyStatsComponent } from './pages/company/company-profile/components/company-stats/company-stats.component';
@@ -22,16 +24,13 @@ import { CertificationsComponent } from './pages/company/company-profile/compone
 import { TeamMembersComponent } from './pages/company/company-profile/components/team-members/team-members.component';
 import { ListedAssetsComponent } from './pages/company/company-profile/components/listed-assets/listed-assets.component';
 import { ReviewsComponent } from './pages/company/company-profile/components/reviews/reviews.component';
-import { HttpClientModule } from '@angular/common/http';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AuthInterceptor } from './interceptors/auth.interceptor';
-import { LoginComponent } from './pages/login/login.component';
-
 
 @NgModule({
   declarations: [
     AppComponent,
-     LoginComponent,
+    LoginComponent,
+    AssetDashboardComponent,
+    PaymentsEscrowComponent,
     CompanyProfileComponent,
     ProfileHeaderComponent,
     CompanyStatsComponent,
@@ -45,24 +44,23 @@ import { LoginComponent } from './pages/login/login.component';
     ReviewsComponent,
   ],
   imports: [
-  BrowserModule,
-  AppRoutingModule,
-  FormsModule, 
-  SharedModule ,
- 
-  HttpClientModule,
-  LucideAngularModule.pick({
-    CheckCircle2,
-    Clock3
-  })
-],
- providers: [
-  {
-    provide: HTTP_INTERCEPTORS,
-    useClass: AuthInterceptor,
-    multi: true
-  }
-],
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule, 
+    SharedModule,
+    HttpClientModule,
+    LucideAngularModule.pick({
+      CheckCircle2,
+      Clock3
+    })
+  ],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

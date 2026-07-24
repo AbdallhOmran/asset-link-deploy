@@ -17,5 +17,30 @@ const createPayment = async (req, res) => {
         });
     }
 };
+const getDashboard = async (req, res) => {
+    try {
+        console.log("Dashboard API called");
 
-module.exports = { createPayment };
+        const dashboard = await paymentService.getDashboard();
+
+        console.log("Dashboard Result:", dashboard);
+
+        res.status(200).json({
+            success: true,
+            data: dashboard
+        });
+
+    } catch (err) {
+
+        console.log("========== ERROR ==========");
+        console.log(err);
+        console.log(err.stack);
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+    }
+};
+
+module.exports = {createPayment, getDashboard};
