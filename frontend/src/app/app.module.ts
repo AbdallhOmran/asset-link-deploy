@@ -27,6 +27,14 @@ import { TeamMembersComponent } from './pages/company/company-profile/components
 import { ListedAssetsComponent } from './pages/company/company-profile/components/listed-assets/listed-assets.component';
 import { ReviewsComponent } from './pages/company/company-profile/components/reviews/reviews.component';
 
+import { NegotiationRoomComponent } from './pages/negotiation-room/negotiation-room.component';
+import { NegotiationHeaderComponent } from './pages/negotiation-room/components/negotiation-header/negotiation-header.component';
+import { NegotiationChatComponent } from './pages/negotiation-room/components/negotiation-chat/negotiation-chat.component';
+import { CurrentOfferComponent } from './pages/negotiation-room/components/current-offer/current-offer.component';
+import { OfferHistoryComponent } from './pages/negotiation-room/components/offer-history/offer-history.component';
+import { PartiesCardComponent } from './pages/negotiation-room/components/parties-card/parties-card.component';
+import { MessageInputComponent } from './pages/negotiation-room/components/message-input/message-input.component';
+
 import { DeliveryTrackingComponent } from './pages/delivery-tracking/delivery-tracking.component';
 import { DeliveryHeaderComponent } from './pages/delivery-tracking/components/delivery-header/delivery-header.component';
 import { DeliveryProgressComponent } from './pages/delivery-tracking/components/delivery-progress/delivery-progress.component';
@@ -52,6 +60,13 @@ import { DeliveryEventLogComponent } from './pages/delivery-tracking/components/
     TeamMembersComponent,
     ListedAssetsComponent,
     ReviewsComponent,
+    NegotiationRoomComponent,
+    NegotiationHeaderComponent,
+    NegotiationChatComponent,
+    CurrentOfferComponent,
+    OfferHistoryComponent,
+    PartiesCardComponent,
+    MessageInputComponent,
     DeliveryTrackingComponent,
     DeliveryHeaderComponent,
     DeliveryProgressComponent,
