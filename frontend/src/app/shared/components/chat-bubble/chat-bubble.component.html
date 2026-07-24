@@ -36,28 +36,16 @@
         </span>
 
         <!-- Main Bubble Content -->
-        <div class="relative px-4 py-3 shadow-xs transition-all duration-200"
-             [class.bg-blue-600]="msg.sender === 'me' && msg.type === 'text'"
-             [class.text-white]="msg.sender === 'me' && msg.type === 'text'"
-             [class.rounded-2xl]="true"
-             [class.rounded-br-xs]="msg.sender === 'me'"
-             [class.rounded-bl-xs]="msg.sender === 'other'"
-             [class.bg-white]="msg.sender === 'other' && msg.type === 'text'"
-             [class.dark:bg-slate-800]="msg.sender === 'other' && msg.type === 'text'"
-             [class.text-slate-900]="msg.sender === 'other' && msg.type === 'text'"
-             [class.dark:text-slate-100]="msg.sender === 'other' && msg.type === 'text'"
-             [class.border]="msg.sender === 'other'"
-             [class.border-slate-200]="msg.sender === 'other'"
-             [class.dark:border-slate-700]="msg.sender === 'other'"
-             [class.bg-gradient-to-br]="msg.type === 'offer'"
-             [class.from-slate-900]="msg.type === 'offer' && msg.sender === 'me'"
-             [class.to-slate-800]="msg.type === 'offer' && msg.sender === 'me'"
-             [class.from-white]="msg.type === 'offer' && msg.sender === 'other'"
-             [class.to-slate-50]="msg.type === 'offer' && msg.sender === 'other'"
-             [class.dark:from-slate-900]="msg.type === 'offer' && msg.sender === 'other'"
-             [class.dark:to-slate-850]="msg.type === 'offer' && msg.sender === 'other'"
-             [class.border-blue-200]="msg.type === 'offer'"
-             [class.dark:border-blue-900\/50]="msg.type === 'offer'">
+        <div class="relative px-4 py-3 shadow-xs transition-all duration-200 rounded-2xl"
+             [ngClass]="{
+               'rounded-br-xs': msg.sender === 'me',
+               'rounded-bl-xs border border-slate-200 dark:border-slate-700': msg.sender === 'other',
+               'bg-blue-600 text-white': msg.sender === 'me' && msg.type === 'text',
+               'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100': msg.sender === 'other' && msg.type === 'text',
+               'bg-gradient-to-br border-blue-200 dark:border-blue-900/50': msg.type === 'offer',
+               'from-slate-900 to-slate-800': msg.type === 'offer' && msg.sender === 'me',
+               'from-white to-slate-50 dark:from-slate-900 dark:to-slate-850': msg.type === 'offer' && msg.sender === 'other'
+             }">
 
           <!-- 1. Text Message Content -->
           <p *ngIf="msg.type === 'text'" class="text-sm leading-relaxed whitespace-pre-wrap break-words font-sans">

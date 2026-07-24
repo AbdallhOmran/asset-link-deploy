@@ -58,6 +58,7 @@ const addAsset = async (assetData) => {
   });
 
   await newAsset.save();
+  return newAsset;
 };
 
 const getAssets = async () => {

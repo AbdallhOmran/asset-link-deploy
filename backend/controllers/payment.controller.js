@@ -21,7 +21,6 @@ const createPayment = async (req, res) => {
 const completePayment = async (req, res) => {
     try {
         const { bookingId } = req.body;
-
         const result = await paymentService.completePayment(bookingId);
 
         res.status(200).json({
@@ -29,7 +28,6 @@ const completePayment = async (req, res) => {
             message: "Payment completed successfully",
             data: result
         });
-
     } catch (error) {
         res.status(400).json({
             success: false,
@@ -38,4 +36,32 @@ const completePayment = async (req, res) => {
     }
 };
 
-module.exports = { createPayment, completePayment };
+const getDashboard = async (req, res) => {
+    try {
+        console.log("Dashboard API called");
+        const dashboard = await paymentService.getDashboard();
+
+        console.log("Dashboard Result:", dashboard);
+
+        res.status(200).json({
+            success: true,
+            data: dashboard
+        });
+
+    } catch (err) {
+        console.log("========== ERROR ==========");
+        console.log(err);
+        console.log(err.stack);
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+    }
+};
+
+module.exports = { 
+    createPayment, 
+    completePayment, 
+    getDashboard 
+};

@@ -1,0 +1,66 @@
+<div class="space-y-6">
+
+  <div
+    *ngFor="let review of reviews"
+    class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+
+    <div class="flex items-start justify-between">
+
+      <div class="flex gap-4">
+
+        <div
+          class="flex h-12 w-12 items-center justify-center rounded-full text-sm font-semibold text-white"
+          [ngClass]="review.color">
+
+          {{ review.initials }}
+
+        </div>
+
+        <div>
+
+          <h3 class="text-lg font-semibold text-slate-900">
+
+            {{ review.name }}
+
+          </h3>
+
+          <p class="text-sm text-slate-500">
+
+            {{ review.company }}
+
+            •
+
+            {{ review.date }}
+
+          </p>
+
+        </div>
+
+      </div>
+
+      <div class="flex gap-1">
+
+        <lucide-icon
+          *ngFor="let star of [1,2,3,4,5]"
+          [img]="Star"
+          class="h-5 w-5"
+          [ngClass]="
+            star <= review.rating
+            ? 'fill-yellow-400 text-yellow-400'
+            : 'text-slate-300'
+          ">
+        </lucide-icon>
+
+      </div>
+
+    </div>
+
+    <p class="mt-5 leading-7 text-slate-600">
+
+      {{ review.comment }}
+
+    </p>
+
+  </div>
+
+</div>

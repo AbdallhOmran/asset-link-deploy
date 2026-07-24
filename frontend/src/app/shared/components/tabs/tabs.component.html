@@ -1,0 +1,13 @@
+<div class="inline-flex bg-slate-100 rounded-xl p-1">
+  <button
+    *ngFor="let tab of tabs; let i = index"
+    (click)="selectTab(i)"
+    class="px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+    [class.bg-white]="activeTab === i"
+    [class.text-blue-600]="activeTab === i"
+    [class.shadow]="activeTab === i"
+    [class.text-slate-600]="activeTab !== i"
+  >
+    {{ tab }}
+  </button>
+</div>

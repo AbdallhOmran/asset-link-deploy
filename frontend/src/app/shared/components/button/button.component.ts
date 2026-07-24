@@ -1,7 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-// Matches the 4 real button styles seen across the Figma screens:
-// primary (filled blue), secondary (white/outline), success (filled green), danger (outline red)
 export type ButtonVariant = 'primary' | 'secondary' | 'success' | 'danger';
 
 @Component({
@@ -12,6 +10,9 @@ export class ButtonComponent {
   @Input() variant: ButtonVariant = 'primary';
   @Input() disabled = false;
   @Input() type: 'button' | 'submit' = 'button';
+  // NEW: makes the button span the full width of its container,
+  // matching the Figma design where buttons match input field width
+  @Input() fullWidth = false;
   @Output() clicked = new EventEmitter<void>();
 
   onClick() {
@@ -21,15 +22,9 @@ export class ButtonComponent {
   }
 
   get classes(): string {
-    // Base shared styles: rounded-lg (not full-round), medium font weight, icon+text gap
     const base =
       'inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed';
 
-    // Each variant mapped 1:1 to what's actually used in the design:
-    // - primary: "Save Changes", "Book Now", "Counter Offer"
-    // - secondary: "Discard", "Details", "Cancel" (white bg, gray border)
-    // - success: "Accept Offer", "Join Waitlist" (solid green)
-    // - danger: "Reject Offer" (outline red, NOT filled)
     const variants: Record<ButtonVariant, string> = {
       primary: 'bg-primary text-white hover:bg-primary/90',
       secondary: 'bg-white text-text border border-border hover:bg-page',
@@ -37,6 +32,10 @@ export class ButtonComponent {
       danger: 'bg-white text-danger border border-danger hover:bg-danger-bg',
     };
 
-    return `${base} ${variants[this.variant]}`;
+    // NEW: 'w-full' + 'flex' (instead of inline-flex) makes it stretch
+    // to the full width of the parent, e.g. matching a form's input width
+    const width = this.fullWidth ? 'w-full flex' : 'inline-flex';
+
+    return `${base} ${width} ${variants[this.variant]}`;
   }
 }
