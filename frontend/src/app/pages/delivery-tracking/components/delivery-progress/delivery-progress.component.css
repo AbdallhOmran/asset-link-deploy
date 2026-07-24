@@ -1,0 +1,98 @@
+.progress-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.card-header p {
+  margin-top: 6px;
+  color: #6b7280;
+}
+
+.live-badge {
+  background: #e8f1ff;
+  color: #2563eb;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.timeline {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 35px;
+}
+
+.step {
+  width: 140px;
+  text-align: center;
+}
+
+.circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 3px solid #d1d5db;
+  margin: auto;
+  background: #fff;
+}
+
+.completed .circle {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.current .circle {
+  border-color: #2563eb;
+}
+
+.line {
+  flex: 1;
+  height: 3px;
+  background: #d1d5db;
+  margin-top: 11px;
+}
+
+.line.active {
+  background: #2563eb;
+}
+
+.step h4 {
+  margin: 12px 0 4px;
+  font-size: 15px;
+}
+
+.step span {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.locations {
+  display: flex;
+  justify-content: space-between;
+}
+
+.locations small {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.locations h5 {
+  margin-top: 6px;
+  font-size: 15px;
+}

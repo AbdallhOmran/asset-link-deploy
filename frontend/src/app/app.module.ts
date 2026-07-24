@@ -26,6 +26,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { PaymentsEscrowComponent } from './pages/payments-escrow/payments-escrow.component';
+import { DeliveryTrackingComponent } from './pages/delivery-tracking/delivery-tracking.component';
+import { DeliveryHeaderComponent } from './pages/delivery-tracking/components/delivery-header/delivery-header.component';
+import { DeliveryProgressComponent } from './pages/delivery-tracking/components/delivery-progress/delivery-progress.component';
+import { ShipmentDetailsComponent } from './pages/delivery-tracking/components/shipment-details/shipment-details.component';
+import { DeliveryEventLogComponent } from './pages/delivery-tracking/components/delivery-event-log/delivery-event-log.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +47,11 @@ import { PaymentsEscrowComponent } from './pages/payments-escrow/payments-escrow
     TeamMembersComponent,
     ListedAssetsComponent,
     ReviewsComponent,
+    DeliveryTrackingComponent,
+    DeliveryHeaderComponent,
+    DeliveryProgressComponent,
+    ShipmentDetailsComponent,
+    DeliveryEventLogComponent,
   ],
   imports: [
   BrowserModule,
