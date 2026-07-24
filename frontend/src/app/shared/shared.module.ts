@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
+import { StatusBadgeComponent } from './components/status-badge/status-badge.component';
 import { ButtonComponent } from './components/button/button.component';
 import { StepperComponent } from './components/stepper/stepper.component';
 import { ImageGalleryComponent } from './components/image-gallery/image-gallery.component';
@@ -11,17 +12,14 @@ import { TabsComponent } from './components/tabs/tabs.component';
 import { StatCardComponent } from './components/stat-card/stat-card.component';
 import { ScoreWidgetComponent } from './components/score-widget/score-widget.component';
 import { QrCodeWidgetComponent } from './components/qr-code-widget/qr-code-widget.component';
-import { ChatBubbleComponent } from './components/chat-bubble/chat-bubble.component';
+// import { ChatBubbleComponent } from './components/chat-bubble/chat-bubble.component';
 import { TimelineComponent } from './components/timeline/timeline.component';
-import { FilterPanelComponent } from './components/filter-panel/filter-panel.component';
+// import { FilterPanelComponent } from './components/filter-panel/filter-panel.component';
 import { ModalComponent } from './components/modal/modal.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { DateRangePickerComponent } from './components/date-range-picker/date-range-picker.component';
-import { DataTableComponent } from './components/data-table/data-table.component'; // ✅ replaces the removed TableComponent
-
-// TEMPORARILY DISABLED: login page not found in current checkout, disabling to unblock build.
-// Re-enable once the login page/route is confirmed present again.
-// import { AuthLayoutComponent } from './components/auth-layout/auth-layout.component';
+import { DataTableComponent } from './components/data-table/data-table.component'; 
+import { AuthLayoutComponent } from './components/auth-layout/auth-layout.component';
 
 @NgModule({
   declarations: [
@@ -33,14 +31,16 @@ import { DataTableComponent } from './components/data-table/data-table.component
     StatCardComponent,
     ScoreWidgetComponent,
     QrCodeWidgetComponent,
-    ChatBubbleComponent,
+    // ChatBubbleComponent,
     TimelineComponent,
-    FilterPanelComponent,
+    // FilterPanelComponent,
     ModalComponent,
     PaginationComponent,
     DateRangePickerComponent,
-    DataTableComponent, // ✅ replaces TableComponent
+    DataTableComponent, 
     // AuthLayoutComponent,
+    AuthLayoutComponent,
+    StatusBadgeComponent
   ],
   imports: [
     CommonModule,
@@ -58,14 +58,16 @@ import { DataTableComponent } from './components/data-table/data-table.component
     StatCardComponent,
     ScoreWidgetComponent,
     QrCodeWidgetComponent,
-    ChatBubbleComponent,
+    // ChatBubbleComponent,
     TimelineComponent,
-    FilterPanelComponent,
+    // FilterPanelComponent,
     ModalComponent,
     PaginationComponent,
     DateRangePickerComponent,
-    DataTableComponent, // ✅ replaces TableComponent
+    DataTableComponent, 
     // AuthLayoutComponent,
-  ]
+    AuthLayoutComponent,
+    StatusBadgeComponent
+  ],
 })
 export class SharedModule {}

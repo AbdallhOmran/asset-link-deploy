@@ -1,0 +1,205 @@
+<div class="w-full px-8 py-8">
+  <!-- Header -->
+
+  <div>
+    <h1 class="text-[22px] font-bold text-slate-900">
+      Payments & Escrow
+    </h1>
+
+    <p class="mt-2 text-[16px] text-slate-500">
+      Monitor escrow accounts and payment release workflows.
+    </p>
+  </div>
+
+  <!-- Summary Cards -->
+
+  <div class="mt-8 grid grid-cols-4 gap-5">
+
+    <app-stat-card
+      title="TOTAL PROCESSED"
+      [value]="stats[0].value"
+      icon="💰">
+    </app-stat-card>
+
+    <app-stat-card
+      title="CURRENTLY IN ESCROW"
+      [value]="stats[1].value"
+      icon="🏦">
+    </app-stat-card>
+
+    <app-stat-card
+      title="RELEASED (MTD)"
+      [value]="stats[2].value"
+      icon="✅">
+    </app-stat-card>
+
+    <app-stat-card
+      title="PLATFORM FEE (MTD)"
+      [value]="stats[3].value"
+      icon="💳">
+    </app-stat-card>
+
+  </div>
+
+
+<div class="mt-8 rounded-2xl border border-slate-200 bg-white shadow-sm">
+
+  <!-- Header -->
+
+  <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+
+    <div>
+
+      <h2 class="text-[18px] font-semibold text-slate-900">
+        Escrow Ledger
+      </h2>
+
+      <p class="mt-1 text-sm text-slate-500">
+        All escrow transactions
+      </p>
+
+    </div>
+
+    <app-button variant="secondary">
+      Export CSV
+    </app-button>
+
+  </div>
+
+  <!-- Table -->
+
+  <div class="w-full overflow-x-auto">
+
+<table class="w-full">
+      <thead class="border-b border-slate-200 bg-slate-50">
+
+        <tr>
+
+          <th class="px-6 py-4 text-left text-xs font-semibold uppercase text-slate-500">Escrow ID</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold uppercase text-slate-500">Booking</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold uppercase text-slate-500">From</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold uppercase text-slate-500">To</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold uppercase text-slate-500">Total</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold uppercase text-slate-500">Held</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold uppercase text-slate-500">Released</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold uppercase text-slate-500">Date</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold uppercase text-slate-500">Status</th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        <tr
+          *ngFor="let item of ledger"
+          class="border-b border-slate-100 hover:bg-slate-50">
+
+          <td class="px-6 py-5 font-semibold text-blue-600">
+            {{ item.escrowId }}
+          </td>
+
+          <td class="px-6 py-5 text-slate-500">
+            {{ item.booking }}
+          </td>
+
+          <td class="px-6 py-5">
+            {{ item.from }}
+          </td>
+
+          <td class="px-6 py-5">
+            {{ item.to }}
+          </td>
+
+          <td class="px-6 py-5 font-semibold">
+            {{ item.total }}
+          </td>
+
+          <td class="px-6 py-5 font-semibold text-orange-500">
+            {{ item.held }}
+          </td>
+
+          <td class="px-6 py-5 font-semibold text-emerald-600">
+            {{ item.released }}
+          </td>
+
+          <td class="px-6 py-5 text-slate-500">
+            {{ item.date }}
+          </td>
+
+          <td class="px-6 py-5">
+            <app-status-badge
+              [status]="item.status">
+            </app-status-badge>
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
+<!-- ================= Payment Timeline ================= -->
+
+<div class="mt-8 rounded-2xl border border-slate-200 bg-white shadow-sm">
+
+  <!-- Header -->
+
+  <div class="border-b border-slate-200 px-6 py-5">
+
+    <h2 class="text-[18px] font-semibold text-slate-900">
+      Payment Timeline
+    </h2>
+
+  </div>
+
+  <!-- Timeline -->
+
+  <div class="px-6 py-3">
+
+    <div
+      *ngFor="let item of timeline"
+      class="flex items-center justify-between border-b border-slate-100 py-5 last:border-0">
+
+      <!-- Left -->
+
+      <div class="flex items-start gap-4">
+
+        <!-- Dot -->
+
+        <div
+          class="mt-2 h-3 w-3 rounded-full"
+          [ngClass]="item.color">
+        </div>
+
+        <!-- Text -->
+
+        <div>
+
+          <p class="font-medium text-slate-900">
+            {{ item.title }}
+          </p>
+
+          <p class="mt-1 text-sm text-slate-500">
+            {{ item.date }}
+          </p>
+
+        </div>
+
+      </div>
+
+      <!-- Status -->
+
+      <app-status-badge
+        [status]="item.status">
+      </app-status-badge>
+
+    </div>
+
+  </div>
+
+</div>
+</div>

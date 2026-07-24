@@ -10,7 +10,7 @@ export class ButtonComponent {
   @Input() variant: ButtonVariant = 'primary';
   @Input() disabled = false;
   @Input() type: 'button' | 'submit' = 'button';
-  @Input() fullWidth = false; // ✅ was missing, needed for contracts page
+  @Input() fullWidth = false;
   @Output() clicked = new EventEmitter<void>();
 
   onClick() {

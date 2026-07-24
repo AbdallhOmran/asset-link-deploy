@@ -7,15 +7,14 @@ import { LucideAngularModule, CheckCircle2, Clock3 } from 'lucide-angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
-
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 
-// pages
-// import { LoginComponent } from './pages/login/login.component'; // ✅ was missing
+import { LoginComponent } from './pages/login/login.component';
+import { AssetDashboardComponent } from './pages/asset-dashboard/asset-dashboard.component';
+import { PaymentsEscrowComponent } from './pages/payments-escrow/payments-escrow.component';
 import { BookingsComponent } from './pages/bookings/bookings.component';
 import { ContractsComponent } from './pages/contracts/contracts.component';
 
-// company profile feature (not mine, keeping as-is)
 import { CompanyProfileComponent } from './pages/company/company-profile/company-profile.component';
 import { ProfileHeaderComponent } from './pages/company/company-profile/components/profile-header/profile-header.component';
 import { CompanyStatsComponent } from './pages/company/company-profile/components/company-stats/company-stats.component';
@@ -28,12 +27,20 @@ import { TeamMembersComponent } from './pages/company/company-profile/components
 import { ListedAssetsComponent } from './pages/company/company-profile/components/listed-assets/listed-assets.component';
 import { ReviewsComponent } from './pages/company/company-profile/components/reviews/reviews.component';
 
+import { DeliveryTrackingComponent } from './pages/delivery-tracking/delivery-tracking.component';
+import { DeliveryHeaderComponent } from './pages/delivery-tracking/components/delivery-header/delivery-header.component';
+import { DeliveryProgressComponent } from './pages/delivery-tracking/components/delivery-progress/delivery-progress.component';
+import { ShipmentDetailsComponent } from './pages/delivery-tracking/components/shipment-details/shipment-details.component';
+import { DeliveryEventLogComponent } from './pages/delivery-tracking/components/delivery-event-log/delivery-event-log.component';
+
 @NgModule({
   declarations: [
     AppComponent,
+    LoginComponent,
+    AssetDashboardComponent,
+    PaymentsEscrowComponent,
     BookingsComponent,
     ContractsComponent,
-
     CompanyProfileComponent,
     ProfileHeaderComponent,
     CompanyStatsComponent,
@@ -45,6 +52,11 @@ import { ReviewsComponent } from './pages/company/company-profile/components/rev
     TeamMembersComponent,
     ListedAssetsComponent,
     ReviewsComponent,
+    DeliveryTrackingComponent,
+    DeliveryHeaderComponent,
+    DeliveryProgressComponent,
+    ShipmentDetailsComponent,
+    DeliveryEventLogComponent
   ],
   imports: [
     BrowserModule,
@@ -54,16 +66,16 @@ import { ReviewsComponent } from './pages/company/company-profile/components/rev
     HttpClientModule,
     LucideAngularModule.pick({
       CheckCircle2,
-      Clock3,
-    }),
+      Clock3
+    })
   ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true,
-    },
+      multi: true
+    }
   ],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}
