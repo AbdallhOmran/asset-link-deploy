@@ -18,7 +18,7 @@ const routes: Routes = [
     component: AssetDashboardComponent 
   },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: '**', redirectTo: 'login' } // دايماً خلي الـ wildcard (**) في آخر المصفوفة
+  { path: '**', redirectTo: 'login' } 
 ];
 
 @NgModule({
