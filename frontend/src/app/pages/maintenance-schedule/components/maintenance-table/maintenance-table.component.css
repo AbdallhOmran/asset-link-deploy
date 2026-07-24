@@ -1,0 +1,4 @@
+/* Maintenance Table Scoped Styles */
+:host {
+  display: block;
+}

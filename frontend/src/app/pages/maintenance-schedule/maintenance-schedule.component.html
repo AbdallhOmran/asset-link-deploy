@@ -1,0 +1,57 @@
+<div class="max-w-screen-2xl mx-auto px-6 py-6 space-y-6" style="font-family: 'Inter', system-ui, sans-serif;">
+  
+  <!-- Page Header & Action Bar -->
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <div class="flex items-center gap-2 mb-1">
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight">Maintenance Schedule</h1>
+        <span class="text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1 rounded-xl">
+          Fleet Health System
+        </span>
+      </div>
+      <p class="text-sm text-slate-500">Monitor scheduled maintenance, track repair operations, and manage asset lifespans.</p>
+    </div>
+
+    <!-- Request New Maintenance CTA Button -->
+    <div class="flex items-center gap-3">
+      <button
+        (click)="openRequestModal()"
+        class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-2xl shadow-lg shadow-blue-600/30 flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
+      >
+        <span class="text-base">+</span>
+        <span>Request New Maintenance</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Predictive Maintenance Alert Banners -->
+  <app-predictive-alerts
+    *ngIf="assets$ | async as assets"
+    [assets]="assets"
+  ></app-predictive-alerts>
+
+  <!-- Fleet Maintenance KPI Cards -->
+  <app-maintenance-stats
+    [stats]="stats$ | async"
+    [activeFilter]="activeStatusFilter"
+    (filterChange)="onFilterStatus($event)"
+  ></app-maintenance-stats>
+
+  <!-- Main Maintenance Table & Search/Filter Section -->
+  <app-maintenance-table
+    [records]="filteredRecords$ | async"
+    [activeStatusFilter]="activeStatusFilter"
+    (searchChange)="onSearch($event)"
+    (statusFilterChange)="onFilterStatus($event)"
+  ></app-maintenance-table>
+
+  <!-- Request New Maintenance Modal -->
+  <app-request-maintenance-modal
+    *ngIf="assets$ | async as assets"
+    [assets]="assets"
+    [isOpen]="isRequestModalOpen"
+    (close)="closeRequestModal()"
+    (submitRequest)="handleNewRequest($event)"
+  ></app-request-maintenance-modal>
+
+</div>

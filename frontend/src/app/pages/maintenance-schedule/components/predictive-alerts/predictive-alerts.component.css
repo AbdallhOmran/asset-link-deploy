@@ -1,0 +1,4 @@
+/* Component scoped styles */
+:host {
+  display: block;
+}

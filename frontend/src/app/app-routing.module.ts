@@ -17,6 +17,10 @@ const routes: Routes = [
     path: 'dashboard', 
     component: AssetDashboardComponent 
   },
+  {
+    path: 'maintenance-schedule',
+    loadChildren: () => import('./pages/maintenance-schedule/maintenance-schedule.module').then(m => m.MaintenanceScheduleModule)
+  },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' } 
 ];
