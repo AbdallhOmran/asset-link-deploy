@@ -1,0 +1,59 @@
+<div class="h-screen flex overflow-hidden">
+  <!-- Left branding panel -->
+  <div class="hidden lg:flex lg:w-1/2 bg-primary-sidebar text-white flex-col justify-center p-8 xl:p-10">
+    <div class="flex items-center gap-2.5 mb-6">
+      <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-bold text-sm">A</div>
+      <div>
+        <div class="font-bold text-sm leading-none">AssetLink</div>
+        <div class="text-[10px] text-white/50 tracking-widest mt-0.5">ENTERPRISE</div>
+      </div>
+    </div>
+
+    <h1 class="text-2xl xl:text-3xl font-bold leading-snug mb-3">
+      The platform for
+      <span class="text-primary-cyan">industrial asset rentals.</span>
+    </h1>
+    <p class="text-white/60 text-sm max-w-sm leading-relaxed mb-6">
+      Connect with verified companies to rent heavy equipment securely — with built-in contracts, escrow, and inspection workflows.
+    </p>
+
+    <ul class="space-y-2.5 text-sm">
+      <li class="flex items-center gap-3">
+        <span class="w-7 h-7 shrink-0 rounded-md bg-white/10 flex items-center justify-center text-sm">🛡️</span>
+        Enterprise-grade escrow protection
+      </li>
+      <li class="flex items-center gap-3">
+        <span class="w-7 h-7 shrink-0 rounded-md bg-white/10 flex items-center justify-center text-sm">📄</span>
+        Digital contract management
+      </li>
+      <li class="flex items-center gap-3">
+        <span class="w-7 h-7 shrink-0 rounded-md bg-white/10 flex items-center justify-center text-sm">✅</span>
+        Pre &amp; post-rental inspections
+      </li>
+      <li class="flex items-center gap-3">
+        <span class="w-7 h-7 shrink-0 rounded-md bg-white/10 flex items-center justify-center text-sm">📈</span>
+        Real-time fleet analytics
+      </li>
+    </ul>
+
+    <blockquote class="bg-white/5 rounded-lg p-4 mt-7">
+      <p class="text-white/80 text-sm leading-relaxed">
+        "AssetLink cut our equipment procurement time by 60%. The escrow system gave us peace of mind on every rental."
+      </p>
+      <footer class="mt-3 flex items-center gap-2.5">
+        <div class="w-7 h-7 shrink-0 rounded-full bg-primary-cyan flex items-center justify-center text-xs font-bold">JR</div>
+        <div>
+          <div class="font-semibold text-sm leading-tight">James Reyes</div>
+          <div class="text-white/50 text-xs leading-tight">VP Operations · Apex Construction</div>
+        </div>
+      </footer>
+    </blockquote>
+  </div>
+
+  <!-- Right form panel -->
+  <div class="w-full lg:w-1/2 flex items-center justify-center px-8 py-6 bg-white">
+    <div class="w-full max-w-sm">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>

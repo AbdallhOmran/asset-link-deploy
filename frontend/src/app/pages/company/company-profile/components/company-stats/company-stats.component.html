@@ -1,0 +1,26 @@
+<div class="border-t border-gray-200 bg-white">
+
+  <div class="grid grid-cols-5">
+
+    <div
+      *ngFor="let stat of stats; let last = last"
+      class="flex h-[98px] flex-col items-center justify-center border-r border-gray-200 last:border-r-0"
+    >
+
+      <h3
+        class="text-[24px] font-bold text-[#0F172A]"
+      >
+        {{ stat.value }}
+      </h3>
+
+      <p
+        class="mt-2 text-[15px] font-normal text-[#64748B]"
+      >
+        {{ stat.label }}
+      </p>
+
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,64 @@
+<app-company-stats ompany-stats></app-company-stats>
+<div class="mt-6">
+
+  <app-profile-tabs
+    (tabChanged)="onTabChanged($event)">
+  </app-profile-tabs>
+
+</div>
+
+<!-- ================= Overview ================= -->
+
+<div *ngIf="activeTab === 'Overview'" class="mt-6">
+
+  <div class="grid grid-cols-12 gap-6">
+
+    <div class="col-span-8">
+
+      <app-company-information
+    [company]="company">
+</app-company-information>
+
+      <div class="mt-6">
+        <app-certifications></app-certifications>
+      </div>
+
+    </div>
+
+    <div class="col-span-4 flex flex-col gap-3">
+
+      <app-contact-card></app-contact-card>
+
+      <app-account-status
+    [company]="company">
+</app-account-status>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= Team Members ================= -->
+
+<div *ngIf="activeTab === 'Team Members'" class="mt-6">
+
+  <app-team-members></app-team-members>
+
+</div>
+
+<!-- ================= Listed Assets ================= -->
+
+<div *ngIf="activeTab === 'Listed Assets'" class="mt-6">
+
+    <app-listed-assets></app-listed-assets>
+
+</div>
+
+<!-- ================= Reviews ================= -->
+
+<div *ngIf="activeTab === 'Reviews'" class="mt-6">
+
+    <app-reviews></app-reviews>
+
+</div>
