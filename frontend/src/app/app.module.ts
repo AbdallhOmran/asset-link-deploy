@@ -25,6 +25,13 @@ import { ReviewsComponent } from './pages/company/company-profile/components/rev
 import { HttpClientModule } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { NegotiationRoomComponent } from './pages/negotiation-room/negotiation-room.component';
+import { NegotiationHeaderComponent } from './pages/negotiation-room/components/negotiation-header/negotiation-header.component';
+import { NegotiationChatComponent } from './pages/negotiation-room/components/negotiation-chat/negotiation-chat.component';
+import { CurrentOfferComponent } from './pages/negotiation-room/components/current-offer/current-offer.component';
+import { OfferHistoryComponent } from './pages/negotiation-room/components/offer-history/offer-history.component';
+import { PartiesCardComponent } from './pages/negotiation-room/components/parties-card/parties-card.component';
+import { MessageInputComponent } from './pages/negotiation-room/components/message-input/message-input.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +48,13 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     TeamMembersComponent,
     ListedAssetsComponent,
     ReviewsComponent,
+    NegotiationRoomComponent,
+    NegotiationHeaderComponent,
+    NegotiationChatComponent,
+    CurrentOfferComponent,
+    OfferHistoryComponent,
+    PartiesCardComponent,
+    MessageInputComponent,
   ],
   imports: [
   BrowserModule,
