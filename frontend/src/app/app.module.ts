@@ -5,6 +5,7 @@ import { LucideAngularModule, CheckCircle2, Clock3 } from 'lucide-angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
+import { AssetDashboardComponent } from './pages/asset-dashboard/asset-dashboard.component';
 import { ButtonComponent } from './shared/components/button/button.component';
 import { StepperComponent } from './shared/components/stepper/stepper.component';
 import { ImageGalleryComponent } from './shared/components/image-gallery/image-gallery.component';
@@ -30,6 +31,7 @@ import { PaymentsEscrowComponent } from './pages/payments-escrow/payments-escrow
 @NgModule({
   declarations: [
     AppComponent,
+    AssetDashboardComponent,
     PaymentsEscrowComponent,
     CompanyProfileComponent,
     ProfileHeaderComponent,
