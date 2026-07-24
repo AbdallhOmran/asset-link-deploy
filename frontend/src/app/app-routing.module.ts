@@ -1,5 +1,7 @@
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { LoginComponent } from './pages/login/login.component';
 import { AssetDashboardComponent } from './pages/asset-dashboard/asset-dashboard.component';
-// تأكدي من عمل Import للـ LoginComponent لو مش موجود
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -16,5 +18,11 @@ const routes: Routes = [
     component: AssetDashboardComponent 
   },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: '**', redirectTo: 'login' }
+  { path: '**', redirectTo: 'login' } // دايماً خلي الـ wildcard (**) في آخر المصفوفة
 ];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule],
+})
+export class AppRoutingModule {}
