@@ -1,17 +1,20 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-
 import { AssetDashboardComponent } from './pages/asset-dashboard/asset-dashboard.component';
+// تأكدي من عمل Import للـ LoginComponent لو مش موجود
 
 const routes: Routes = [
-  {
-    path: '',
-    component: AssetDashboardComponent,
+  { path: 'login', component: LoginComponent },
+  { 
+    path: 'register', 
+    loadChildren: () => import('./pages/register/register.module').then(m => m.RegisterModule) 
   },
+  { 
+    path: 'otp', 
+    loadChildren: () => import('./pages/otp/otp.module').then(m => m.OtpModule) 
+  },
+  { 
+    path: 'dashboard', 
+    component: AssetDashboardComponent 
+  },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '**', redirectTo: 'login' }
 ];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule],
-})
-export class AppRoutingModule {}
