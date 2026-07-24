@@ -4,6 +4,8 @@ import { LoginComponent } from './pages/login/login.component';
 import { AssetDashboardComponent } from './pages/asset-dashboard/asset-dashboard.component';
 import { DeliveryTrackingComponent } from './pages/delivery-tracking/delivery-tracking.component';
 import { NegotiationRoomComponent } from './pages/negotiation-room/negotiation-room.component';
+import { BookingsComponent } from './pages/bookings/bookings.component';
+import { ContractsComponent } from './pages/contracts/contracts.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -30,6 +32,14 @@ const routes: Routes = [
   {
     path: 'negotiation-room',
     component: NegotiationRoomComponent
+  },
+  { 
+    path: 'bookings', 
+    component: BookingsComponent 
+  },
+  { 
+    path: 'contracts', 
+    component: ContractsComponent 
   },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' } 

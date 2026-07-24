@@ -12,6 +12,9 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { LoginComponent } from './pages/login/login.component';
 import { AssetDashboardComponent } from './pages/asset-dashboard/asset-dashboard.component';
 import { PaymentsEscrowComponent } from './pages/payments-escrow/payments-escrow.component';
+import { BookingsComponent } from './pages/bookings/bookings.component';
+import { ContractsComponent } from './pages/contracts/contracts.component';
+
 import { CompanyProfileComponent } from './pages/company/company-profile/company-profile.component';
 import { ProfileHeaderComponent } from './pages/company/company-profile/components/profile-header/profile-header.component';
 import { CompanyStatsComponent } from './pages/company/company-profile/components/company-stats/company-stats.component';
@@ -44,6 +47,8 @@ import { DeliveryEventLogComponent } from './pages/delivery-tracking/components/
     LoginComponent,
     AssetDashboardComponent,
     PaymentsEscrowComponent,
+    BookingsComponent,
+    ContractsComponent,
     CompanyProfileComponent,
     ProfileHeaderComponent,
     CompanyStatsComponent,
@@ -66,12 +71,12 @@ import { DeliveryEventLogComponent } from './pages/delivery-tracking/components/
     DeliveryHeaderComponent,
     DeliveryProgressComponent,
     ShipmentDetailsComponent,
-    DeliveryEventLogComponent,
+    DeliveryEventLogComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule, 
+    FormsModule,
     SharedModule,
     HttpClientModule,
     LucideAngularModule.pick({

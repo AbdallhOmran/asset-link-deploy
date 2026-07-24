@@ -10,8 +10,6 @@ export class ButtonComponent {
   @Input() variant: ButtonVariant = 'primary';
   @Input() disabled = false;
   @Input() type: 'button' | 'submit' = 'button';
-  // NEW: makes the button span the full width of its container,
-  // matching the Figma design where buttons match input field width
   @Input() fullWidth = false;
   @Output() clicked = new EventEmitter<void>();
 
@@ -23,7 +21,7 @@ export class ButtonComponent {
 
   get classes(): string {
     const base =
-      'inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed';
+      'items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed';
 
     const variants: Record<ButtonVariant, string> = {
       primary: 'bg-primary text-white hover:bg-primary/90',
@@ -32,10 +30,8 @@ export class ButtonComponent {
       danger: 'bg-white text-danger border border-danger hover:bg-danger-bg',
     };
 
-    // NEW: 'w-full' + 'flex' (instead of inline-flex) makes it stretch
-    // to the full width of the parent, e.g. matching a form's input width
-    const width = this.fullWidth ? 'w-full flex' : 'inline-flex';
+    const display = this.fullWidth ? 'w-full flex' : 'inline-flex';
 
-    return `${base} ${width} ${variants[this.variant]}`;
+    return `${base} ${display} ${variants[this.variant]}`;
   }
 }

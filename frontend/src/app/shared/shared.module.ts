@@ -18,6 +18,7 @@ import { TimelineComponent } from './components/timeline/timeline.component';
 import { ModalComponent } from './components/modal/modal.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { DateRangePickerComponent } from './components/date-range-picker/date-range-picker.component';
+import { DataTableComponent } from './components/data-table/data-table.component'; 
 import { AuthLayoutComponent } from './components/auth-layout/auth-layout.component';
 
 @NgModule({
@@ -36,6 +37,8 @@ import { AuthLayoutComponent } from './components/auth-layout/auth-layout.compon
     ModalComponent,
     PaginationComponent,
     DateRangePickerComponent,
+    DataTableComponent, 
+    // AuthLayoutComponent,
     AuthLayoutComponent,
     StatusBadgeComponent
   ],
@@ -61,6 +64,8 @@ import { AuthLayoutComponent } from './components/auth-layout/auth-layout.compon
     ModalComponent,
     PaginationComponent,
     DateRangePickerComponent,
+    DataTableComponent, 
+    // AuthLayoutComponent,
     AuthLayoutComponent,
     StatusBadgeComponent
   ],
