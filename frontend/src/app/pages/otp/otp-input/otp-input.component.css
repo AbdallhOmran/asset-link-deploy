@@ -1,0 +1,4 @@
+/* Additional custom styles for OTP input component if needed */
+:host {
+  display: block;
+}
