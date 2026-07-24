@@ -1,0 +1,134 @@
+<app-modal
+  [isOpen]="isOpen"
+  title="Request Maintenance"
+  subtitle="Schedule routine service or repair work for fleet equipment"
+  icon="🛠️"
+  [showConfirmButton]="false"
+  [showCancelButton]="false"
+  (closed)="closeModal()"
+>
+  <!-- Modal Form -->
+  <form [formGroup]="maintenanceForm" (ngSubmit)="onSubmit()" class="space-y-4" dir="ltr">
+
+    <!-- Asset Selection -->
+    <div>
+      <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
+        Equipment <span class="text-red-500">*</span>
+      </label>
+      <select
+        formControlName="assetId"
+        class="w-full px-4 py-2.5 text-sm border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer transition-all"
+        [ngClass]="isFieldInvalid('assetId') ? 'border-red-300 bg-red-50/20' : 'border-slate-200'"
+      >
+        <option value="" disabled selected>Select equipment from fleet...</option>
+        <option *ngFor="let asset of assets" [value]="asset.assetId">
+          {{ asset.assetCode }} - {{ asset.assetName }} ({{ asset.category }})
+        </option>
+      </select>
+      <p *ngIf="isFieldInvalid('assetId')" class="text-[11px] text-red-500 mt-1">Equipment selection is required.</p>
+    </div>
+
+    <!-- Grid 2 Columns: Maintenance Type & Scheduled Date -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      
+      <!-- Maintenance Type -->
+      <div>
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
+          Service Type <span class="text-red-500">*</span>
+        </label>
+        <select
+          formControlName="maintenanceType"
+          class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+        >
+          <option *ngFor="let type of maintenanceTypes" [value]="type">{{ type }}</option>
+        </select>
+      </div>
+
+      <!-- Scheduled Date -->
+      <div>
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
+          Scheduled Date <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="date"
+          formControlName="scheduledDate"
+          class="w-full px-4 py-2.5 text-sm border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [ngClass]="isFieldInvalid('scheduledDate') ? 'border-red-300 bg-red-50/20' : 'border-slate-200'"
+        />
+        <p *ngIf="isFieldInvalid('scheduledDate')" class="text-[11px] text-red-500 mt-1">Please select a valid scheduled date.</p>
+      </div>
+    </div>
+
+    <!-- Grid 2 Columns: Technician & Priority -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <!-- Technician -->
+      <div>
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
+          Assigned Technician <span class="text-red-500">*</span>
+        </label>
+        <select
+          formControlName="technician"
+          class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+          [ngClass]="isFieldInvalid('technician') ? 'border-red-300 bg-red-50/20' : 'border-slate-200'"
+        >
+          <option value="" disabled selected>Select assigned technician...</option>
+          <option *ngFor="let tech of technicians" [value]="tech">{{ tech }}</option>
+        </select>
+        <p *ngIf="isFieldInvalid('technician')" class="text-[11px] text-red-500 mt-1">Please assign a technician responsible for maintenance.</p>
+      </div>
+
+      <!-- Priority Level -->
+      <div>
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
+          Priority Level
+        </label>
+        <select
+          formControlName="priority"
+          class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+        >
+          <option value="low">Low Priority</option>
+          <option value="medium">Medium Priority (Standard)</option>
+          <option value="high">High Priority</option>
+          <option value="urgent">Urgent / Emergency</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Notes & Scope of Work -->
+    <div>
+      <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
+        Notes & Scope of Work <span class="text-red-500">*</span>
+      </label>
+      <textarea
+        formControlName="notes"
+        rows="3"
+        placeholder="Enter inspection notes or required replacement parts (at least 10 characters)..."
+        class="w-full px-4 py-3 text-sm border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+        [ngClass]="isFieldInvalid('notes') ? 'border-red-300 bg-red-50/20' : 'border-slate-200'"
+      ></textarea>
+      <p *ngIf="isFieldInvalid('notes')" class="text-[11px] text-red-500 mt-1">Notes are required and must be at least 10 characters.</p>
+    </div>
+
+    <!-- Modal Footer Action Buttons -->
+    <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+      <button
+        type="button"
+        (click)="closeModal()"
+        class="px-5 py-2.5 border border-slate-200 text-slate-700 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-colors"
+      >
+        Cancel
+      </button>
+      
+      <button
+        type="submit"
+        [disabled]="isSubmitting"
+        class="px-6 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 shadow-md shadow-blue-600/30 flex items-center gap-2 transition-all disabled:opacity-50"
+      >
+        <span *ngIf="isSubmitting" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+        <span>Confirm & Schedule Maintenance</span>
+      </button>
+    </div>
+
+  </form>
+</app-modal>

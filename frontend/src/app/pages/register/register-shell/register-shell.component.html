@@ -1,0 +1,119 @@
+<div class="min-h-screen flex bg-slate-50 font-sans dir-ltr rtl:dir-rtl">
+
+  <!-- Left Brand Panel (Matching AuthLayout from reference design) -->
+  <div class="hidden lg:flex w-[480px] flex-shrink-0 flex-col justify-between p-10 relative overflow-hidden bg-slate-900 text-white">
+    <!-- Background Grid Pattern -->
+    <div class="absolute inset-0 opacity-[0.04] pointer-events-none"
+         style="background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 40px 40px;">
+    </div>
+    <!-- Ambient Glow Blobs -->
+    <div class="absolute top-20 left-10 w-64 h-64 rounded-full opacity-10 pointer-events-none" style="background: radial-gradient(circle, #1A6CFF, transparent);"></div>
+    <div class="absolute bottom-32 right-0 w-48 h-48 rounded-full opacity-10 pointer-events-none" style="background: radial-gradient(circle, #14B8A6, transparent);"></div>
+
+    <!-- Header Logo -->
+    <div class="relative z-10">
+      <div class="flex items-center gap-3 mb-12">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-900/50">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+            <polyline points="2 17 12 22 22 17"/>
+            <polyline points="2 12 12 17 22 12"/>
+          </svg>
+        </div>
+        <div>
+          <span class="text-white font-bold text-lg tracking-tight">AssetLink</span>
+          <span class="block text-[10px] text-slate-400 font-semibold uppercase tracking-widest -mt-0.5">Enterprise</span>
+        </div>
+      </div>
+
+      <h2 class="text-3xl font-bold text-white leading-tight mb-4">
+        Equipment & Asset<br>
+        <span class="text-blue-400">Rental Platform.</span>
+      </h2>
+      <p class="text-slate-400 text-sm leading-relaxed mb-8">
+        Connect with trusted companies to rent heavy equipment securely — complete with integrated digital contracts, enterprise escrows, and technical inspection workflows.
+      </p>
+
+      <!-- Key Value Features -->
+      <div class="space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="w-7 h-7 rounded-lg bg-white/10 border border-white/10 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+          </div>
+          <span class="text-sm text-slate-300">Enterprise Escrow Financial Protection</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-7 h-7 rounded-lg bg-white/10 border border-white/10 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <span class="text-sm text-slate-300">Digital Contracts & Rental Management</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-7 h-7 rounded-lg bg-white/10 border border-white/10 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </div>
+          <span class="text-sm text-slate-300">Pre & Post Rental Asset Inspection</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Testimonial Quote -->
+    <div class="relative z-10 p-4 rounded-2xl bg-white/5 border border-white/10 mt-8">
+      <p class="text-xs text-slate-300 italic leading-relaxed mb-3">
+        "AssetLink reduced our equipment procurement and rental timeline by 60%. The escrow system gives us complete peace of mind on every transaction."
+      </p>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white text-xs font-bold">
+          JR
+        </div>
+        <div>
+          <p class="text-xs font-semibold text-white">James Reyes</p>
+          <p class="text-xs text-slate-400">VP Operations · Apex Construction</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Form Container Panel -->
+  <div class="flex-1 flex items-center justify-center p-6 sm:p-10">
+    <div class="w-full max-w-[460px]">
+
+      <!-- Mobile Brand Header -->
+      <div class="flex items-center gap-2 mb-8 lg:hidden">
+        <div class="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg>
+        </div>
+        <span class="font-bold text-slate-900 text-lg">AssetLink</span>
+      </div>
+
+      <!-- Main Section Titles -->
+      <h1 class="text-2xl font-bold text-slate-900 mb-1 tracking-tight">
+        Register Company Account
+      </h1>
+      <p class="text-sm text-slate-500 mb-8">
+        Set up your company account in 3 simple steps.
+      </p>
+
+      <!-- Shared Stepper Component Integration -->
+      <div class="mb-8">
+        <app-stepper
+          [steps]="steps"
+          [currentStep]="currentStep"
+        ></app-stepper>
+      </div>
+
+      <!-- Child Routed Step Content Container -->
+      <div class="bg-white rounded-[16px] p-6 shadow-sm border border-slate-100">
+        <router-outlet></router-outlet>
+      </div>
+
+      <!-- Navigation Footer Link -->
+      <p class="text-center text-sm text-slate-500 mt-6">
+        Already have an account?
+        <a routerLink="/login" class="font-semibold text-blue-600 hover:text-blue-700 transition-colors">Log In</a>
+      </p>
+
+    </div>
+  </div>
+
+</div>

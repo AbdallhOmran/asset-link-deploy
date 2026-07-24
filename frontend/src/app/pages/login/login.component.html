@@ -1,0 +1,71 @@
+<app-auth-layout>
+  <h2 class="text-xl font-bold text-text">Welcome back</h2>
+  <p class="text-text-muted text-sm mt-1 mb-6">
+    Sign in to your AssetLink account to continue.
+  </p>
+
+  <p *ngIf="errorMessage" class="text-sm text-danger bg-danger-bg px-3 py-2 rounded-md mb-4">
+    {{ errorMessage }}
+  </p>
+
+  <form (ngSubmit)="onSubmit()" class="space-y-3.5">
+    <div>
+      <label class="text-xs font-semibold text-text-muted tracking-wide">WORK EMAIL *</label>
+      <input
+        type="email"
+        [(ngModel)]="companyEmail"
+        name="companyEmail"
+        required
+        placeholder="marcus.chen@terraequip.com"
+        class="w-full mt-1 px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30"
+      />
+    </div>
+
+    <div>
+      <label class="text-xs font-semibold text-text-muted tracking-wide">PASSWORD *</label>
+      <div class="relative mt-1">
+        <input
+          [type]="showPassword ? 'text' : 'password'"
+          [(ngModel)]="password"
+          name="password"
+          required
+          class="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30"
+        />
+        <button
+          type="button"
+          (click)="togglePassword()"
+          class="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted text-sm"
+        >
+          👁
+        </button>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between text-xs pt-1">
+      <label class="flex items-center gap-1.5 text-text-muted">
+        <input type="checkbox" [(ngModel)]="rememberMe" name="rememberMe" />
+        Remember me
+      </label>
+      <a href="#" class="text-primary hover:underline">Forgot password?</a>
+    </div>
+
+    <app-button variant="primary" type="submit" [fullWidth]="true" [disabled]="isLoading">
+      {{ isLoading ? 'Signing in...' : 'Sign in to AssetLink' }}
+    </app-button>
+  </form>
+
+  <div class="flex items-center gap-3 my-4">
+    <div class="flex-1 h-px bg-border"></div>
+    <span class="text-xs text-text-muted">or continue with</span>
+    <div class="flex-1 h-px bg-border"></div>
+  </div>
+
+  <app-button variant="secondary" [fullWidth]="true">
+    <span>G</span> Sign in with Google
+  </app-button>
+
+  <p class="text-center text-xs text-text-muted mt-4">
+    Don't have an account?
+    <a href="#" class="text-primary font-medium hover:underline">Register your company</a>
+  </p>
+</app-auth-layout>

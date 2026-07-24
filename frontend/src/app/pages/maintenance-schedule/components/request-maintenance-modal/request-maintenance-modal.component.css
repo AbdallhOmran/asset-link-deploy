@@ -1,0 +1,4 @@
+/* Modal scoped styles */
+:host {
+  display: block;
+}

@@ -1,6 +1,8 @@
 const Payment = require("../models/payment.model");
 const Booking = require("../models/booking.model");
 const Contract = require("../models/contract.model"); 
+const paymentProvider = require("./paymentProvider.service");
+const escrowService = require("./escrow.service");
 const Escrow = require("../models/escrow.model");
 
 const createPayment = async (bookingId) => {
@@ -33,6 +35,32 @@ const createPayment = async (bookingId) => {
     
     return payment;
 }
+
+const completePayment = async (bookingId) => {
+    const payment = await Payment.findOne({ bookingId });
+
+    if (!payment) {
+        throw new Error("Payment not found");
+    }
+
+    const contract = await Contract.findOne({ bookingId });
+
+    if (!contract) {
+        throw new Error("Contract not found");
+    }
+
+    const completedPayment = await paymentProvider.processPayment(payment._id);
+
+    const escrow = await escrowService.createEscrow({
+        bookingId,
+        contractId: contract._id
+    });
+
+    return {
+        payment: completedPayment,
+        escrow
+    };
+};
 
 const getDashboard = async () => {
 
@@ -76,7 +104,6 @@ const getDashboard = async () => {
         .sort({ createdAt: -1 });
 
     const ledgerData = ledger.map(item => ({
-
         escrowId: item.escrowCode,
 
         booking:
@@ -105,29 +132,72 @@ const getDashboard = async () => {
         date: item.createdAt,
 
         status: item.status
-
     }));
 
+    // ===========================
+    // Timeline
+    // ===========================
+
+    const timeline = ledger.map(item => {
+        let title = "";
+        let status = "";
+        let color = "";
+
+        switch (item.status) {
+            case "Held":
+                title = `Escrow ${item.escrowCode} created — ${item.totalHeld} ${item.currency} deposited`;
+                status = "In Escrow";
+                color = "bg-orange-400";
+                break;
+
+            case "Frozen":
+                title = `Escrow ${item.escrowCode} frozen due to dispute`;
+                status = "Frozen";
+                color = "bg-blue-500";
+                break;
+
+            case "Released":
+                title = `Funds released to ${item.ownerCompanyId?.companyName || "Owner Company"}`;
+                status = "Released";
+                color = "bg-emerald-500";
+                break;
+
+            case "Refunded":
+                title = `Escrow refunded to renter`;
+                status = "Refunded";
+                color = "bg-purple-500";
+                break;
+
+            case "Cancelled":
+                title = `Escrow cancelled`;
+                status = "Cancelled";
+                color = "bg-red-500";
+                break;
+
+            default:
+                title = item.escrowCode;
+                status = item.status;
+                color = "bg-slate-400";
+        }
+
+        return {
+            title,
+            date: item.createdAt,
+            status,
+            color
+        };
+    });
+
     return {
-
         summary: {
-
             totalProcessed,
-
             currentlyInEscrow,
-
             releasedMTD,
-
             platformFee
-
         },
-
-        ledger: ledgerData
-
+        ledger: ledgerData,
+        timeline
     };
-
 };
 
-
-
-module.exports = { createPayment, getDashboard };
+module.exports = { createPayment, completePayment, getDashboard };
