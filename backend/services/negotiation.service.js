@@ -2,6 +2,7 @@ const negotiationModel = require('../models/nagotiation.model')
 const versionModel = require('../models/version.model')
 const bookingModel = require('../models/booking.model');
 const companyModel = require('../models/company.model');
+const contractService = require("./contract.service");
 
 const generateNegotiationCode = async () =>{
 
@@ -222,7 +223,10 @@ const acceptOffer = async (offerData) => {
       status: "Confirmed"
     })
 
-    await contractService.createContract()
+    await contractService.createContract({
+    bookingId,
+    securityDeposit: acceptVersion.securityDeposit
+});
     
 }
 

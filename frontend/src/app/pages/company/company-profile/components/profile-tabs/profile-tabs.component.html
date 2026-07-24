@@ -1,0 +1,18 @@
+<div class="mt-6">
+  <div class="inline-flex rounded-2xl border border-slate-200 bg-white p-1 shadow-sm">
+
+    <button
+      *ngFor="let tab of tabs"
+      (click)="selectTab(tab)"
+      class="rounded-xl px-7 py-3 text-[15px] font-medium transition-all duration-200"
+      [ngClass]="
+        activeTab === tab
+          ? 'bg-[#2563EB] text-white shadow'
+          : 'text-slate-600 hover:bg-slate-50'
+      "
+    >
+      {{ tab }}
+    </button>
+
+  </div>
+</div>
