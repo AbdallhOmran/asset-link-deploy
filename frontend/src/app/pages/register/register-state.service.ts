@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, map } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
 
 export interface CompanyInfo {
   companyName: string;
@@ -58,8 +59,17 @@ export class RegisterStateService {
   private formDataSubject = new BehaviorSubject<RegisterFormData>(initialData);
   public formData$: Observable<RegisterFormData> = this.formDataSubject.asObservable();
 
+  /** Store email after registration so OTP page can read it */
+  private registeredEmail: string = '';
+
+  constructor(private authService: AuthService) {}
+
   get currentData(): RegisterFormData {
     return this.formDataSubject.value;
+  }
+
+  getRegisteredEmail(): string {
+    return this.registeredEmail || this.currentData.contact.email;
   }
 
   updateCompanyInfo(info: Partial<CompanyInfo>): void {
@@ -88,23 +98,32 @@ export class RegisterStateService {
 
   reset(): void {
     this.formDataSubject.next(initialData);
+    this.registeredEmail = '';
   }
 
   /**
    * Submit complete registration data to Backend API
+   * Maps frontend form fields to backend expected fields:
+   * - companyName     ← company.companyName
+   * - companyEmail    ← contact.email
+   * - phoneNumber     ← contact.phone
+   * - password        ← account.password
+   * - confirmPassword ← account.confirmPassword
    */
   submitRegistration(): Observable<{ success: boolean; message: string }> {
     const payload = this.currentData;
-    console.log('Submitting registration payload:', payload);
 
-    // TODO: Replace with actual AuthService HTTP call
-    // return this.http.post('/api/v1/auth/register', payload);
+    const apiPayload = {
+      companyName: payload.company.companyName,
+      companyEmail: payload.contact.email,
+      phoneNumber: payload.contact.phone || '',
+      password: payload.account.password,
+      confirmPassword: payload.account.confirmPassword,
+    };
 
-    return new Observable((subscriber) => {
-      setTimeout(() => {
-        subscriber.next({ success: true, message: 'Registration initial step completed successfully.' });
-        subscriber.complete();
-      }, 800);
-    });
+    this.registeredEmail = payload.contact.email;
+
+    return this.authService.register(apiPayload);
   }
 }
+
