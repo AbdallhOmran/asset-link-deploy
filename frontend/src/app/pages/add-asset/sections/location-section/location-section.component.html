@@ -1,0 +1,41 @@
+<div class="bg-white rounded-xl border border-border p-8">
+  <h2 class="text-xl font-bold text-text mb-1">Location</h2>
+  <p class="text-sm text-text-muted mb-7">Where the asset is based. Shown to renters when browsing.</p>
+
+  <div [formGroup]="form" class="space-y-6">
+
+    <!-- Location field (model: location — single string) -->
+    <div>
+      <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-1.5">
+        City, State / Region
+      </label>
+      <div class="relative">
+        <lucide-icon name="map-pin" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted pointer-events-none"></lucide-icon>
+        <input
+          formControlName="location"
+          type="text"
+          placeholder="e.g. Portland, OR"
+          class="w-full border border-border rounded-lg pl-10 pr-4 py-3 text-sm text-text placeholder-text-muted outline-none focus:border-primary transition-colors"
+        />
+      </div>
+    </div>
+
+    <!-- Info note -->
+    <div class="p-4 rounded-xl bg-page border border-border flex items-start gap-3">
+      <lucide-icon name="info" class="h-4 w-4 text-text-muted flex-shrink-0 mt-0.5"></lucide-icon>
+      <p class="text-xs text-text-muted leading-relaxed">
+        This is the pickup/inspection location visible to renters. It can be updated after registration.
+      </p>
+    </div>
+
+    <!-- Location Preview placeholder -->
+    <div>
+      <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-2">Location Preview</label>
+      <div class="h-40 rounded-xl border-2 border-dashed border-border bg-page flex flex-col items-center justify-center gap-2 text-text-muted">
+        <lucide-icon name="map-pin" class="h-8 w-8 text-border"></lucide-icon>
+        <p class="text-sm font-medium">Enter a location above to preview</p>
+      </div>
+    </div>
+
+  </div>
+</div>

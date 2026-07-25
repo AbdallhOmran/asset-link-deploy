@@ -1,0 +1,12 @@
+<div class="bg-white rounded-xl border border-border p-8">
+  <h2 class="text-xl font-bold text-text mb-1">Images & Media</h2>
+  <p class="text-sm text-text-muted mb-7">Upload high-quality photos to attract renters. Min. 1 required.</p>
+
+  <!-- Shared app-image-gallery handles dropzone + thumbnail grid + remove -->
+  <app-image-gallery
+    [images]="images"
+    [maxImages]="8"
+    (filesSelected)="onFilesSelected($event)"
+    (imagesChange)="onImagesChange($event)"
+  ></app-image-gallery>
+</div>

@@ -41,6 +41,10 @@ const routes: Routes = [
     path: 'contracts', 
     component: ContractsComponent 
   },
+  {
+    path: 'assets/add',
+    loadChildren: () => import('./pages/add-asset/add-asset.module').then(m => m.AddAssetModule)
+  },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' } 
 ];
