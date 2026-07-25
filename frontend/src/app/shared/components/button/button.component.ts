@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'success' | 'danger'|'ghost';
+export type ButtonVariant = 'primary' | 'secondary' | 'success' | 'danger' | 'ghost';
 
 @Component({
   selector: 'app-button',
@@ -28,7 +28,7 @@ export class ButtonComponent {
       secondary: 'bg-white text-text border border-border hover:bg-page',
       success: 'bg-success text-white hover:bg-success/90',
       danger: 'bg-white text-danger border border-danger hover:bg-danger-bg',
-      ghost: 'bg-transparent text-text hover:bg-page'
+      ghost: 'bg-transparent text-primary hover:underline hover:bg-primary/5',
     };
 
     const display = this.fullWidth ? 'w-full flex' : 'inline-flex';

@@ -20,6 +20,7 @@ import { PaginationComponent } from './components/pagination/pagination.componen
 import { DateRangePickerComponent } from './components/date-range-picker/date-range-picker.component';
 import { DataTableComponent } from './components/data-table/data-table.component'; 
 import { AuthLayoutComponent } from './components/auth-layout/auth-layout.component';
+import { FileDropzoneComponent } from './components/file-dropzone/file-dropzone.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { AuthLayoutComponent } from './components/auth-layout/auth-layout.compon
     DataTableComponent, 
     // AuthLayoutComponent,
     AuthLayoutComponent,
-    StatusBadgeComponent
+    StatusBadgeComponent,
+    FileDropzoneComponent
   ],
   imports: [
     CommonModule,
@@ -67,7 +69,8 @@ import { AuthLayoutComponent } from './components/auth-layout/auth-layout.compon
     DataTableComponent, 
     // AuthLayoutComponent,
     AuthLayoutComponent,
-    StatusBadgeComponent
+    StatusBadgeComponent,
+    FileDropzoneComponent
   ],
 })
 export class SharedModule {}

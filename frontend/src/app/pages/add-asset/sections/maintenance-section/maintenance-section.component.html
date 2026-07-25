@@ -1,0 +1,83 @@
+<div class="space-y-6">
+
+  <!-- Maintenance Records Card -->
+  <div class="bg-white rounded-xl border border-border p-8">
+    <h2 class="text-xl font-bold text-text mb-1">Maintenance Records</h2>
+    <p class="text-sm text-text-muted mb-7">Transparent maintenance history builds trust and reduces liability.</p>
+
+    <div [formGroup]="form" class="space-y-6">
+
+      <!-- Maintenance Status — uses shared app-status-badge to preview the selected value -->
+      <div>
+        <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-1.5">
+          Maintenance Status <span class="text-danger">*</span>
+        </label>
+        <div class="flex items-center gap-3">
+          <select
+            formControlName="maintenanceStatus"
+            class="flex-1 border border-border rounded-lg px-4 py-3 text-sm text-text outline-none focus:border-primary transition-colors bg-white"
+          >
+            <option *ngFor="let s of maintenanceStatuses" [value]="s">{{ s }}</option>
+          </select>
+          <!-- Shared app-status-badge live-previews the selected status -->
+          <app-status-badge [status]="form.get('maintenanceStatus')?.value || 'Current'"></app-status-badge>
+        </div>
+      </div>
+
+      <!-- Last Maintenance + Next Service — shared app-date-range-picker -->
+      <div>
+        <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-2">Service Dates</label>
+        <app-date-range-picker
+          startLabel="Last Maintenance Date"
+          endLabel="Next Service Due"
+          [startDate]="form.get('lastMaintenanceDate')?.value"
+          [endDate]="form.get('nextServiceDue')?.value"
+          (rangeChange)="onDateRangeChange($event)"
+        ></app-date-range-picker>
+      </div>
+
+      <!-- Maintenance Notes -->
+      <div>
+        <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-1.5">Maintenance Notes</label>
+        <textarea
+          formControlName="maintenanceNotes"
+          rows="4"
+          placeholder="Describe recent service work, known issues, or upcoming requirements…"
+          class="w-full border border-border rounded-lg px-4 py-3 text-sm text-text placeholder-text-muted outline-none focus:border-primary transition-colors resize-none"
+        ></textarea>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Compliance Documents Card -->
+  <div class="bg-white rounded-xl border border-border p-8">
+    <h2 class="text-xl font-bold text-text mb-1">Compliance Documents</h2>
+    <p class="text-sm text-text-muted mb-7">Upload inspection certificates, insurance, and compliance records.</p>
+
+    <div class="space-y-4">
+      <div
+        *ngFor="let doc of complianceDocs"
+        class="flex items-center justify-between p-4 rounded-xl border border-border hover:border-primary/40 hover:bg-slate-50 transition-all group"
+      >
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
+            <lucide-icon name="file-text" class="h-5 w-5 text-slate-500"></lucide-icon>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-text">{{ doc.label }}</p>
+            <p class="text-xs text-text-muted">Upload required</p>
+          </div>
+        </div>
+        <!-- Shared app-button triggers the hidden file input for this doc -->
+        <label [for]="'doc-' + doc.key" class="cursor-pointer">
+          <app-button variant="secondary">
+            ↑ Upload
+          </app-button>
+          <input [id]="'doc-' + doc.key" type="file" accept=".pdf,.jpg,.png" class="hidden" />
+        </label>
+      </div>
+    </div>
+  </div>
+
+</div>
