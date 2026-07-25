@@ -12,7 +12,7 @@ export class StatusBadgeComponent {
     if (s === 'confirmed' || s === 'completed' || s === 'active') {
       return 'bg-green-100 text-green-800';
     }
-    if (s === 'pending' || s === 'in progress') {
+    if (s === 'pending' || s === 'in progress' || s=== 'In Escrow') {
       return 'bg-orange-100 text-orange-800';
     }
     if (s === 'failed' || s === 'danger' || s === 'expired') {

@@ -103,6 +103,17 @@ const getRecommendedAssets = async (req, res, next) => {
       });
   }
 };
+const getMyAssets= async (req, res) => {
+  try {
+    const assets = await assetService.getMyAssets(req.user.id);
+    return res.status(200).json({
+      success: true,
+      data: assets
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+}
 
 module.exports = {
   addAsset,
@@ -111,5 +122,6 @@ module.exports = {
   getAssets,
   searchAssets,
   getAssetAvailability,
-  getRecommendedAssets
+  getRecommendedAssets,
+  getMyAssets,
 };

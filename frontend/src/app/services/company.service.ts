@@ -17,5 +17,8 @@ export class CompanyService {
   updateProfile(data: any) {
     return this.http.put(`${this.baseUrl}/profile`, data);
   }
+  getMyAssets() {
+  return this.http.get('http://localhost:3000/api/assets/my-assets');
+}
 
 }

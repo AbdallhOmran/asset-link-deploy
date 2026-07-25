@@ -264,6 +264,12 @@ const getRecommendedAssets = async (query) => {
 
   return recommendedAssets;
 };
+const getMyAssets = async (id) => {
+  const assets = await assetModel.find({ companyId: id })
+    .populate("companyId")
+    .populate("assetCategoryId");
+  return assets;
+};
 
 
 module.exports = {
@@ -273,5 +279,6 @@ module.exports = {
   updateAsset,
   searchAssets,
   getAssetAvailability,
-  getRecommendedAssets
+  getRecommendedAssets,
+  getMyAssets,
 };
