@@ -1,0 +1,11 @@
+a[routerLinkActive]{
+    color:#CBD5E1;
+}
+
+a[routerLinkActive].bg-\[\#2563EB\]{
+    color:white;
+}
+
+a[routerLinkActive].bg-\[\#2563EB\] lucide-icon{
+    color:white;
+}
