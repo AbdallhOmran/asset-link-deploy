@@ -22,6 +22,7 @@ import { DataTableComponent } from './components/data-table/data-table.component
 import { AuthLayoutComponent } from './components/auth-layout/auth-layout.component';
 import { FileDropzoneComponent } from './components/file-dropzone/file-dropzone.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
+import { TopNavbarComponent } from './top-navbar/top-navbar.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     StatusBadgeComponent,
     FileDropzoneComponent,
     SidebarComponent,
+    TopNavbarComponent,
   ],
   imports: [
     CommonModule,
@@ -91,7 +93,8 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     StatusBadgeComponent,
     FileDropzoneComponent,
      LucideAngularModule,
-     SidebarComponent
+     SidebarComponent,
+     TopNavbarComponent
   ],
 })
 export class SharedModule {}
