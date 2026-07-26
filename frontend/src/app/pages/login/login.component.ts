@@ -29,7 +29,7 @@ export class LoginComponent {
       next: (res: any) => {
         this.isLoading = false;
         this.authService.saveSession(res.token, res.company);
-        this.router.navigate(['/dashboard']); // TODO: adjust to your real dashboard route
+       this.router.navigate(['/app/dashboard']); // TODO: adjust to your real dashboard route
       },
       error: (err) => {
         this.isLoading = false;
