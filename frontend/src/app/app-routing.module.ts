@@ -6,7 +6,7 @@ import { DeliveryTrackingComponent } from './pages/delivery-tracking/delivery-tr
 import { NegotiationRoomComponent } from './pages/negotiation-room/negotiation-room.component';
 import { BookingsComponent } from './pages/bookings/bookings.component';
 import { ContractsComponent } from './pages/contracts/contracts.component';
-
+import { EditCompanyProfileComponent } from './pages/edit-company-profile/edit-company-profile.component';
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { 
@@ -46,7 +46,10 @@ const routes: Routes = [
     loadChildren: () => import('./pages/add-asset/add-asset.module').then(m => m.AddAssetModule)
   },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: '**', redirectTo: 'login' } 
+  {path: 'company/edit-profile',
+  component: EditCompanyProfileComponent
+},
+  { path: '**', redirectTo: 'login' }, 
 ];
 
 @NgModule({

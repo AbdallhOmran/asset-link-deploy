@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CompanyService } from 'src/app/services/company.service';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-company-profile',
   templateUrl: './company-profile.component.html',
@@ -8,7 +8,10 @@ import { CompanyService } from 'src/app/services/company.service';
 })
 export class CompanyProfileComponent implements OnInit {
 assets: any[] = [];
-  constructor(private companyService: CompanyService) {}
+  constructor(
+  private companyService: CompanyService,
+  private router: Router
+) {}
 
   activeTab: 'overview' | 'assets' = 'overview';
 
@@ -72,5 +75,8 @@ assets: any[] = [];
       console.error(err);
     }
   });
+}
+goToEditProfile() {
+  this.router.navigate(['/company/edit-profile']);
 }
 }

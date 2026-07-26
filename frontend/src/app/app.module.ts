@@ -1,19 +1,17 @@
   import { NgModule } from '@angular/core';
   import { BrowserModule } from '@angular/platform-browser';
-  import { FormsModule } from '@angular/forms';
+  import { FormsModule ,ReactiveFormsModule} from '@angular/forms';
   import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-  import { LucideAngularModule,CheckCircle2, Clock3, Mail, Phone, Globe, MapPin } from 'lucide-angular';
+  import { LucideAngularModule,CheckCircle2, Clock3, Mail, Phone, Globe, MapPin,ArrowLeft } from 'lucide-angular';
   import { AppRoutingModule } from './app-routing.module';
   import { AppComponent } from './app.component';
   import { SharedModule } from './shared/shared.module';
   import { AuthInterceptor } from './interceptors/auth.interceptor';
-
   import { LoginComponent } from './pages/login/login.component';
   import { AssetDashboardComponent } from './pages/asset-dashboard/asset-dashboard.component';
   import { PaymentsEscrowComponent } from './pages/payments-escrow/payments-escrow.component';
   import { BookingsComponent } from './pages/bookings/bookings.component';
   import { ContractsComponent } from './pages/contracts/contracts.component';
-
   import { CompanyProfileComponent } from './pages/company-profile/company-profile.component';
   import { NegotiationRoomComponent } from './pages/negotiation-room/negotiation-room.component';
   import { NegotiationHeaderComponent } from './pages/negotiation-room/components/negotiation-header/negotiation-header.component';
@@ -28,6 +26,7 @@
   import { DeliveryProgressComponent } from './pages/delivery-tracking/components/delivery-progress/delivery-progress.component';
   import { ShipmentDetailsComponent } from './pages/delivery-tracking/components/shipment-details/shipment-details.component';
   import { DeliveryEventLogComponent } from './pages/delivery-tracking/components/delivery-event-log/delivery-event-log.component';
+import { EditCompanyProfileComponent } from './pages/edit-company-profile/edit-company-profile.component';
   @NgModule({
     declarations: [
       AppComponent,
@@ -49,12 +48,14 @@
       ShipmentDetailsComponent,
       DeliveryEventLogComponent,
       CompanyProfileComponent,
+      EditCompanyProfileComponent,
     ],
     imports: [
       BrowserModule,
       AppRoutingModule,
       FormsModule,
       SharedModule,
+      ReactiveFormsModule,
       HttpClientModule,
       LucideAngularModule.pick({
   CheckCircle2,
@@ -62,7 +63,8 @@
   Mail,
   Phone,
   Globe,
-  MapPin
+  MapPin,
+  ArrowLeft
 })
     ],
     providers: [

@@ -1,0 +1,104 @@
+<div class="min-h-screen bg-slate-50 p-8">
+
+  <!-- Header -->
+
+  <div class="mb-2">
+    <h1 class="text-4xl font-bold text-slate-900">
+      Edit Company Profile
+    </h1>
+
+    <p class="mt-2 text-lg text-slate-500">
+      Update your company information, branding, and settings.
+    </p>
+  </div>
+
+  <!-- Top Actions -->
+
+  <div class="mb-8 flex items-center justify-between">
+
+    <button
+      type="button"
+      class="flex items-center gap-2 text-lg font-medium text-slate-600 hover:text-blue-600">
+
+      <lucide-icon
+        name="arrow-left"
+        class="h-5 w-5">
+      </lucide-icon>
+
+      Back to Company Profile
+
+    </button>
+
+    <div class="flex gap-3">
+
+      <app-button variant="secondary">
+        Discard
+      </app-button>
+
+      <app-button variant="primary">
+        Save Changes
+      </app-button>
+
+    </div>
+
+  </div>
+
+  <!-- Main Layout -->
+
+  <div class="grid grid-cols-12 gap-6">
+
+    <!-- Sidebar -->
+
+    <div class="col-span-3">
+
+      <div class="rounded-3xl border border-slate-200 bg-white p-3 shadow-sm">
+
+        <button
+          *ngFor="let tab of tabs"
+          (click)="selectedTab = tab.id"
+          class="mb-2 flex w-full items-center gap-3 rounded-2xl px-5 py-4 text-left font-semibold transition-all duration-200"
+          [ngClass]="{
+            'bg-blue-600 text-white shadow': selectedTab === tab.id,
+            'text-slate-700 hover:bg-slate-100': selectedTab !== tab.id
+          }">
+
+          <lucide-icon
+            [name]="tab.icon"
+            class="h-5 w-5">
+          </lucide-icon>
+
+          {{ tab.title }}
+
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- Content -->
+
+    <div class="col-span-9">
+
+      <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+
+        <ng-container [ngSwitch]="selectedTab">
+
+          <!-- ===================== GENERAL ===================== -->
+
+          <div *ngSwitchCase="'general'">
+
+            <h2 class="text-3xl font-bold">
+              General Information
+            </h2>
+
+            <p class="mt-2 text-slate-500">
+              Basic company details visible to other users on the platform.
+            </p>
+
+            <hr class="my-8">
+
+            <form [formGroup]="profileForm">
+
+              <!-- General Form Starts -->
+
+              <div class="grid grid-cols-2 gap-6">
