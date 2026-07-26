@@ -9,7 +9,7 @@ import { BookingsComponent } from './pages/bookings/bookings.component';
 import { ContractsComponent } from './pages/contracts/contracts.component';
 import { CompanyProfileComponent } from './pages/company-profile/company-profile.component';
 import { PaymentsEscrowComponent } from './pages/payments-escrow/payments-escrow.component';
-
+import { EditCompanyProfileComponent } from './pages/edit-company-profile/edit-company-profile.component';
 import { DashboardLayoutComponent } from './shared/layout/dashboard-layout/dashboard-layout.component';
 
 const routes: Routes = [
@@ -55,7 +55,10 @@ const routes: Routes = [
         path: 'company-profile',
         component: CompanyProfileComponent
       },
-
+      {
+        path: 'edit-company-profile',
+        component: EditCompanyProfileComponent
+      },
       {
         path: 'payments-escrow',
         component: PaymentsEscrowComponent

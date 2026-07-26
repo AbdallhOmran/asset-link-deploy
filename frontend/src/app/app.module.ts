@@ -2,7 +2,7 @@
   import { BrowserModule } from '@angular/platform-browser';
   import { FormsModule ,ReactiveFormsModule} from '@angular/forms';
   import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-  import { LucideAngularModule,CheckCircle2, Clock3, Mail, Phone, Globe, MapPin,LogOut } from 'lucide-angular';
+  import { LucideAngularModule,CheckCircle2, Clock3, Mail, Phone, Globe, MapPin,LogOut ,Building2,Shield,Image,BriefcaseBusiness,Users,Calendar,} from 'lucide-angular';
   import { AppRoutingModule } from './app-routing.module';
   import { AppComponent } from './app.component';
   import { SharedModule } from './shared/shared.module';
@@ -49,7 +49,8 @@ import { EditCompanyProfileComponent } from './pages/edit-company-profile/edit-c
       ShipmentDetailsComponent,
       DeliveryEventLogComponent,
       CompanyProfileComponent,
-      DashboardLayoutComponent
+      DashboardLayoutComponent,
+      EditCompanyProfileComponent
 
     ],
     imports: [
@@ -67,6 +68,12 @@ import { EditCompanyProfileComponent } from './pages/edit-company-profile/edit-c
   Globe,
   MapPin,
   LogOut,
+  Building2, 
+  Shield, 
+  Image,
+  BriefcaseBusiness,
+  Users,
+  Calendar,
 })
     ],
     providers: [

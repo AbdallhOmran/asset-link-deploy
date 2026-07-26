@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ProfileService } from 'src/app/services/profile.service';
 
-export type TabType =
+type EditSection =
   | 'general'
   | 'contact'
   | 'branding'
@@ -14,70 +15,169 @@ export type TabType =
 })
 export class EditCompanyProfileComponent implements OnInit {
 
-  selectedTab: TabType = 'general';
+  activeSection: EditSection = 'general';
 
-  tabs: {
-    id: TabType;
+  sections: {
+    key: EditSection;
     title: string;
     icon: string;
   }[] = [
     {
-      id: 'general',
+      key: 'general',
       title: 'General Info',
       icon: 'building-2'
     },
     {
-      id: 'contact',
+      key: 'contact',
       title: 'Contact Details',
       icon: 'mail'
     },
     {
-      id: 'branding',
+      key: 'branding',
       title: 'Branding & Logo',
       icon: 'image'
     },
     {
-      id: 'security',
+      key: 'security',
       title: 'Security',
       icon: 'shield'
     }
   ];
 
-  profileForm!: FormGroup;
+  form!: FormGroup;
+
+  constructor(
+    private fb: FormBuilder,
+    private profileService: ProfileService
+  ) {}
 
   ngOnInit(): void {
-    this.profileForm = new FormGroup({
-      // General Info
-      companyName: new FormControl(''),
-      displayName: new FormControl(''),
-      industry: new FormControl(''),
-      companySize: new FormControl(''),
-      yearFounded: new FormControl(''),
-      website: new FormControl(''),
-      description: new FormControl(''),
 
-      // Contact Details
-      companyEmail: new FormControl(''),
-      phoneNumber: new FormControl(''),
-      street: new FormControl(''),
-      city: new FormControl(''),
-      state: new FormControl(''),
-      zipCode: new FormControl(''),
-      country: new FormControl(''),
+    this.form = this.fb.group({
+
+      // General
+      companyName: ['', Validators.required],
+      displayName: ['', Validators.required],
+      industry: ['', Validators.required],
+      companySize: ['', Validators.required],
+      yearFounded: [''],
+      website: [''],
+      description: [''],
+
+      // Contact
+      email: ['', [Validators.required, Validators.email]],
+      phone: [''],
+      street: [''],
+      city: [''],
+      state: [''],
+      zipCode: [''],
+      country: [''],
 
       // Branding
-      companyLogo: new FormControl(''),
-      coverImage: new FormControl(''),
-      brandColor: new FormControl(''),
+      logo: [''],
+      coverImage: [''],
+      brandColor: ['#2563eb'],
 
       // Security
-      currentPassword: new FormControl(''),
-      newPassword: new FormControl(''),
-      confirmPassword: new FormControl('')
+      currentPassword: [''],
+      newPassword: [''],
+      confirmPassword: ['']
+
     });
+
+    this.loadProfile();
   }
 
-  changeTab(tab: TabType): void {
-    this.selectedTab = tab;
+  loadProfile(): void {
+
+    this.profileService.getProfile().subscribe({
+
+      next: (res: any) => {
+
+        const company = res.data;
+
+        this.form.patchValue({
+
+          companyName: company.companyName || '',
+          displayName: company.displayName || '',
+          industry: company.industry || '',
+          companySize: company.companySize || '',
+          yearFounded: company.yearFounded || '',
+          website: company.website || '',
+          description: company.description || '',
+
+          email: company.companyEmail || '',
+          phone: company.phoneNumber || '',
+
+          street: company.companyAddress || '',
+          city: company.city || '',
+          state: company.state || '',
+          zipCode: company.zipCode || '',
+          country: company.country || '',
+
+          logo: company.companyLogo || ''
+
+        });
+
+      },
+
+      error: (err) => {
+        console.error('Load Profile Error:', err);
+      }
+
+    });
+
   }
+
+  saveChanges(): void {
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const body = {
+
+      companyName: this.form.value.companyName,
+      displayName: this.form.value.displayName,
+      companyEmail: this.form.value.email,
+      phoneNumber: this.form.value.phone,
+      companyAddress: this.form.value.street,
+
+      industry: this.form.value.industry,
+      companySize: this.form.value.companySize,
+      yearFounded: this.form.value.yearFounded,
+
+      website: this.form.value.website,
+      description: this.form.value.description,
+
+      city: this.form.value.city,
+      state: this.form.value.state,
+      zipCode: this.form.value.zipCode,
+      country: this.form.value.country,
+
+      companyLogo: this.form.value.logo
+
+    };
+
+    this.profileService.updateProfile(body).subscribe({
+
+      next: (res: any) => {
+
+        console.log(res);
+        alert('Profile updated successfully');
+
+      },
+
+      error: (err) => {
+
+        console.error('Update Error:', err);
+        alert('Failed to update profile');
+
+      }
+
+    });
+
+  }
+
 }

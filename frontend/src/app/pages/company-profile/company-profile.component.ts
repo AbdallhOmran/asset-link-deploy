@@ -76,7 +76,7 @@ assets: any[] = [];
     }
   });
 }
-goToEditProfile() {
-  this.router.navigate(['/company/edit-profile']);
+goToEditProfile(): void {
+  this.router.navigate(['/app/edit-company-profile']);
 }
 }
