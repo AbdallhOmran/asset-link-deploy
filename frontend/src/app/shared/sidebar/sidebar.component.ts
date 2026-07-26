@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-
+import { Router } from '@angular/router';
 interface SidebarItem {
   title: string;
   icon: string;
@@ -13,6 +13,8 @@ interface SidebarItem {
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent {
+
+  constructor(private router: Router) {}
 
   platformItems: SidebarItem[] = [
   {
@@ -68,10 +70,11 @@ export class SidebarComponent {
   }
 ];
 logout(): void {
-  console.log('Logout');
+
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  this.router.navigate(['/login']);
+
 }
-// logout(): void {
-//   this.authService.logout();
-//   this.router.navigate(['/login']);
-// }
+
 }
