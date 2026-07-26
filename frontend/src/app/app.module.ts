@@ -2,12 +2,12 @@
   import { BrowserModule } from '@angular/platform-browser';
   import { FormsModule } from '@angular/forms';
   import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-  import { LucideAngularModule,CheckCircle2, Clock3, Mail, Phone, Globe, MapPin } from 'lucide-angular';
+  import { LucideAngularModule,CheckCircle2, Clock3, Mail, Phone, Globe, MapPin,LogOut } from 'lucide-angular';
   import { AppRoutingModule } from './app-routing.module';
   import { AppComponent } from './app.component';
   import { SharedModule } from './shared/shared.module';
   import { AuthInterceptor } from './interceptors/auth.interceptor';
-
+import { DashboardLayoutComponent } from './shared/layout/dashboard-layout/dashboard-layout.component';
   import { LoginComponent } from './pages/login/login.component';
   import { AssetDashboardComponent } from './pages/asset-dashboard/asset-dashboard.component';
   import { PaymentsEscrowComponent } from './pages/payments-escrow/payments-escrow.component';
@@ -49,6 +49,8 @@
       ShipmentDetailsComponent,
       DeliveryEventLogComponent,
       CompanyProfileComponent,
+      DashboardLayoutComponent
+
     ],
     imports: [
       BrowserModule,
@@ -62,7 +64,8 @@
   Mail,
   Phone,
   Globe,
-  MapPin
+  MapPin,
+  LogOut,
 })
     ],
     providers: [
