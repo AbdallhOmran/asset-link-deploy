@@ -1,0 +1,63 @@
+<div class="p-6">
+  <h2 class="text-2xl font-bold text-text">Bookings</h2>
+  <p class="text-text-muted text-sm mt-1 mb-5">
+    Track active, pending, and completed equipment rentals.
+  </p>
+
+  <p *ngIf="errorMessage" class="text-sm text-danger bg-danger-bg p-2 rounded-md mb-4">
+    {{ errorMessage }}
+  </p>
+
+  <!-- Toolbar: List/Calendar toggle + Search + Filter + New Booking -->
+  <div class="flex items-center gap-3 mb-5 flex-wrap">
+    <div class="flex bg-page rounded-lg p-1 border border-border">
+      <button
+        type="button"
+        class="px-4 py-1.5 rounded-md text-sm font-medium transition-colors"
+        [ngClass]="viewMode === 'list' ? 'bg-primary text-white' : 'text-text-muted'"
+        (click)="viewMode = 'list'"
+      >
+        List View
+      </button>
+      <button
+        type="button"
+        class="px-4 py-1.5 rounded-md text-sm font-medium transition-colors"
+        [ngClass]="viewMode === 'calendar' ? 'bg-primary text-white' : 'text-text-muted'"
+        (click)="viewMode = 'calendar'"
+      >
+        Calendar
+      </button>
+    </div>
+
+    <div class="relative flex-1 min-w-[220px]">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-sm">🔍</span>
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="applyFilter()"
+        placeholder="Search bookings..."
+        class="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30"
+      />
+    </div>
+
+    <app-button variant="secondary" (clicked)="toggleFilterPanel()">
+      <span>☰</span> Filter
+    </app-button>
+
+    <app-button variant="primary">
+      <span>+</span> New Booking
+    </app-button>
+  </div>
+
+  <p *ngIf="isLoading" class="text-sm text-text-muted mb-4">Loading...</p>
+
+  <app-data-table
+    [columns]="columns"
+    [data]="filteredBookings"
+    (actionClicked)="onBookingAction($event)"
+  ></app-data-table>
+
+  <p *ngIf="!isLoading && filteredBookings.length === 0" class="text-center text-text-muted py-8 text-sm">
+    No bookings found.
+  </p>
+</div>

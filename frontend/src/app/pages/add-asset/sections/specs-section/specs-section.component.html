@@ -1,0 +1,104 @@
+<div class="bg-white rounded-xl border border-border p-8">
+  <h2 class="text-xl font-bold text-text mb-1">Technical Specifications</h2>
+  <p class="text-sm text-text-muted mb-7">Detailed specs help renters confirm the asset meets their project requirements.</p>
+
+  <div [formGroup]="form" class="space-y-5">
+
+    <!-- Row 1 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div>
+        <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-1.5">Operating Weight</label>
+        <input
+          formControlName="operatingWeight"
+          type="text"
+          placeholder="e.g. 90,000 lbs"
+          class="w-full border border-border rounded-lg px-4 py-3 text-sm text-text placeholder-text-muted outline-none focus:border-primary transition-colors"
+        />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-1.5">Engine / Motor Power</label>
+        <input
+          formControlName="enginePower"
+          type="text"
+          placeholder="e.g. 513 HP or 48V"
+          class="w-full border border-border rounded-lg px-4 py-3 text-sm text-text placeholder-text-muted outline-none focus:border-primary transition-colors"
+        />
+      </div>
+    </div>
+
+    <!-- Row 2 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div>
+        <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-1.5">Fuel / Power Type</label>
+        <input
+          formControlName="fuelType"
+          type="text"
+          placeholder="e.g. Diesel / Electric"
+          class="w-full border border-border rounded-lg px-4 py-3 text-sm text-text placeholder-text-muted outline-none focus:border-primary transition-colors"
+        />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-1.5">Max Capacity</label>
+        <input
+          formControlName="maxCapacity"
+          type="text"
+          placeholder="e.g. 4.1 cu yd or 100 t"
+          class="w-full border border-border rounded-lg px-4 py-3 text-sm text-text placeholder-text-muted outline-none focus:border-primary transition-colors"
+        />
+      </div>
+    </div>
+
+    <!-- Row 3 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div>
+        <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-1.5">Key Dimension</label>
+        <input
+          formControlName="keyDimension"
+          type="text"
+          placeholder="e.g. Max Dig Depth: 24 ft"
+          class="w-full border border-border rounded-lg px-4 py-3 text-sm text-text placeholder-text-muted outline-none focus:border-primary transition-colors"
+        />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-1.5">Noise / Emissions</label>
+        <input
+          formControlName="noiseEmissions"
+          type="text"
+          placeholder="e.g. 74 dB(A) or Tier 4"
+          class="w-full border border-border rounded-lg px-4 py-3 text-sm text-text placeholder-text-muted outline-none focus:border-primary transition-colors"
+        />
+      </div>
+    </div>
+
+    <!-- Row 4 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div>
+        <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-1.5">Drive / Configuration</label>
+        <input
+          formControlName="driveConfig"
+          type="text"
+          placeholder="e.g. 8×6×8 or Triple Mast"
+          class="w-full border border-border rounded-lg px-4 py-3 text-sm text-text placeholder-text-muted outline-none focus:border-primary transition-colors"
+        />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-1.5">Additional Spec</label>
+        <input
+          formControlName="additionalSpec"
+          type="text"
+          placeholder="Label: Value"
+          class="w-full border border-border rounded-lg px-4 py-3 text-sm text-text placeholder-text-muted outline-none focus:border-primary transition-colors"
+        />
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Note -->
+  <div class="mt-6 flex items-start gap-2 text-sm text-warning">
+    <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+      <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+    </svg>
+    Accurate specifications reduce disputes and help renters confirm suitability. Always include capacity, power ratings, and key dimensions.
+  </div>
+</div>

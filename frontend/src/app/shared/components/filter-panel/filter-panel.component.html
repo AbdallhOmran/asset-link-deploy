@@ -101,17 +101,9 @@
               (click)="toggleStatus(opt.value)"
               [attr.aria-pressed]="isStatusSelected(opt.value)"
               class="group relative inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all duration-200 cursor-pointer select-none"
-              [class.bg-blue-600]="isStatusSelected(opt.value)"
-              [class.text-white]="isStatusSelected(opt.value)"
-              [class.border-blue-600]="isStatusSelected(opt.value)"
-              [class.shadow-xs]="isStatusSelected(opt.value)"
-              [class.bg-slate-50]="!isStatusSelected(opt.value)"
-              [class.dark:bg-slate-800/60]="!isStatusSelected(opt.value)"
-              [class.text-slate-700]="!isStatusSelected(opt.value)"
-              [class.dark:text-slate-300]="!isStatusSelected(opt.value)"
-              [class.border-slate-200]="!isStatusSelected(opt.value)"
-              [class.dark:border-slate-700]="!isStatusSelected(opt.value)"
-              [class.hover:border-blue-400]="!isStatusSelected(opt.value)">
+              [ngClass]="isStatusSelected(opt.value) ? 
+                'bg-blue-600 text-white border-blue-600 shadow-xs' : 
+                'bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-blue-400'">
 
         <!-- Color indicator dot -->
         <span *ngIf="opt.colorClass" 
@@ -124,12 +116,9 @@
         <!-- Count Badge -->
         <span *ngIf="opt.count !== undefined" 
               class="px-1.5 py-0.2 rounded-md text-[10px] font-bold"
-              [class.bg-blue-500/40]="isStatusSelected(opt.value)"
-              [class.text-white]="isStatusSelected(opt.value)"
-              [class.bg-slate-200]="!isStatusSelected(opt.value)"
-              [class.dark:bg-slate-700]="!isStatusSelected(opt.value)"
-              [class.text-slate-600]="!isStatusSelected(opt.value)"
-              [class.dark:text-slate-400]="!isStatusSelected(opt.value)">
+              [ngClass]="isStatusSelected(opt.value) ? 
+                'bg-blue-500/40 text-white' : 
+                'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400'">
           {{ opt.count }}
         </span>
       </button>

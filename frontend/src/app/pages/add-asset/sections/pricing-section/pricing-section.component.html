@@ -1,0 +1,75 @@
+<div class="bg-white rounded-xl border border-border p-8">
+  <h2 class="text-xl font-bold text-text mb-1">Pricing &amp; Terms</h2>
+  <p class="text-sm text-text-muted mb-7">Set your rental rates. Daily rate is required.</p>
+
+  <div [formGroup]="form" class="space-y-6">
+
+    <!-- Daily Rate (required) -->
+    <div>
+      <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-1.5">
+        Daily Rate <span class="text-danger">*</span>
+      </label>
+      <div class="relative">
+        <lucide-icon name="dollar-sign" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted pointer-events-none"></lucide-icon>
+        <input
+          formControlName="priceDaily"
+          type="number"
+          min="0"
+          placeholder="0.00"
+          class="w-full border rounded-lg pl-10 pr-4 py-3 text-sm text-text placeholder-text-muted outline-none transition-colors focus:border-primary"
+          [class.border-danger]="isInvalid('priceDaily')"
+          [class.border-border]="!isInvalid('priceDaily')"
+        />
+      </div>
+      <p *ngIf="isInvalid('priceDaily')" class="text-xs text-danger mt-1 flex items-center gap-1">
+        <lucide-icon name="alert-triangle" class="h-3.5 w-3.5"></lucide-icon>
+        Daily rate is required.
+      </p>
+    </div>
+
+    <!-- Weekly + Monthly Rate -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div>
+        <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-1.5">
+          Weekly Rate <span class="text-xs text-text-muted font-normal normal-case">(optional)</span>
+        </label>
+        <div class="relative">
+          <lucide-icon name="dollar-sign" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted pointer-events-none"></lucide-icon>
+          <input
+            formControlName="priceWeekly"
+            type="number"
+            min="0"
+            placeholder="0.00"
+            class="w-full border border-border rounded-lg pl-10 pr-4 py-3 text-sm text-text placeholder-text-muted outline-none focus:border-primary transition-colors"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-1.5">
+          Monthly Rate <span class="text-xs text-text-muted font-normal normal-case">(optional)</span>
+        </label>
+        <div class="relative">
+          <lucide-icon name="dollar-sign" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted pointer-events-none"></lucide-icon>
+          <input
+            formControlName="priceMonthly"
+            type="number"
+            min="0"
+            placeholder="0.00"
+            class="w-full border border-border rounded-lg pl-10 pr-4 py-3 text-sm text-text placeholder-text-muted outline-none focus:border-primary transition-colors"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Helper tip -->
+    <div class="p-4 rounded-xl bg-page border border-border flex items-start gap-3">
+      <lucide-icon name="info" class="h-4 w-4 text-text-muted flex-shrink-0 mt-0.5"></lucide-icon>
+      <p class="text-xs text-text-muted leading-relaxed">
+        Renters will see the daily rate by default. Offering weekly and monthly discounts increases your booking rate.
+        The asset status will be set to <strong>Available</strong> after registration.
+      </p>
+    </div>
+
+  </div>
+</div>
