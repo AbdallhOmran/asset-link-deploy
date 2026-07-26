@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-
+import {LucideAngularModule,Layers,LayoutDashboard,Boxes,Sparkles,CalendarDays,FileText,MessagesSquare,Truck,Wallet,ClipboardCheck,Wrench,Building2,ShieldCheck,Users,Settings} from 'lucide-angular';
 import { StatusBadgeComponent } from './components/status-badge/status-badge.component';
 import { ButtonComponent } from './components/button/button.component';
 import { StepperComponent } from './components/stepper/stepper.component';
@@ -21,6 +21,8 @@ import { DateRangePickerComponent } from './components/date-range-picker/date-ra
 import { DataTableComponent } from './components/data-table/data-table.component'; 
 import { AuthLayoutComponent } from './components/auth-layout/auth-layout.component';
 import { FileDropzoneComponent } from './components/file-dropzone/file-dropzone.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
+import { TopNavbarComponent } from './top-navbar/top-navbar.component';
 
 @NgModule({
   declarations: [
@@ -42,12 +44,31 @@ import { FileDropzoneComponent } from './components/file-dropzone/file-dropzone.
     // AuthLayoutComponent,
     AuthLayoutComponent,
     StatusBadgeComponent,
-    FileDropzoneComponent
+    FileDropzoneComponent,
+    SidebarComponent,
+    TopNavbarComponent,
   ],
   imports: [
     CommonModule,
     FormsModule,
     RouterModule,
+    LucideAngularModule.pick({
+    Layers,
+    LayoutDashboard,
+    Boxes,
+    Sparkles,
+    CalendarDays,
+    FileText,
+    MessagesSquare,
+    Truck,
+    Wallet,
+    ClipboardCheck,
+    Wrench,
+    Building2,
+    ShieldCheck,
+    Users,
+    Settings
+  })
   ],
   exports: [
     CommonModule,
@@ -70,7 +91,10 @@ import { FileDropzoneComponent } from './components/file-dropzone/file-dropzone.
     // AuthLayoutComponent,
     AuthLayoutComponent,
     StatusBadgeComponent,
-    FileDropzoneComponent
+    FileDropzoneComponent,
+     LucideAngularModule,
+     SidebarComponent,
+     TopNavbarComponent
   ],
 })
 export class SharedModule {}
