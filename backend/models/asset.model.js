@@ -48,6 +48,13 @@ const assetSchema = new mongoose.Schema({
     ],
     default: "Available"
   },
+  //added by eman - sprint 6
+  healthScore: {
+  type: Number,
+  min: 0,
+  max: 100,
+  default: 100,
+},
 
   location:{
     type: String,

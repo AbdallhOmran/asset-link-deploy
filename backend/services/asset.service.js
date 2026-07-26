@@ -189,9 +189,9 @@ const getAssetAvailability = async (assetId, startDate, endDate) => {
 
 module.exports = {
   addAsset,
+  getAssets,
   getAssetDetails,
   updateAsset,
-  getAssets,
   searchAssets,
   getAssetAvailability,
 };

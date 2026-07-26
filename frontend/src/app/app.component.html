@@ -1,0 +1,11 @@
+<div style="display: flex;">
+  <app-sidebar></app-sidebar>
+  <div style="margin-left: 250px; width: calc(100% - 250px); background-color: #f8fafc; min-height: 100vh;">
+    <app-topbar></app-topbar>
+    
+    <!-- المكان الذي سيتم فيه عرض صفحات التطبيق (الجدول والتقرير) -->
+    <main class="p-3">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

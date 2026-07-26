@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs");
 const Company = require('../models/company.model');
 const generateToken = require('../utils/generateToken');
 const authService = require('../services/auth.service');
-
+const inspectorModel = require('../models/inspector.model')
 /**
  * Register Company Controller
  * POST /api/auth/register-company
@@ -202,5 +202,105 @@ const login = async (req, res) => {
     }
 };
 
+const inspectorLogin = async (req, res) => {
+  try {
+    const { inspectorEmail, password } = req.body;
 
-module.exports = { registerCompany, verifyOtp, resendOtp, login};
+    if (!inspectorEmail || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
+
+    const inspector = await inspectorModel.findOne({ inspectorEmail });
+    if (!inspector) {
+      return res.status(400).json({ message: "This inspector not found" });
+    }
+
+    const checkPassword = await bcrypt.compare(password, inspector.password);
+    if (!checkPassword) {
+      return res.status(400).json({ message: "Your email or password is invalid" });
+    }
+
+    const token = generateToken(inspector._id, inspector.role);
+
+    return res.status(200).json({
+      success: true, 
+      message: 'Login successful',
+      token,
+      inspector: {
+        id: inspector._id,
+        fullName: inspector.fullName,
+        inspectorEmail: inspector.inspectorEmail,
+        role: inspector.role
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+const forgotPassword = async (req, res) => {
+  try {
+
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required"
+      });
+    }
+
+    const result = await authService.forgotPassword(email.toLowerCase());
+
+    return res.status(200).json({
+      success: true,
+      ...result
+    });
+
+  } catch (error) {
+
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Internal Server Error"
+    });
+
+  }
+};
+const resetPassword = async (req, res) => {
+  try {
+
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!password) {
+      return res.status(400).json({
+        success: false,
+        message: "Password is required"
+      });
+    }
+
+    const result = await authService.resetPassword(token, password);
+
+    return res.status(200).json({
+      success: true,
+      ...result
+    });
+
+  } catch (error) {
+
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Internal Server Error"
+    });
+
+  }
+};
+module.exports = {
+  registerCompany,
+  verifyOtp,
+  resendOtp,
+  login,
+  inspectorLogin,
+  forgotPassword,
+  resetPassword
+};

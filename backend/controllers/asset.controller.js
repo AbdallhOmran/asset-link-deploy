@@ -13,6 +13,7 @@ const addAsset = async (req, res) => {
   }
 };
 
+// Note: a duplicated & broken `getAssets` definition was removed here (merge leftover) - Fixed by Eman
 const getAssets = async (req, res) => {
   try {
     const assets = await assetService.getAssets();

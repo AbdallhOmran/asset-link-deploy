@@ -15,6 +15,8 @@ const bookingSchema = new mongoose.Schema({
 
   ownerCompanyId: { type: mongoose.Schema.Types.ObjectId, ref: "company", required: true },
 
+  assignedInspectorId:{type: mongoose.Schema.Types.ObjectId, ref: "inspector"},
+
   startDate: {
     type: Date,
     required: [true, "Start date is required"]
@@ -38,13 +40,17 @@ const bookingSchema = new mongoose.Schema({
 
   status: {
     type: String,
-    enum: ["Pending", "Confirmed", "Rejected", "Cancelled", "Completed"],
+    enum: ["Pending", "InNegotiation", "Confirmed", "Rejected", "Cancelled", "Completed"],
     default: "Pending"
   },
 
   cancelReason: {
     type: String,
     trim: true
+  },
+
+  returnedAt: {
+    type: Date
   },
 
   notes: {
