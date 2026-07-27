@@ -1,17 +1,24 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { CompanyService } from 'src/app/services/company.service';
 
 @Component({
   selector: 'app-top-navbar',
   templateUrl: './top-navbar.component.html',
   styleUrls: ['./top-navbar.component.css']
 })
-export class TopNavbarComponent {
+export class TopNavbarComponent implements OnInit {
 
   pageTitle = 'Dashboard';
 
-  constructor(private router: Router) {
+  companyName = '';
+  companyLogo = '';
+
+  constructor(
+    private router: Router,
+    private companyService: CompanyService
+  ) {
 
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
@@ -40,6 +47,49 @@ export class TopNavbarComponent {
         }
 
       });
+
+  }
+
+  ngOnInit(): void {
+    this.loadProfile();
+  }
+
+  loadProfile(): void {
+
+    this.companyService.getProfile().subscribe({
+
+      next: (res: any) => {
+
+        const company = res.data;
+
+        this.companyName =
+          company.displayName || company.companyName;
+
+        this.companyLogo =
+          company.companyLogo || '';
+
+      },
+
+      error: (err) => {
+        console.error(err);
+      }
+
+    });
+
+  }
+
+  get initials(): string {
+
+    if (!this.companyName) {
+      return '';
+    }
+
+    return this.companyName
+      .split(' ')
+      .map((word: string) => word.charAt(0))
+      .join('')
+      .substring(0, 2)
+      .toUpperCase();
 
   }
 
