@@ -1,0 +1,71 @@
+<aside class="sidebar">
+  <!-- Top Section: Logo & Nav -->
+  <div class="sidebar-top">
+    <!-- Logo -->
+    <div class="logo-container">
+      <div class="logo-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>
+      </div>
+      <div class="logo-text">
+        <h2>AssetLink</h2>
+        <span>ENTERPRISE</span>
+      </div>
+    </div>
+
+    <!-- PLATFORM Section -->
+    <div class="nav-section">
+      <p class="section-title">PLATFORM</p>
+      <nav class="nav-list">
+        <button 
+          *ngFor="let item of navItems" 
+          [routerLink]="['/' + item.id]"
+          routerLinkActive="active"
+          class="nav-item">
+          <div class="item-left">
+            <span class="icon">●</span>
+            <span>{{ item.label }}</span>
+          </div>
+          <span *ngIf="item.badge" class="badge">
+            {{ item.badge }}
+          </span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- ACCOUNT Section -->
+    <div class="nav-section">
+      <p class="section-title">ACCOUNT</p>
+      <button 
+        routerLink="/company"
+        routerLinkActive="active"
+        class="nav-item">
+        <div class="item-left">
+          <span class="icon">🏢</span>
+          <span>Company</span>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Bottom Section: Inspection Box & User Profile -->
+  <div class="sidebar-bottom">
+    <div class="inspection-card" routerLink="/inspections" style="cursor: pointer;">
+      <div class="card-header">
+        <span class="dot"></span>
+        3 inspections due
+      </div>
+      <p class="card-sub">Review before booking</p>
+    </div>
+
+    <div class="user-profile">
+      <div class="user-info">
+        <div class="avatar">MC</div>
+        <div class="user-details">
+          <span class="user-name">Marcus Chen</span>
+          <span class="user-role">Fleet Manager · Terr...</span>
+        </div>
+      </div>
+      <button class="logout-btn">➔</button>
+    </div>
+  </div>
+</aside>

@@ -166,4 +166,57 @@ const sendOTPEmail = async (toEmail, otp) => {
   }
 };
 
-module.exports = sendOTPEmail;
+/**
+ * Send Reset Password Email
+ */
+const sendResetPasswordEmail = async (toEmail, resetLink) => {
+  try {
+
+    if (isPlaceholder()) {
+      console.log("========================================");
+      console.log(`📧 Reset Password Link for ${toEmail}`);
+      console.log(resetLink);
+      console.log("========================================");
+      return;
+    }
+
+    const transporter = createTransporter();
+    const fromName = process.env.EMAIL_FROM_NAME || "AssetLink";
+
+    await transporter.sendMail({
+      from: `"${fromName}" <${process.env.EMAIL_USER}>`,
+      to: toEmail,
+      subject: "AssetLink - Reset Password",
+      html: `
+        <h2>Reset Your Password</h2>
+
+        <p>You requested to reset your password.</p>
+
+        <p>
+          <a href="${resetLink}">
+            Click here to reset your password
+          </a>
+        </p>
+
+        <p>This link will expire in 15 minutes.</p>
+      `
+    });
+
+    console.log(`✅ Reset Password email sent successfully to ${toEmail}`);
+
+  } catch (error) {
+
+    console.error(error);
+
+    throw {
+      statusCode: 500,
+      message: "Failed to send reset password email."
+    };
+
+  }
+};
+
+module.exports = {
+  sendOTPEmail,
+  sendResetPasswordEmail
+};

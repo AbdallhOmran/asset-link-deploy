@@ -6,7 +6,6 @@ const contractModel = require("../models/contract.model");
 const bookingModel = require("../models/booking.model");
 const generateContractCode = require("../utils/generateContractCode");
 
-
 const createContract = async (contractData) => {
   const { bookingId, securityDeposit } = contractData;
 
