@@ -1,0 +1,98 @@
+<div class="container mt-4 mb-5">
+  <!-- Back Button & Header -->
+  <div class="d-flex align-items-center mb-3">
+    <button class="btn btn-outline-secondary me-3" (click)="goBack()">
+      ← Back to Inspections
+    </button>
+    <h3 class="mb-0">Inspection Comparison Report ({{ inspectionId }})</h3>
+  </div>
+
+  <!-- Asset Info Header -->
+  <div class="card mb-4 shadow-sm bg-light">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-3">
+          <strong>Equipment:</strong>
+          <p class="mb-0 text-primary fw-bold">{{ reportData.assetName }}</p>
+        </div>
+        <div class="col-md-3">
+          <strong>Asset Code:</strong>
+          <p class="mb-0 text-muted">{{ reportData.assetCode }}</p>
+        </div>
+        <div class="col-md-3">
+          <strong>Renter:</strong>
+          <p class="mb-0">{{ reportData.renter }}</p>
+        </div>
+        <div class="col-md-3">
+          <strong>Rental Period:</strong>
+          <p class="mb-0">{{ reportData.rentalPeriod }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison Grid: Pre-Rental vs Post-Rental -->
+  <div class="row">
+    <!-- Pre-Rental Inspection Card -->
+    <div class="col-md-6 mb-3">
+      <div class="card border-info shadow-sm h-100">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">🔵 Pre-Rental Inspection</h5>
+          <span class="badge bg-light text-dark">{{ reportData.preRental.status }}</span>
+        </div>
+        <div class="card-body">
+          <ul class="list-group list-group-flush mb-3">
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Date:</span> <strong>{{ reportData.preRental.date }}</strong>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Inspector:</span> <strong>{{ reportData.preRental.inspector }}</strong>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Overall Condition:</span> <strong>{{ reportData.preRental.condition }}</strong>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Working Hours:</span> <strong>{{ reportData.preRental.workingHours }} hrs</strong>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Fuel Level:</span> <strong>{{ reportData.preRental.fuelLevel }}</strong>
+            </li>
+          </ul>
+          <h6>Inspector Notes:</h6>
+          <p class="card-text text-muted bg-light p-2 rounded">{{ reportData.preRental.notes }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post-Rental Inspection Card -->
+    <div class="col-md-6 mb-3">
+      <div class="card border-warning shadow-sm h-100">
+        <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">🟠 Post-Rental Inspection</h5>
+          <span class="badge bg-danger">{{ reportData.postRental.status }}</span>
+        </div>
+        <div class="card-body">
+          <ul class="list-group list-group-flush mb-3">
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Date:</span> <strong>{{ reportData.postRental.date }}</strong>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Inspector:</span> <strong>{{ reportData.postRental.inspector }}</strong>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Overall Condition:</span> <strong class="text-danger">{{ reportData.postRental.condition }}</strong>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Working Hours:</span> <strong>{{ reportData.postRental.workingHours }} hrs (+150 hrs)</strong>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Fuel Level:</span> <strong>{{ reportData.postRental.fuelLevel }}</strong>
+            </li>
+          </ul>
+          <h6>Inspector Notes:</h6>
+          <p class="card-text text-muted bg-light p-2 rounded">{{ reportData.postRental.notes }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

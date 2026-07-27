@@ -1,6 +1,5 @@
 const contractService = require("../services/contract.service");
 
-
 const createContract = async (req, res) => {
   try {
     const contract = await contractService.createContract(req.body);
