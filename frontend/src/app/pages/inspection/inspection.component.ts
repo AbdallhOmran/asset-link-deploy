@@ -32,12 +32,40 @@ export class InspectionComponent implements OnInit {
 
   activeFilter: 'all' | 'Pre-Rental' | 'Post-Rental' = 'all';
 
-  // Inspector identity stats (static for now, could be derived from records)
+  // Figma-matching state
+  activeInsp: string | null = null;
+  startedIds: Set<string> = new Set();
+
+  // Inspector identity stats
   inspectorStats = {
     assignedToday: 3,
     highPriority: 1,
-    completedMtd: 12
+    completedMtd: 12,
   };
+
+  // Priority metadata matching Figma
+  priorityMeta: Record<string, { label: string; color: string; bg: string; border: string }> = {
+    high: { label: 'High Priority', color: 'text-red-700', bg: 'bg-red-50', border: 'border-red-100' },
+    medium: { label: 'Medium Priority', color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-100' },
+    low: { label: 'Low Priority', color: 'text-slate-500', bg: 'bg-slate-50', border: 'border-slate-100' },
+  };
+
+  // Phase metadata matching Figma
+  phaseMeta: Record<string, { label: string; color: string; bg: string; border: string }> = {
+    'Pre-Rental': { label: 'Pre-Rental', color: 'text-blue-700', bg: 'bg-blue-50', border: 'border-blue-100' },
+    'Post-Rental': { label: 'Post-Rental', color: 'text-teal-700', bg: 'bg-teal-50', border: 'border-teal-100' },
+    'Inspection': { label: 'Inspection', color: 'text-purple-700', bg: 'bg-purple-50', border: 'border-purple-100' },
+  };
+
+  // Gradient configs per inspection index
+  gradientConfigs = [
+    { from: '#1E40AF', to: '#0E7490', accent: '#38BDF8' },
+    { from: '#78350F', to: '#B45309', accent: '#FCD34D' },
+    { from: '#1E3A5F', to: '#374151', accent: '#94A3B8' },
+    { from: '#065F46', to: '#047857', accent: '#34D399' },
+    { from: '#7C3AED', to: '#4F46E5', accent: '#A78BFA' },
+    { from: '#BE185D', to: '#E11D48', accent: '#FDA4AF' },
+  ];
 
   constructor(private inspectionService: InspectionService) {
     this.filteredInspections$ = this.inspectionService.filteredInspections$;
@@ -53,9 +81,6 @@ export class InspectionComponent implements OnInit {
 
   setPhaseFilter(phase: 'all' | 'Pre-Rental' | 'Post-Rental'): void {
     this.activeFilter = phase;
-    // We could filter locally or via backend. For now, since we don't have phase in backend yet, 
-    // we will rely on client side or backend if it supports it.
-    // If backend doesn't support 'phase', we filter locally in the template.
   }
 
   private loadDropdownData(): void {
@@ -89,6 +114,50 @@ export class InspectionComponent implements OnInit {
         console.error('Failed to create inspection:', err);
       },
     });
+  }
+
+  // Figma-matching methods
+  toggleExpand(inspId: string): void {
+    this.activeInsp = this.activeInsp === inspId ? null : inspId;
+  }
+
+  isExpanded(inspId: string): boolean {
+    return this.activeInsp === inspId;
+  }
+
+  startInspection(inspId: string): void {
+    this.startedIds.add(inspId);
+  }
+
+  isStarted(inspId: string): boolean {
+    return this.startedIds.has(inspId);
+  }
+
+  getGradient(index: number): { from: string; to: string; accent: string } {
+    return this.gradientConfigs[index % this.gradientConfigs.length];
+  }
+
+  getPhaseLabel(phase: string | undefined): string {
+    return this.phaseMeta[phase || 'Inspection']?.label || 'Inspection';
+  }
+
+  getPhaseClasses(phase: string | undefined): string {
+    const p = this.phaseMeta[phase || 'Inspection'] || this.phaseMeta['Inspection'];
+    return `${p.bg} ${p.border} ${p.color}`;
+  }
+
+  getPriorityClasses(): string {
+    const p = this.priorityMeta['medium'];
+    return `${p.bg} ${p.border} ${p.color}`;
+  }
+
+  getInitials(name: string): string {
+    return name
+      .split(' ')
+      .map((w) => w[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
   }
 
   // Delete flow

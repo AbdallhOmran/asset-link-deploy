@@ -1,20 +1,13 @@
-const { createClient } = require('redis');
-require('dotenv').config();
-
-const redisClient = createClient({
-  url: process.env.REDIS_URL || 'redis://localhost:6379'
-});
-
-redisClient.on('error', (err) => {
-  console.error('Redis Client Error:', err);
-});
-
-redisClient.on('connect', () => {
-  console.log('Connected to Redis');
-});
-
-const connectRedis = async () => {
-  await redisClient.connect();
+const mockRedisClient = {
+  on: (event, cb) => {},
+  connect: async () => { console.log('Mock Redis connected'); },
+  setEx: async (key, ttl, value) => {},
+  get: async (key) => null,
+  del: async (key) => {}
 };
 
-module.exports = { redisClient, connectRedis };
+const connectRedis = async () => {
+  await mockRedisClient.connect();
+};
+
+module.exports = { redisClient: mockRedisClient, connectRedis };

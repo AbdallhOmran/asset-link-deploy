@@ -1,100 +1,113 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AssetMaintenanceSummary, NewMaintenanceRequest } from '../../models/maintenance.model';
 
 @Component({
   selector: 'app-request-maintenance-modal',
   templateUrl: './request-maintenance-modal.component.html',
-  styleUrls: ['./request-maintenance-modal.component.css']
+  styleUrls: ['./request-maintenance-modal.component.css'],
 })
-export class RequestMaintenanceModalComponent implements OnInit {
-  @Input() assets: AssetMaintenanceSummary[] = [];
+export class RequestMaintenanceModalComponent implements OnChanges {
   @Input() isOpen = false;
-
+  @Input() assets: AssetMaintenanceSummary[] = [];
   @Output() close = new EventEmitter<void>();
   @Output() submitRequest = new EventEmitter<NewMaintenanceRequest>();
 
-  maintenanceForm!: FormGroup;
+  maintenanceForm: FormGroup;
   isSubmitting = false;
+  saved = false;
 
-  readonly maintenanceTypes = [
-    'Scheduled Service',
-    'Engine Service',
-    'Hydraulic Overhaul',
-    'Safety & Compliance Inspection',
-    'Undercarriage & Track Replacement',
-    'Electrical & Diagnostics',
-    'Emergency Repair'
+  selectedType = 'Routine';
+  selectedPriority: 'high' | 'medium' | 'low' = 'medium';
+
+  maintTypes = [
+    { key: 'Routine',       icon: 'clipboard-list', color: 'text-blue-700',   bg: 'bg-blue-50',   border: 'border-blue-100' },
+    { key: 'Preventive',    icon: 'shield-check',   color: 'text-teal-700',   bg: 'bg-teal-50',   border: 'border-teal-100' },
+    { key: 'Emergency',     icon: 'alert-triangle', color: 'text-red-700',    bg: 'bg-red-50',    border: 'border-red-100' },
+    { key: 'Corrective',    icon: 'hammer',         color: 'text-amber-700',  bg: 'bg-amber-50',  border: 'border-amber-100' },
+    { key: 'Certification', icon: 'badge-check',    color: 'text-purple-700', bg: 'bg-purple-50', border: 'border-purple-100' },
   ];
 
-  readonly technicians = [
-    'Jake Morrison (Lead Hydraulic Specialist)',
-    'Maria Santos (Senior Heavy Diesel Mechanic)',
-    'Tom Becker (Undercarriage & Safety Inspector)',
-    'Sarah Jenkins (Electrical & Telematics Tech)',
-    'External Certified Vendor'
-  ];
+  technicians = ['Carlos Rivera', 'Dana Park', 'External — NW Cert', 'External — SureTech'];
 
-  constructor(private fb: FormBuilder) {}
-
-  ngOnInit(): void {
-    this.initForm();
-  }
-
-  private initForm(): void {
-    const today = new Date().toISOString().split('T')[0];
-
+  constructor(private fb: FormBuilder) {
     this.maintenanceForm = this.fb.group({
-      assetId: ['', [Validators.required]],
-      maintenanceType: ['Scheduled Service', [Validators.required]],
-      scheduledDate: [today, [Validators.required]],
-      technician: ['', [Validators.required]],
-      priority: ['medium', [Validators.required]],
-      estimatedHours: [8, [Validators.required, Validators.min(1)]],
-      notes: ['', [Validators.required, Validators.minLength(10)]]
+      assetId: ['', Validators.required],
+      notes: ['', [Validators.required, Validators.minLength(10)]],
+      scheduledDate: ['', Validators.required],
+      technician: [''],
+      estimatedCost: ['', [Validators.required, Validators.min(1)]],
     });
   }
 
-  isFieldInvalid(fieldName: string): boolean {
-    const field = this.maintenanceForm.get(fieldName);
-    return !!(field && field.invalid && (field.dirty || field.touched));
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['isOpen'] && !this.isOpen) {
+      this.resetForm();
+    }
+  }
+
+  get selectedAsset(): AssetMaintenanceSummary | undefined {
+    return this.assets.find((a) => a.assetId === this.maintenanceForm.value.assetId);
+  }
+
+  get canSubmit(): boolean {
+    return this.maintenanceForm.valid && !!this.maintenanceForm.value.estimatedCost;
+  }
+
+  selectType(type: string): void {
+    this.selectedType = type;
+  }
+
+  selectPriority(p: 'high' | 'medium' | 'low'): void {
+    this.selectedPriority = p;
+  }
+
+  isFieldInvalid(field: string): boolean {
+    const control = this.maintenanceForm.get(field);
+    return !!(control && control.invalid && control.touched);
   }
 
   onSubmit(): void {
-    if (this.maintenanceForm.invalid) {
+    if (!this.canSubmit) {
       this.maintenanceForm.markAllAsTouched();
       return;
     }
 
     this.isSubmitting = true;
-    const formValues = this.maintenanceForm.value;
+    const formVal = this.maintenanceForm.value;
 
-    const selectedAsset = this.assets.find(a => a.assetId === formValues.assetId);
-
-    const requestPayload: NewMaintenanceRequest = {
-      assetId: formValues.assetId,
-      assetName: selectedAsset?.assetName,
-      maintenanceType: formValues.maintenanceType,
-      scheduledDate: formValues.scheduledDate,
-      technician: formValues.technician,
-      priority: formValues.priority,
-      estimatedHours: formValues.estimatedHours,
-      notes: formValues.notes
+    const request: NewMaintenanceRequest = {
+      assetId: formVal.assetId,
+      maintenanceType: this.selectedType,
+      scheduledDate: formVal.scheduledDate,
+      technician: formVal.technician || 'Unassigned',
+      priority: this.selectedPriority,
+      notes: formVal.notes,
+      estimatedHours: formVal.estimatedCost ? Math.ceil(formVal.estimatedCost / 120) : undefined,
     };
 
-    setTimeout(() => {
-      this.submitRequest.emit(requestPayload);
-      this.isSubmitting = false;
-      this.closeModal();
-    }, 400);
+    this.submitRequest.emit(request);
+    this.isSubmitting = false;
+    this.saved = true;
+  }
+
+  logAnother(): void {
+    this.maintenanceForm.reset();
+    this.selectedType = 'Routine';
+    this.selectedPriority = 'medium';
+    this.saved = false;
   }
 
   closeModal(): void {
-    this.maintenanceForm.reset({
-      maintenanceType: 'Scheduled Service',
-      priority: 'medium',
-      estimatedHours: 8
-    });
+    this.resetForm();
     this.close.emit();
+  }
+
+  private resetForm(): void {
+    this.maintenanceForm.reset();
+    this.selectedType = 'Routine';
+    this.selectedPriority = 'medium';
+    this.isSubmitting = false;
+    this.saved = false;
   }
 }
