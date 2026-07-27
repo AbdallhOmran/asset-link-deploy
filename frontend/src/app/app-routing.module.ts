@@ -92,6 +92,12 @@ const routes: Routes = [
           import('./pages/add-asset/add-asset.module')
             .then(m => m.AddAssetModule)
       },
+      {
+        path: 'assets/category/add',
+        loadChildren: () =>
+          import('./pages/add-category/add-category.module')
+            .then(m => m.AddCategoryModule)
+      },
 
       { 
         path: 'inspections', 

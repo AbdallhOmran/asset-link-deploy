@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-asset-dashboard',
@@ -6,6 +7,12 @@ import { Component } from '@angular/core';
   styleUrls: ['./asset-dashboard.component.css'],
 })
 export class AssetDashboardComponent {
+  constructor(private router: Router) {}
+
+  goToAddAsset(): void {
+    this.router.navigate(['/assets/add']);
+  }
+
   assets = [
     {
       name: 'Atlas Copco XRHS 1150',

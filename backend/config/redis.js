@@ -1,9 +1,26 @@
+const memoryStore = new Map();
+
 const mockRedisClient = {
   on: (event, cb) => {},
-  connect: async () => { console.log('Mock Redis connected'); },
-  setEx: async (key, ttl, value) => {},
-  get: async (key) => null,
-  del: async (key) => {}
+  
+  connect: async () => { 
+    console.log('Mock Redis connected (In-Memory mode active)'); 
+  },
+  
+  setEx: async (key, ttl, value) => {
+    memoryStore.set(key, value);
+    setTimeout(() => {
+      memoryStore.delete(key);
+    }, ttl * 1000);
+  },
+  
+  get: async (key) => {
+    return memoryStore.get(key) || null;
+  },
+  
+  del: async (key) => {
+    memoryStore.delete(key);
+  }
 };
 
 const connectRedis = async () => {
