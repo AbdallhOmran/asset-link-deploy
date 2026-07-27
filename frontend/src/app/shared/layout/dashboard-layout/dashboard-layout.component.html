@@ -1,0 +1,18 @@
+<div class="flex h-screen overflow-hidden bg-slate-50">
+
+  <!-- Sidebar -->
+  <app-sidebar></app-sidebar>
+
+  <!-- Main -->
+  <div class="flex flex-1 flex-col overflow-hidden">
+
+    <!-- Navbar -->
+    <app-top-navbar></app-top-navbar>
+    <!-- Page -->
+    <main class="flex-1 overflow-auto p-6">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+
+</div>

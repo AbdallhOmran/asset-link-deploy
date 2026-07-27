@@ -1,0 +1,173 @@
+<div class="timeline-container w-full dir-rtl bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6 shadow-xs">
+  
+  <!-- Header with Title & Percentage -->
+  <div *ngIf="title || stages.length > 0" class="flex items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
+    <div class="flex items-center gap-2.5">
+      <div class="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-base font-bold text-slate-900 dark:text-slate-100">
+          {{ title || 'مراحل حالة الشحنة' }}
+        </h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400">
+          متابعة فورية لتحديثات التتبع
+        </p>
+      </div>
+    </div>
+
+    <!-- Progress Percentage Badge -->
+    <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/60 px-3 py-1.5 rounded-full border border-slate-200/60 dark:border-slate-700/60">
+      <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">نسبة الإنجاز:</span>
+      <span class="text-xs font-bold text-blue-600 dark:text-blue-400">{{ completionPercentage }}%</span>
+    </div>
+  </div>
+
+  <!-- Timeline Body -->
+  <ol class="relative flex w-full"
+      [class.flex-col]="orientation === 'vertical'"
+      [class.space-y-6]="orientation === 'vertical'"
+      [class.flex-row]="orientation === 'horizontal'"
+      [class.flex-col]="orientation === 'responsive'"
+      [class.md:flex-row]="orientation === 'responsive'"
+      [class.space-y-6]="orientation === 'responsive'"
+      [class.md:space-y-0]="orientation === 'responsive'"
+      [class.justify-between]="orientation !== 'vertical'"
+      role="list"
+      aria-label="خطوات الشحن التفاعلية">
+    
+    <li *ngFor="let stage of stages; let i = index; let isLast = last"
+        class="relative flex-1 group"
+        [class.cursor-pointer]="isInteractive"
+        (click)="selectStage(stage, i)"
+        role="listitem">
+      
+      <!-- Stage Container (Horizontal Layout for MD+) -->
+      <div class="flex items-start"
+           [class.flex-row]="orientation === 'vertical'"
+           [class.md:flex-col]="orientation === 'responsive'"
+           [class.flex-col]="orientation === 'horizontal'">
+        
+        <!-- Icon & Connecting Line Container -->
+        <div class="relative flex items-center shrink-0"
+             [class.flex-col]="orientation === 'vertical'"
+             [class.md:flex-row]="orientation === 'responsive'"
+             [class.flex-row]="orientation === 'horizontal'"
+             [class.w-full]="!isLast && orientation !== 'vertical'"
+             [class.md:w-full]="!isLast && orientation === 'responsive'">
+
+          <!-- Stage Node Circle / Icon -->
+          <div class="relative z-10 flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 shadow-xs"
+               [attr.aria-current]="getStageStatus(stage, i) === 'active' ? 'step' : null"
+               [class.bg-emerald-600]="getStageStatus(stage, i) === 'completed'"
+               [class.text-white]="getStageStatus(stage, i) === 'completed'"
+               [class.ring-4]="getStageStatus(stage, i) === 'active'"
+               [class.ring-blue-100]="getStageStatus(stage, i) === 'active'"
+               [class.dark:ring-blue-950]="getStageStatus(stage, i) === 'active'"
+               [class.bg-blue-600]="getStageStatus(stage, i) === 'active'"
+               [class.text-white]="getStageStatus(stage, i) === 'active'"
+               [class.bg-slate-100]="getStageStatus(stage, i) === 'upcoming'"
+               [class.dark:bg-slate-800]="getStageStatus(stage, i) === 'upcoming'"
+               [class.text-slate-400]="getStageStatus(stage, i) === 'upcoming'"
+               [class.border-2]="getStageStatus(stage, i) === 'upcoming'"
+               [class.border-slate-300]="getStageStatus(stage, i) === 'upcoming'"
+               [class.dark:border-slate-700]="getStageStatus(stage, i) === 'upcoming'"
+               [class.group-hover:scale-110]="isInteractive">
+
+            <!-- Completed Icon (Checkmark) -->
+            <svg *ngIf="getStageStatus(stage, i) === 'completed'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+
+            <!-- Active Icon (Pulsing Circle or Custom) -->
+            <ng-container *ngIf="getStageStatus(stage, i) === 'active'">
+              <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+              </span>
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </ng-container>
+
+            <!-- Upcoming Icon (Step Index or Dot) -->
+            <span *ngIf="getStageStatus(stage, i) === 'upcoming'" class="text-xs font-bold font-mono">
+              {{ i + 1 }}
+            </span>
+          </div>
+
+          <!-- Connecting Line Between Nodes -->
+          <div *ngIf="!isLast" 
+               class="transition-all duration-300"
+               [class.w-0.5]="orientation === 'vertical'"
+               [class.h-12]="orientation === 'vertical'"
+               [class.ms-5]="orientation === 'vertical'"
+               [class.-mt-2]="orientation === 'vertical'"
+               
+               [class.h-1]="orientation === 'horizontal'"
+               [class.flex-1]="orientation === 'horizontal'"
+
+               [class.w-0.5]="orientation === 'responsive'"
+               [class.h-10]="orientation === 'responsive'"
+               [class.ms-5]="orientation === 'responsive'"
+               [class.md:ms-0]="orientation === 'responsive'"
+               [class.md:w-full]="orientation === 'responsive'"
+               [class.md:h-1]="orientation === 'responsive'"
+
+               [class.bg-emerald-600]="getStageStatus(stage, i) === 'completed'"
+               [class.bg-gradient-to-l]="getStageStatus(stage, i) === 'active'"
+               [class.from-slate-200]="getStageStatus(stage, i) === 'active'"
+               [class.to-blue-600]="getStageStatus(stage, i) === 'active'"
+               [class.dark:from-slate-700]="getStageStatus(stage, i) === 'active'"
+               [class.bg-slate-200]="getStageStatus(stage, i) === 'upcoming'"
+               [class.dark:bg-slate-800]="getStageStatus(stage, i) === 'upcoming'">
+          </div>
+        </div>
+
+        <!-- Stage Text Information -->
+        <div class="mt-3 md:mt-3 pe-4 md:pe-2"
+             [class.ms-4]="orientation === 'vertical'"
+             [class.md:ms-0]="orientation === 'responsive'"
+             [class.ms-4]="orientation === 'responsive'">
+
+          <!-- Title -->
+          <div class="flex items-center gap-2">
+            <h4 class="text-sm font-bold transition-colors"
+                [class.text-emerald-700]="getStageStatus(stage, i) === 'completed'"
+                [class.dark:text-emerald-400]="getStageStatus(stage, i) === 'completed'"
+                [class.text-blue-600]="getStageStatus(stage, i) === 'active'"
+                [class.dark:text-blue-400]="getStageStatus(stage, i) === 'active'"
+                [class.text-slate-600]="getStageStatus(stage, i) === 'upcoming'"
+                [class.dark:text-slate-400]="getStageStatus(stage, i) === 'upcoming'">
+              {{ stage.title }}
+            </h4>
+
+            <span *ngIf="getStageStatus(stage, i) === 'active'"
+                  class="px-2 py-0.5 text-[10px] font-extrabold bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 rounded-full border border-blue-200 dark:border-blue-800">
+              المرحلة الحالية
+            </span>
+          </div>
+
+          <!-- Date / Timestamp -->
+          <p *ngIf="showDates && stage.date" class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium flex items-center gap-1">
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{{ stage.date }}</span>
+          </p>
+
+          <!-- Description -->
+          <p *ngIf="showDescriptions && (stage.description || stage.subtitle)" 
+             class="text-xs text-slate-500 dark:text-slate-400 mt-1.5 line-clamp-2 max-w-xs leading-relaxed">
+            {{ stage.description || stage.subtitle }}
+          </p>
+
+        </div>
+
+      </div>
+
+    </li>
+  </ol>
+</div>

@@ -8,67 +8,60 @@ const contractSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
-
     bookingId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "booking",
       required: true,
     },
-
     assetId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "asset",
       required: true,
     },
-
     companyId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "company",
       required: true,
     },
-
     ownerCompanyId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "company",
       required: true,
     },
-
     startDate: {
       type: Date,
       required: true,
     },
-
     endDate: {
       type: Date,
       required: true,
     },
-
     totalPrice: {
       type: Number,
       required: true,
     },
-
     securityDeposit: {
       type: Number,
       required: true,
     },
-
+    version: {
+      type: Number,
+      default: 1,
+    },
     status: {
       type: String,
-      enum: ["Draft", "Active", "Rejected", "Completed"],
+      // تم دمج الحالات من كلا الفرعين
+      enum: ["Draft", "Approved", "Active", "Rejected", "Completed"],
       default: "Draft",
     },
-
     approvedAt: {
       type: Date,
       default: null,
     },
-
     rejectedAt: {
       type: Date,
       default: null,
     },
-
     pdfPath: {
       type: String,
       default: null,
@@ -76,9 +69,6 @@ const contractSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  },
+  }
 );
-
 module.exports = mongoose.model("contract", contractSchema);
-
-

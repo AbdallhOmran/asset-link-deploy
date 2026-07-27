@@ -1,0 +1,24 @@
+/* Chat Bubble Component Animations & Specific Styles */
+:host {
+  display: block;
+  width: 100%;
+}
+
+.chat-thread {
+  font-family: inherit;
+}
+
+@keyframes bubbleFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.group {
+  animation: bubbleFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

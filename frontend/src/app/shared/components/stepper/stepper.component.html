@@ -1,0 +1,35 @@
+<div class="flex items-start w-full">
+  <ng-container *ngFor="let step of steps; let i = index; let last = last">
+    <!-- Circle + labels -->
+    <div class="flex flex-col items-center text-center" [style.flex]="last ? '0 0 auto' : '1 1 0%'">
+      <div
+        class="w-12 h-12 flex items-center justify-center rounded-full border-2 text-lg transition-colors"
+        [ngClass]="{
+          'bg-primary border-primary text-white': getStatus(i) === 'completed',
+          'bg-white border-primary text-primary ring-4 ring-primary/20': getStatus(i) === 'active',
+          'bg-white border-border text-border': getStatus(i) === 'upcoming'
+        }"
+      >
+        <ng-container *ngIf="getStatus(i) === 'completed'; else stepIcon">✓</ng-container>
+        <ng-template #stepIcon>{{ step.icon || (i + 1) }}</ng-template>
+      </div>
+
+      <span
+        class="mt-2 text-sm font-semibold"
+        [ngClass]="getStatus(i) === 'upcoming' ? 'text-text-muted' : 'text-text'"
+      >
+        {{ step.label }}
+      </span>
+      <span *ngIf="step.subLabel" class="text-xs text-text-muted mt-0.5">
+        {{ step.subLabel }}
+      </span>
+    </div>
+
+    <!-- Connecting line -->
+    <div
+      *ngIf="!last"
+      class="flex-1 h-0.5 mt-6 mx-1"
+      [ngClass]="isLineCompleted(i) ? 'bg-primary' : 'bg-border'"
+    ></div>
+  </ng-container>
+</div>

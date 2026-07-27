@@ -1,0 +1,91 @@
+<div class="bg-white rounded-xl border border-border p-8">
+  <h2 class="text-xl font-bold text-text mb-1">Basic Information</h2>
+  <p class="text-sm text-text-muted mb-7">Provide the core details about your equipment.</p>
+
+  <div [formGroup]="form" class="space-y-6">
+
+    <!-- Asset Name -->
+    <div>
+      <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-1.5">
+        Asset Name <span class="text-danger">*</span>
+      </label>
+      <input
+        formControlName="assetName"
+        type="text"
+        placeholder="e.g. Caterpillar 320 Excavator"
+        class="w-full border rounded-lg px-4 py-3 text-sm text-text placeholder-text-muted outline-none transition-colors focus:border-primary"
+        [class.border-danger]="isInvalid('assetName')"
+        [class.border-border]="!isInvalid('assetName')"
+      />
+      <p *ngIf="isInvalid('assetName')" class="text-xs text-danger mt-1 flex items-center gap-1">
+        <lucide-icon name="alert-triangle" class="h-3.5 w-3.5"></lucide-icon>
+        Asset name is required (min 2 characters).
+      </p>
+    </div>
+
+    <!-- Category + Asset Code -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div>
+        <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-1.5">
+          Category <span class="text-danger">*</span>
+        </label>
+        <select
+          formControlName="assetCategoryId"
+          class="w-full border rounded-lg px-4 py-3 text-sm text-text outline-none transition-colors focus:border-primary bg-white"
+          [class.border-danger]="isInvalid('assetCategoryId')"
+          [class.border-border]="!isInvalid('assetCategoryId')"
+        >
+          <option value="" disabled selected>Select a category…</option>
+          <option *ngFor="let cat of categories" [value]="cat._id">
+            {{ cat.assetCategoryName }}
+          </option>
+        </select>
+        <p *ngIf="isInvalid('assetCategoryId')" class="text-xs text-danger mt-1 flex items-center gap-1">
+          <lucide-icon name="alert-triangle" class="h-3.5 w-3.5"></lucide-icon>
+          Category is required.
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-1.5">
+          Asset Code / Serial No. <span class="text-danger">*</span>
+        </label>
+        <div class="relative">
+          <lucide-icon name="hash" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted pointer-events-none"></lucide-icon>
+          <input
+            formControlName="assetCode"
+            type="text"
+            placeholder="e.g. CAT-320-2024-001"
+            class="w-full border rounded-lg pl-10 pr-4 py-3 text-sm text-text placeholder-text-muted outline-none transition-colors focus:border-primary"
+            [class.border-danger]="isInvalid('assetCode')"
+            [class.border-border]="!isInvalid('assetCode')"
+          />
+        </div>
+        <p *ngIf="isInvalid('assetCode')" class="text-xs text-danger mt-1 flex items-center gap-1">
+          <lucide-icon name="alert-triangle" class="h-3.5 w-3.5"></lucide-icon>
+          Asset code is required.
+        </p>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div>
+      <label class="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-1.5">
+        Description <span class="text-danger">*</span>
+      </label>
+      <textarea
+        formControlName="description"
+        rows="4"
+        placeholder="Describe the asset's condition, use cases, and notable features…"
+        class="w-full border rounded-lg px-4 py-3 text-sm text-text placeholder-text-muted outline-none transition-colors focus:border-primary resize-none"
+        [class.border-danger]="isInvalid('description')"
+        [class.border-border]="!isInvalid('description')"
+      ></textarea>
+      <p *ngIf="isInvalid('description')" class="text-xs text-danger mt-1 flex items-center gap-1">
+        <lucide-icon name="alert-triangle" class="h-3.5 w-3.5"></lucide-icon>
+        Description is required (min 2 characters).
+      </p>
+    </div>
+
+  </div>
+</div>

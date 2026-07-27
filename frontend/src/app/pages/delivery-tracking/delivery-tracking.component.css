@@ -1,0 +1,13 @@
+.delivery-container {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+app-delivery-header,
+app-delivery-progress,
+app-shipment-details,
+app-delivery-event-log {
+  display: block;
+  margin-bottom: 24px;
+}

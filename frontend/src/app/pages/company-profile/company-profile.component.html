@@ -1,0 +1,501 @@
+<div class="min-h-screen bg-slate-50 p-8">
+
+  <!-- Header -->
+
+  <div class="mb-8">
+    <h1 class="text-4xl font-bold text-slate-900">
+      Company Profile
+    </h1>
+
+    <p class="mt-2 text-lg text-slate-500">
+      Your company's public profile.
+    </p>
+  </div>
+
+  <!-- Hero Card -->
+
+  <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+
+    <!-- Cover -->
+
+    <div class="relative h-44 bg-gradient-to-r from-slate-900 to-blue-900">
+
+      <div
+        class="absolute right-6 top-6 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold text-white backdrop-blur">
+
+        ● Verified Company
+
+      </div>
+
+    </div>
+
+    <!-- Content -->
+
+    <div class="relative px-8 pb-0">
+
+      <!-- Logo -->
+
+      <div
+        class="-mt-12 flex h-24 w-24 items-center justify-center rounded-2xl border-4 border-white bg-slate-900 shadow-lg">
+
+        <span class="text-3xl font-bold text-white">
+          T
+        </span>
+
+      </div>
+
+      <!-- Top Row -->
+
+      <div class="mt-6 flex items-start justify-between">
+
+        <!-- Left -->
+
+        <div class="max-w-4xl">
+
+          <div class="flex items-center gap-3">
+
+            <h2 class="text-5xl font-bold text-slate-900">
+              {{ company.companyName }}
+            </h2>
+
+           <span
+  *ngIf="company.isVerified"
+  class="rounded-full bg-emerald-100 px-4 py-1 text-sm font-semibold text-emerald-700">
+  ● Verified
+</span>
+
+          </div>
+
+          <p class="mt-5 text-lg leading-8 text-slate-600">
+
+            Full-service heavy equipment rental company specializing in excavation,
+            lifting, and site preparation machinery across the Pacific Northwest.
+            Trusted by 120+ contractors since 2018.
+
+          </p>
+
+          <!-- Meta -->
+
+          <div class="mt-6 flex flex-wrap gap-x-8 gap-y-3 text-sm text-slate-500">
+
+            <div class="flex items-center gap-2">
+              🏗️ Construction & Infrastructure
+            </div>
+
+            <div class="flex items-center gap-2">
+              📍 Portland, OR, USA
+            </div>
+
+            <div class="flex items-center gap-2">
+              🌐 terraequip.com
+            </div>
+
+            <div class="flex items-center gap-2">
+              👥 51–200 employees
+            </div>
+
+            <div class="flex items-center gap-2">
+              📅 Member since Jan 2023
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Right -->
+
+        <div class="space-y-4">
+
+          <div class="flex justify-end gap-3">
+
+            <app-button variant="secondary">
+              Export
+            </app-button>
+
+            <app-button>
+              Edit Profile
+            </app-button>
+
+          </div>
+
+          <!-- <div
+            class="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+
+            <div class="text-xl text-yellow-400">
+              ★★★★☆
+            </div>
+
+            <div class="mt-2 text-5xl font-bold">
+              4.8
+            </div>
+
+            <div class="mt-2 text-slate-500">
+              48 Reviews
+            </div>
+
+          </div> -->
+
+        </div>
+
+      </div>
+
+      <!-- Stats -->
+
+      <div class="mt-10 grid grid-cols-2 border-t border-slate-200 ">
+
+        <div class="py-7 text-center border-r border-slate-200">
+          <div class="text-4xl font-bold">{{ assets.length }}</div>
+          <div class="mt-2 text-slate-500">
+            Assets Listed
+          </div>
+        </div>
+
+        <div class="py-7 text-center border-r border-slate-200">
+          <div class="text-4xl font-bold">142</div>
+          <div class="mt-2 text-slate-500">
+            Total Bookings
+          </div>
+        </div>
+
+        <!-- <div class="py-7 text-center border-r border-slate-200">
+          <div class="text-4xl font-bold">$1.24M</div>
+          <div class="mt-2 text-slate-500">
+            Revenue (YTD)
+          </div>
+        </div> -->
+
+        <!-- <div class="py-7 text-center border-r border-slate-200">
+          <div class="text-4xl font-bold">98.6%</div>
+          <div class="mt-2 text-slate-500">
+            Completion Rate
+          </div>
+        </div> -->
+
+        <!-- <div class="py-7 text-center">
+          <div class="text-4xl font-bold">&lt; 2 hrs</div>
+          <div class="mt-2 text-slate-500">
+            Response Time
+          </div>
+        </div> -->
+
+      </div>
+
+    </div>
+
+  </div>
+<!-- ================= Tabs ================= -->
+
+<div class="mt-8">
+
+  <div
+    class="inline-flex rounded-2xl border border-slate-200 bg-white p-1 shadow-sm">
+
+    <button
+      (click)="activeTab='overview'"
+      [ngClass]="{
+        'bg-blue-600 text-white shadow': activeTab==='overview',
+        'text-slate-600 hover:bg-slate-100': activeTab!=='overview'
+      }"
+      class="rounded-xl px-8 py-3 text-sm font-semibold transition">
+
+      Overview
+
+    </button>
+
+    <button
+      (click)="activeTab='assets'"
+      [ngClass]="{
+        'bg-blue-600 text-white shadow': activeTab==='assets',
+        'text-slate-600 hover:bg-slate-100': activeTab!=='assets'
+      }"
+      class="rounded-xl px-8 py-3 text-sm font-semibold transition">
+
+      Listed Assets
+
+    </button>
+
+  </div>
+
+</div>
+
+<!-- ================= Overview ================= -->
+
+<div
+  *ngIf="activeTab==='overview'"
+  class="mt-8 grid grid-cols-12 gap-6">
+
+  <!-- ================= Company Information ================= -->
+
+  <div
+    class="col-span-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+
+    <h2 class="mb-8 text-3xl font-bold text-slate-900">
+      Company Information
+    </h2>
+
+    <div class="grid grid-cols-2 gap-y-8 gap-x-16">
+
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+          Legal Name
+        </p>
+
+        <h3 class="mt-2 text-2xl font-semibold">
+          {{ company.companyName }}
+        </h3>
+      </div>
+
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+          {{ company.role }}
+        </p>
+
+        <h3 class="mt-2 text-2xl font-semibold">
+          Limited Liability Company
+        </h3>
+      </div>
+
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+          Industry
+        </p>
+
+        <h3 class="mt-2 text-2xl font-semibold">
+          Construction & Infrastructure
+        </h3>
+      </div>
+
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+          Founded
+        </p>
+
+        <h3 class="mt-2 text-2xl font-semibold">
+          2018
+        </h3>
+      </div>
+
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+          EIN / TAX ID
+        </p>
+
+        <h3 class="mt-2 text-2xl font-semibold">
+         {{ company.commercialRegistrationNumber }}
+        </h3>
+      </div>
+
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+          DUNS Number
+        </p>
+
+        <h3 class="mt-2 text-2xl font-semibold">
+          08-421-••••
+        </h3>
+      </div>
+
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+          Headquarters
+        </p>
+
+        <h3 class="mt-2 text-2xl font-semibold">
+          {{ company.companyAddress }}
+        </h3>
+      </div>
+
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+          Fleet Size
+        </p>
+
+        <h3 class="mt-2 text-2xl font-semibold">
+          {{ assets.length }} Assets
+        </h3>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ================= Contact ================= -->
+
+  <div
+    class="col-span-4 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+
+    <h2 class="mb-8 text-3xl font-bold">
+      Contact
+    </h2>
+
+    <div class="space-y-7">
+
+      <div class="flex items-center gap-4">
+
+        <div
+          class="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
+
+          <lucide-icon
+            name="mail"
+            class="h-5 w-5 text-slate-500">
+          </lucide-icon>
+
+        </div>
+
+        <span class="text-lg">
+          {{ company.companyEmail }}
+        </span>
+
+      </div>
+
+      <div class="flex items-center gap-4">
+
+        <div
+          class="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
+
+          <lucide-icon
+            name="phone"
+            class="h-5 w-5 text-slate-500">
+          </lucide-icon>
+
+        </div>
+
+        <span class="text-lg">
+          {{ company.phoneNumber }}
+        </span>
+
+      </div>
+
+      <div class="flex items-center gap-4">
+
+        <div
+          class="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
+
+          <lucide-icon
+            name="globe"
+            class="h-5 w-5 text-slate-500">
+          </lucide-icon>
+
+        </div>
+
+        <span class="text-lg">
+          terraequip.com
+        </span>
+
+      </div>
+
+      <div class="flex items-start gap-4">
+
+        <div
+          class="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
+
+          <lucide-icon
+            name="map-pin"
+            class="h-5 w-5 text-slate-500">
+          </lucide-icon>
+
+        </div>
+
+        <span class="text-lg leading-7">
+         {{ company.companyAddress }}   
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+<!-- ================= Listed Assets ================= -->
+
+<div *ngIf="activeTab==='assets'" class="mt-8">
+
+  <div class="rounded-3xl border border-slate-200 bg-white shadow-sm">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b border-slate-200 p-8">
+
+      <h2 class="text-3xl font-bold">
+        Listed Assets
+      </h2>
+
+      <app-button>
+        + Add Asset
+      </app-button>
+
+    </div>
+
+    <!-- Table -->
+
+    <div class="overflow-x-auto">
+
+      <table class="w-full">
+
+        <thead class="bg-slate-50">
+
+          <tr>
+            <th class="px-6 py-4 text-left">Asset</th>
+            <th class="px-6 py-4 text-left">Category</th>
+            <th class="px-6 py-4 text-left">Daily Rate</th>
+            <th class="px-6 py-4 text-left">Location</th>
+            <th class="px-6 py-4 text-left">Status</th>
+            <th class="px-6 py-4 text-left">Rating</th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr
+            *ngFor="let asset of assets"
+            class="border-t hover:bg-slate-50">
+
+            <td class="px-6 py-5 font-semibold">
+               {{ asset.assetName }}
+            </td>
+
+            <td class="px-6 py-5">
+             {{ asset.assetCategoryId?.assetCategoryName }}
+            </td>
+
+            <td class="px-6 py-5">
+             ${{ asset.price?.daily }} /day
+            </td>
+
+            <td class="px-6 py-5">
+ {{ asset.location }}
+            </td>
+
+            <td class="px-6 py-5">
+
+              <span
+                class="rounded-full px-3 py-1 text-sm"
+                [ngClass]="{
+                  'bg-green-100 text-green-700':asset.status==='Available',
+                  'bg-blue-100 text-blue-700':asset.status==='Rented',
+                  'bg-yellow-100 text-yellow-700':asset.status==='Maintenance'
+                }">
+
+                {{asset.status}}
+
+              </span>
+
+            </td>
+
+            <!-- <td class="px-6 py-5 text-yellow-500">
+              ★ {{asset.rating}}
+            </td> -->
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
+</div>

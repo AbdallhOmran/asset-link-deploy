@@ -1,0 +1,26 @@
+<div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-slate-200">
+  <table class="min-w-full divide-y divide-slate-200">
+    <thead class="bg-slate-50">
+      <tr>
+        <th *ngFor="let col of columns" class="px-6 py-4 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+          {{ col.header }}
+        </th>
+        <th class="px-6 py-4 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
+          الإجراءات
+        </th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-slate-200">
+      <tr *ngFor="let row of data" class="hover:bg-slate-50 transition-colors">
+        <td *ngFor="let col of columns" class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">
+          {{ row[col.field] }}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+          <button (click)="actionClicked.emit(row)" class="text-blue-600 hover:text-blue-900">
+            عرض
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

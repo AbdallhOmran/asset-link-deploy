@@ -29,6 +29,7 @@ const inspectorRoutes = require("./routes/inspector.routes");
 const assetHealthRoutes = require("./routes/assetHealth.routes");
 const deliveryRoutes = require("./routes/delivery.routes");
 const maintenanceRoutes = require("./routes/maintenance.routes");
+const assetReportRoutes = require("./routes/assetReport.routes");
 
 const app = express();
 
@@ -59,6 +60,7 @@ app.use("/api/inspector", inspectorRoutes);
 app.use("/api/assetHealth", assetHealthRoutes);
 app.use("/api/deliveries", deliveryRoutes);
 app.use("/api/maintenances", maintenanceRoutes);
+app.use("/api/reports/assets", assetReportRoutes);
 
 const startServer = async () => {
   try {

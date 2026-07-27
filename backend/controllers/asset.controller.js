@@ -86,11 +86,42 @@ const getAssetAvailability = async (req, res) => {
   }
 };
 
+
+const getRecommendedAssets = async (req, res, next) => {
+  try {
+    const recommended = await assetService.getRecommendedAssets(req.query);
+    
+    return res.status(200).json({
+      success: true,
+      count: recommended.length,
+      data: recommended,
+    });
+  } catch (err) {
+      return res.status(400).json({
+        success: false,
+        message: err.message
+      });
+  }
+};
+const getMyAssets= async (req, res) => {
+  try {
+    const assets = await assetService.getMyAssets(req.user.id);
+    return res.status(200).json({
+      success: true,
+      data: assets
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+}
+
 module.exports = {
   addAsset,
   getAssetDetails,
   updateAsset,
   getAssets,
   searchAssets,
-  getAssetAvailability
+  getAssetAvailability,
+  getRecommendedAssets,
+  getMyAssets,
 };

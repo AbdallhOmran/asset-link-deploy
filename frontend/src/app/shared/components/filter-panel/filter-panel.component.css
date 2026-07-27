@@ -1,0 +1,28 @@
+/* Filter Panel Component Specific CSS & Scrollbar Styling */
+:host {
+  display: block;
+  width: 100%;
+}
+
+.filter-panel-container {
+  font-family: inherit;
+}
+
+/* Custom Scrollbar for Chips and Pills Containers */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.4);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.7);
+}

@@ -12,7 +12,6 @@ const createContract = async (req, res) => {
     ) {
       return res.status(400).send({ error: err.message });
     }
-
     return res.status(500).send({ error: err.message });
   }
 };
@@ -34,7 +33,6 @@ const getContract = async (req, res) => {
     if (err.message.includes("not found")) {
       return res.status(404).send({ error: err.message });
     }
-
     return res.status(500).send({ error: err.message });
   }
 };
@@ -43,9 +41,8 @@ const approveContract = async (req, res) => {
   try {
     const contract = await contractService.approveContract(
       req.params.id,
-      req.user.id,
+      req.user.id
     );
-
     return res.status(200).send(contract);
   } catch (err) {
     if (
@@ -55,7 +52,6 @@ const approveContract = async (req, res) => {
     ) {
       return res.status(400).send({ error: err.message });
     }
-
     return res.status(500).send({ error: err.message });
   }
 };
@@ -64,9 +60,8 @@ const rejectContract = async (req, res) => {
   try {
     const contract = await contractService.rejectContract(
       req.params.id,
-      req.user.id,
+      req.user.id
     );
-
     return res.status(200).send(contract);
   } catch (err) {
     if (
@@ -76,8 +71,47 @@ const rejectContract = async (req, res) => {
     ) {
       return res.status(400).send({ error: err.message });
     }
-
     return res.status(500).send({ error: err.message });
+  }
+};
+
+const generateContractPDF = async (req, res) => {
+  try {
+    const contract = await contractService.generateContractPDF(req.params.id);
+    return res.status(200).json({
+      success: true,
+      message: "Contract PDF generated successfully",
+      data: contract,
+    });
+  } catch (err) {
+    return res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+const downloadContractPDF = async (req, res) => {
+  try {
+    const filePath = await contractService.downloadContractPDF(req.params.id);
+    return res.download(filePath);
+  } catch (err) {
+    return res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+const viewContractPDF = async (req, res) => {
+  try {
+    const filePath = await contractService.viewContractPDF(req.params.id);
+    return res.sendFile(filePath);
+  } catch (err) {
+    return res.status(400).json({
+      success: false,
+      message: err.message,
+    });
   }
 };
 
@@ -87,4 +121,7 @@ module.exports = {
   getContract,
   approveContract,
   rejectContract,
+  generateContractPDF,
+  downloadContractPDF,
+  viewContractPDF,
 };

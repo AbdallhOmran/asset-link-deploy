@@ -1,0 +1,4 @@
+/* Maintenance Schedule Component Scoped Styles */
+:host {
+  display: block;
+}

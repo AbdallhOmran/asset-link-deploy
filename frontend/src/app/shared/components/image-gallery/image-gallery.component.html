@@ -1,0 +1,56 @@
+<div class="w-full">
+  <!-- Main dropzone -->
+  <label
+    class="flex flex-col items-center justify-center gap-2 w-full py-10 rounded-xl border-2 border-dashed border-border bg-page cursor-pointer hover:border-primary transition-colors"
+  >
+    <div class="w-12 h-12 rounded-full bg-white border border-border flex items-center justify-center text-xl">
+      ⬆
+    </div>
+    <span class="text-sm font-semibold text-text">Click to upload photos</span>
+    <span class="text-xs text-text-muted">PNG, JPG, WebP · Max 10MB each · Multiple selection supported</span>
+    <input
+      type="file"
+      accept="image/png, image/jpeg, image/webp"
+      multiple
+      class="hidden"
+      (change)="onFileInputChange($event)"
+    />
+  </label>
+
+  <!-- Thumbnails grid: uploaded images + empty dashed placeholders -->
+  <div class="grid grid-cols-4 gap-3 mt-4">
+    <!-- Uploaded images -->
+    <div
+      *ngFor="let img of images; let i = index"
+      class="relative group aspect-square rounded-lg overflow-hidden border border-border"
+    >
+      <img [src]="img" class="w-full h-full object-cover" alt="Uploaded asset image" />
+      <button
+        type="button"
+        (click)="removeImage(i)"
+        class="absolute top-1 right-1 w-6 h-6 rounded-full bg-white/90 text-danger text-xs font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        ✕
+      </button>
+    </div>
+
+    <!-- Empty dashed placeholders (click also opens the file picker) -->
+    <label
+      *ngFor="let _ of placeholderSlots"
+      class="aspect-square rounded-lg border-2 border-dashed border-border flex items-center justify-center text-text-muted text-xl cursor-pointer hover:border-primary transition-colors"
+    >
+      +
+      <input
+        type="file"
+        accept="image/png, image/jpeg, image/webp"
+        multiple
+        class="hidden"
+        (change)="onFileInputChange($event)"
+      />
+    </label>
+  </div>
+
+  <p class="text-xs text-text-muted mt-3">
+    Tips: Show multiple angles, cabin interior, and any wear areas. Transparent photos build renter trust and reduce disputes.
+  </p>
+</div>
