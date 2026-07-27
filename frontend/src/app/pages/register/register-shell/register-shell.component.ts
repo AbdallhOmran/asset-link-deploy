@@ -2,7 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { Subscription, filter } from 'rxjs';
 
-export interface StepperStep {
+// renamed from 'StepperStep' to avoid confusion with the shared StepperComponent's own StepperStep interface
+export interface RegisterStep {
   id: number;
   label: string;
 }
@@ -10,16 +11,16 @@ export interface StepperStep {
 @Component({
   selector: 'app-register-shell',
   templateUrl: './register-shell.component.html',
-  styleUrls: ['./register-shell.component.css']
+  styleUrls: ['./register-shell.component.css'],
 })
 export class RegisterShellComponent implements OnInit, OnDestroy {
-  public steps: StepperStep[] = [
+  public steps: RegisterStep[] = [
     { id: 1, label: 'Company Info' },
     { id: 2, label: 'Contact Details' },
-    { id: 3, label: 'Account Setup' }
+    { id: 3, label: 'Account Setup' },
   ];
 
-  public currentStep: number = 1;
+  public currentStep: number = 1; // 1-based, matches step-1/step-2/step-3 routes
   private routerSub!: Subscription;
 
   constructor(private router: Router) {}
@@ -28,7 +29,7 @@ export class RegisterShellComponent implements OnInit, OnDestroy {
     this.updateCurrentStep(this.router.url);
 
     this.routerSub = this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
+      .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: any) => {
         this.updateCurrentStep(event.urlAfterRedirects || event.url);
       });
@@ -50,8 +51,12 @@ export class RegisterShellComponent implements OnInit, OnDestroy {
     }
   }
 
+  // ✅ fixed: shared app-stepper expects a 0-based index, but currentStep here is 1-based
+  get stepperIndex(): number {
+    return this.currentStep - 1;
+  }
+
   public navigateToStep(stepId: number): void {
-    // Only allow navigating back to previously visited steps
     if (stepId < this.currentStep) {
       this.router.navigate([`/register/step-${stepId}`]);
     }

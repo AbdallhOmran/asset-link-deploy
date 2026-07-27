@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-current-offer',
@@ -6,6 +6,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
   styleUrls: ['./current-offer.component.css'],
 })
 export class CurrentOfferComponent {
+  @Input() offer: any = null;
   @Output() accept = new EventEmitter<void>();
   @Output() reject = new EventEmitter<void>();
 
