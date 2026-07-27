@@ -45,6 +45,10 @@ const routes: Routes = [
     path: 'assets/add',
     loadChildren: () => import('./pages/add-asset/add-asset.module').then(m => m.AddAssetModule)
   },
+  {
+    path: 'assets/category/add',
+    loadChildren: () => import('./pages/add-category/add-category.module').then(m => m.AddCategoryModule)
+  },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' } 
 ];
