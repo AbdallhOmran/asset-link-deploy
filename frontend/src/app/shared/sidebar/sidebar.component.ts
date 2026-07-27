@@ -57,6 +57,11 @@ export class SidebarComponent {
     route: '/app/payments-escrow'
   },
   {
+    title: 'Inspections',
+    icon: 'clipboard-check',
+    route: '/app/inspections'
+  },
+  {
     title: 'Maintenance',
     icon: 'wrench',
     route: '/app/maintenance-schedule'

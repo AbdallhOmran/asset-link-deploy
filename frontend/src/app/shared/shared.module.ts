@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import {LucideAngularModule,Layers,LayoutDashboard,Boxes,Sparkles,CalendarDays,FileText,MessagesSquare,Truck,Wallet,ClipboardCheck,Wrench,Building2,ShieldCheck,Users,Settings} from 'lucide-angular';
+import {LucideAngularModule,Layers,LayoutDashboard,Boxes,Sparkles,CalendarDays,FileText,MessagesSquare,Truck,Wallet,ClipboardCheck,Wrench,Building2,ShieldCheck,Users,Settings,CheckCircle2,Clock,AlertTriangle,HardHat,Eye,Edit,ChevronDown,Navigation2,Download,Phone,ChevronRight,MapPin,ArrowRight} from 'lucide-angular';
 import { StatusBadgeComponent } from './components/status-badge/status-badge.component';
 import { ButtonComponent } from './components/button/button.component';
 import { StepperComponent } from './components/stepper/stepper.component';
@@ -67,7 +67,20 @@ import { TopNavbarComponent } from './top-navbar/top-navbar.component';
     Building2,
     ShieldCheck,
     Users,
-    Settings
+    Settings,
+    CheckCircle2,
+    Clock,
+    AlertTriangle,
+    HardHat,
+    Eye,
+    Edit,
+    ChevronDown,
+    Navigation2,
+    Download,
+    Phone,
+    ChevronRight,
+    MapPin,
+    ArrowRight
   })
   ],
   exports: [

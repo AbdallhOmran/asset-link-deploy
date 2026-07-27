@@ -4,6 +4,8 @@ export type PriorityLevel = 'low' | 'medium' | 'high' | 'urgent';
 
 export interface MaintenanceRecord {
   id: string;
+  _id?: string;
+  maintenanceCode?: string;
   assetId: string;
   assetName: string;
   assetCode: string;
@@ -11,6 +13,7 @@ export interface MaintenanceRecord {
   type: string;
   tech: string;
   date: string;
+  completedDate?: string;
   hrs: number;
   status: MaintenanceRecordStatus;
   desc: string;
@@ -48,6 +51,8 @@ export interface MaintenanceFilterOptions {
   statusFilter: 'all' | MaintenanceStatusType;
   categoryFilter: string;
   priorityFilter: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface MaintenanceStats {

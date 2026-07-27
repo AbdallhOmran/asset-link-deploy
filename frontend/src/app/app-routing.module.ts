@@ -82,6 +82,13 @@ const routes: Routes = [
       },
 
       {
+        path: 'inspections',
+        loadChildren: () =>
+          import('./pages/inspection/inspection.module')
+            .then(m => m.InspectionModule)
+      },
+
+      {
         path: 'maintenance-schedule',
         loadChildren: () =>
           import('./pages/maintenance-schedule/maintenance-schedule.module')
