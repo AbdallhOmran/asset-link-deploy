@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, map, tap, catchError, of } from 'rxjs';
 import {
   MaintenanceRecord,
   AssetMaintenanceSummary,
@@ -13,169 +14,11 @@ import {
   providedIn: 'root'
 })
 export class MaintenanceService {
-  // ── Mock Initial State based on AssetLink Dashboard reference data ──
-  private readonly initialAssets: AssetMaintenanceSummary[] = [
-    {
-      assetId: 'A-001',
-      assetCode: 'TE-EXC-001',
-      assetName: 'Caterpillar 390F Excavator',
-      category: 'Excavator',
-      company: 'TerraEquip LLC',
-      maintenanceStatus: 'current',
-      lastMaintenance: 'Jun 28, 2025',
-      nextMaintenance: 'Sep 28, 2025',
-      hoursOperated: 2847,
-      healthScore: 94,
-      thresholdHours: 3000
-    },
-    {
-      assetId: 'A-002',
-      assetCode: 'HL-CRN-002',
-      assetName: 'Liebherr LTM 1100 Crane',
-      category: 'Mobile Crane',
-      company: 'HeavyLift Partners',
-      maintenanceStatus: 'upcoming',
-      lastMaintenance: 'May 10, 2025',
-      nextMaintenance: 'Aug 10, 2025',
-      hoursOperated: 4120,
-      healthScore: 89,
-      thresholdHours: 4500
-    },
-    {
-      assetId: 'A-003',
-      assetCode: 'IA-FORK-003',
-      assetName: 'Toyota 8FBU25 Forklift',
-      category: 'Forklift',
-      company: 'IndustrialAssets Co',
-      maintenanceStatus: 'current',
-      lastMaintenance: 'Jul 01, 2025',
-      nextMaintenance: 'Oct 01, 2025',
-      hoursOperated: 1450,
-      healthScore: 97,
-      thresholdHours: 2000
-    },
-    {
-      assetId: 'A-004',
-      assetCode: 'TE-BULL-004',
-      assetName: 'Komatsu D65EX Bulldozer',
-      category: 'Bulldozer',
-      company: 'TerraEquip LLC',
-      maintenanceStatus: 'in-progress',
-      lastMaintenance: 'Jan 15, 2025',
-      nextMaintenance: 'Jul 18, 2025',
-      hoursOperated: 3890,
-      healthScore: 72,
-      thresholdHours: 4000
-    },
-    {
-      assetId: 'A-005',
-      assetCode: 'AW-BOOM-005',
-      assetName: 'Genie S-125 Boom Lift',
-      category: 'Aerial Platform',
-      company: 'AerialWorks Inc',
-      maintenanceStatus: 'overdue',
-      lastMaintenance: 'Nov 20, 2024',
-      nextMaintenance: 'May 20, 2025',
-      hoursOperated: 2980,
-      healthScore: 64,
-      thresholdHours: 3000
-    },
-    {
-      assetId: 'A-006',
-      assetCode: 'PA-COMP-006',
-      assetName: 'Atlas Copco XRHS 1150',
-      category: 'Compressor',
-      company: 'PowerAssets Corp',
-      maintenanceStatus: 'current',
-      lastMaintenance: 'Jun 15, 2025',
-      nextMaintenance: 'Sep 15, 2025',
-      hoursOperated: 1820,
-      healthScore: 91,
-      thresholdHours: 2500
-    }
-  ];
-
-  private readonly initialRecords: MaintenanceRecord[] = [
-    {
-      id: 'M-101',
-      assetId: 'A-001',
-      assetCode: 'TE-EXC-001',
-      assetName: 'Caterpillar 390F Excavator',
-      category: 'Excavator',
-      type: 'Scheduled Service',
-      tech: 'Jake Morrison',
-      date: 'Jun 28, 2025',
-      hrs: 2847,
-      status: 'completed',
-      priority: 'medium',
-      desc: 'Oil change, hydraulic fluid top-up, filter replacement, track tension inspection, grease all fittings.',
-      cost: 1450
-    },
-    {
-      id: 'M-102',
-      assetId: 'A-001',
-      assetCode: 'TE-EXC-001',
-      assetName: 'Caterpillar 390F Excavator',
-      category: 'Excavator',
-      type: 'Engine Service',
-      tech: 'Maria Santos',
-      date: 'Mar 12, 2025',
-      hrs: 2501,
-      status: 'completed',
-      priority: 'high',
-      desc: 'Full engine tune-up, fuel injector cleaning, serpentine belt replacement, coolant flush.',
-      cost: 3200
-    },
-    {
-      id: 'M-103',
-      assetId: 'A-004',
-      assetCode: 'TE-BULL-004',
-      assetName: 'Komatsu D65EX Bulldozer',
-      category: 'Bulldozer',
-      type: 'Hydraulic Overhaul',
-      tech: 'Jake Morrison',
-      date: 'Jul 18, 2025',
-      hrs: 3890,
-      status: 'in-progress',
-      priority: 'high',
-      desc: 'Hydraulic pump rebuild, all seals replaced, pressure relief valve calibrated, system leak tested.',
-      cost: 4800
-    },
-    {
-      id: 'M-104',
-      assetId: 'A-005',
-      assetCode: 'AW-BOOM-005',
-      assetName: 'Genie S-125 Boom Lift',
-      category: 'Aerial Platform',
-      type: 'Safety Compliance Check & Track Replacement',
-      tech: 'Tom Becker',
-      date: 'May 20, 2025',
-      hrs: 2980,
-      status: 'scheduled',
-      priority: 'urgent',
-      desc: 'Annual mandatory safety inspection, basket boom cable tensioning, hydraulic seal check.',
-      cost: 2100
-    },
-    {
-      id: 'M-105',
-      assetId: 'A-002',
-      assetCode: 'HL-CRN-002',
-      assetName: 'Liebherr LTM 1100 Crane',
-      category: 'Mobile Crane',
-      type: 'Preventive Maintenance',
-      tech: 'Maria Santos',
-      date: 'Aug 10, 2025',
-      hrs: 4120,
-      status: 'scheduled',
-      priority: 'medium',
-      desc: 'Boom extension lube, outrigger hydraulic check, load sensor calibration.',
-      cost: 1950
-    }
-  ];
+  private readonly apiUrl = 'http://localhost:3000/api/maintenances';
 
   // BehaviorSubjects for reactive state management
-  private assetsSubject = new BehaviorSubject<AssetMaintenanceSummary[]>(this.initialAssets);
-  private recordsSubject = new BehaviorSubject<MaintenanceRecord[]>(this.initialRecords);
+  private assetsSubject = new BehaviorSubject<AssetMaintenanceSummary[]>([]);
+  private recordsSubject = new BehaviorSubject<MaintenanceRecord[]>([]);
   private filterSubject = new BehaviorSubject<MaintenanceFilterOptions>({
     searchQuery: '',
     statusFilter: 'all',
@@ -222,9 +65,102 @@ export class MaintenanceService {
     })
   );
 
-  constructor() {}
+  constructor(private http: HttpClient) {
+    this.loadMaintenanceHistory();
+  }
+
+  // ── Data Loading from API ──
+
+  /**
+   * Load maintenance history from backend API
+   * Maps backend fields to frontend MaintenanceRecord model
+   */
+  public loadMaintenanceHistory(): void {
+    this.http.get<any[]>(`${this.apiUrl}/history`).pipe(
+      map(backendRecords => this.mapBackendToRecords(backendRecords)),
+      catchError(err => {
+        console.error('Failed to load maintenance history:', err);
+        return of([]);
+      })
+    ).subscribe(records => {
+      this.recordsSubject.next(records);
+      this.buildAssetSummaries(records);
+    });
+  }
+
+  /**
+   * Map backend maintenance records to frontend MaintenanceRecord model
+   * Backend: { _id, maintenanceCode, assetId (populated), issueDescription, maintenanceCost, maintenanceDate, notes, status }
+   * Frontend: { id, assetId, assetName, assetCode, category, type, tech, date, hrs, status, desc, priority, cost }
+   */
+  private mapBackendToRecords(backendRecords: any[]): MaintenanceRecord[] {
+    return backendRecords.map(r => {
+      const asset = r.assetId || {};
+      return {
+        id: r._id || r.maintenanceCode,
+        assetId: typeof r.assetId === 'object' ? r.assetId._id : r.assetId,
+        assetName: asset.assetName || asset.name || 'Unknown Asset',
+        assetCode: asset.assetCode || r.maintenanceCode || '',
+        category: asset.category || 'General',
+        type: r.issueDescription || 'Maintenance',
+        tech: r.assignedTo || 'Unassigned',
+        date: r.maintenanceDate ? new Date(r.maintenanceDate).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : '',
+        hrs: asset.hoursOperated || 0,
+        status: this.mapBackendStatus(r.status),
+        priority: r.priority || 'medium',
+        desc: r.notes || r.issueDescription || '',
+        cost: r.maintenanceCost || 0
+      };
+    });
+  }
+
+  /**
+   * Map backend status strings to frontend status types
+   */
+  private mapBackendStatus(status: string): 'completed' | 'in-progress' | 'scheduled' | 'cancelled' {
+    const statusMap: Record<string, 'completed' | 'in-progress' | 'scheduled' | 'cancelled'> = {
+      'Completed': 'completed',
+      'In Progress': 'in-progress',
+      'Scheduled': 'scheduled',
+      'Pending': 'scheduled',
+      'Cancelled': 'cancelled'
+    };
+    return statusMap[status] || 'scheduled';
+  }
+
+  /**
+   * Build asset summaries from maintenance records
+   */
+  private buildAssetSummaries(records: MaintenanceRecord[]): void {
+    const assetMap = new Map<string, AssetMaintenanceSummary>();
+
+    records.forEach(r => {
+      if (!assetMap.has(r.assetId)) {
+        let maintenanceStatus: MaintenanceStatusType = 'current';
+        if (r.status === 'in-progress') maintenanceStatus = 'in-progress';
+        else if (r.status === 'scheduled') maintenanceStatus = 'upcoming';
+
+        assetMap.set(r.assetId, {
+          assetId: r.assetId,
+          assetCode: r.assetCode,
+          assetName: r.assetName,
+          category: r.category,
+          company: '',
+          maintenanceStatus,
+          lastMaintenance: r.status === 'completed' ? r.date : '',
+          nextMaintenance: r.status === 'scheduled' ? r.date : '',
+          hoursOperated: r.hrs,
+          healthScore: r.status === 'completed' ? 90 : r.status === 'in-progress' ? 70 : 80,
+          thresholdHours: r.hrs + 500
+        });
+      }
+    });
+
+    this.assetsSubject.next(Array.from(assetMap.values()));
+  }
 
   // ── Actions ──
+
   public updateFilters(newFilters: Partial<MaintenanceFilterOptions>): void {
     this.filterSubject.next({
       ...this.filterSubject.value,
@@ -232,46 +168,59 @@ export class MaintenanceService {
     });
   }
 
+  /**
+   * Create a new maintenance request via API
+   * Maps frontend NewMaintenanceRequest to backend expected payload
+   */
   public requestNewMaintenance(req: NewMaintenanceRequest): Observable<MaintenanceRecord> {
-    const selectedAsset = this.assetsSubject.value.find(a => a.assetId === req.assetId);
-
-    const newRecord: MaintenanceRecord = {
-      id: `M-${Math.floor(100 + Math.random() * 900)}`,
+    const apiPayload = {
       assetId: req.assetId,
-      assetCode: selectedAsset?.assetCode || 'UNKNOWN',
-      assetName: req.assetName || selectedAsset?.assetName || 'Selected Asset',
-      category: selectedAsset?.category || 'General Equipment',
-      type: req.maintenanceType,
-      tech: req.technician || 'Unassigned',
-      date: req.scheduledDate,
-      hrs: selectedAsset?.hoursOperated || 0,
-      status: 'scheduled',
-      priority: req.priority,
-      desc: req.notes,
-      cost: req.estimatedHours ? req.estimatedHours * 120 : 500
+      issueDescription: req.maintenanceType,
+      maintenanceCost: req.estimatedHours ? req.estimatedHours * 120 : 500,
+      maintenanceDate: req.scheduledDate,
+      notes: req.notes
     };
 
-    const updatedRecords = [newRecord, ...this.recordsSubject.value];
-    this.recordsSubject.next(updatedRecords);
+    return this.http.post<any>(this.apiUrl, apiPayload).pipe(
+      map(backendRecord => {
+        const mapped = this.mapBackendToRecords([backendRecord])[0];
+        // Update local state with the new record
+        const updatedRecords = [mapped, ...this.recordsSubject.value];
+        this.recordsSubject.next(updatedRecords);
+        this.buildAssetSummaries(updatedRecords);
+        return mapped;
+      }),
+      catchError(err => {
+        console.error('Failed to create maintenance:', err);
+        throw err;
+      })
+    );
+  }
 
-    // Update asset status if needed
-    if (selectedAsset) {
-      const updatedAssets = this.assetsSubject.value.map(a => {
-        if (a.assetId === req.assetId) {
-          return {
-            ...a,
-            maintenanceStatus: 'upcoming' as MaintenanceStatusType,
-            nextMaintenance: req.scheduledDate
-          };
-        }
-        return a;
-      });
-      this.assetsSubject.next(updatedAssets);
-    }
+  /**
+   * Update maintenance status via API
+   */
+  public updateMaintenanceStatus(id: string, status: string): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/${id}/status`, { status }).pipe(
+      tap(() => this.loadMaintenanceHistory()),
+      catchError(err => {
+        console.error('Failed to update maintenance status:', err);
+        throw err;
+      })
+    );
+  }
 
-    return new Observable(observer => {
-      observer.next(newRecord);
-      observer.complete();
-    });
+  /**
+   * Delete maintenance via API
+   */
+  public deleteMaintenance(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${id}`).pipe(
+      tap(() => this.loadMaintenanceHistory()),
+      catchError(err => {
+        console.error('Failed to delete maintenance:', err);
+        throw err;
+      })
+    );
   }
 }
+
