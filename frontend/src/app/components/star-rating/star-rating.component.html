@@ -1,0 +1,11 @@
+<div class="star-rating">
+  <span 
+    *ngFor="let star of stars; let i = index" 
+    class="star" 
+    [class.filled]="i < rating"
+    [class.readonly]="readonly"
+    (click)="setRating(i + 1)">
+    ★
+  </span>
+  <span *ngIf="showLabel" class="rating-label">{{ rating }}</span>
+</div>

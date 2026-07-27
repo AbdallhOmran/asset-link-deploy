@@ -17,7 +17,6 @@ export class MaintenanceService {
   private readonly baseUrl = 'http://localhost:3000/api/maintenances';
   private readonly assetUrl = 'http://localhost:3000/api/asset';
 
-  // Reactive state
   private recordsSubject = new BehaviorSubject<MaintenanceRecord[]>([]);
   private assetsSubject = new BehaviorSubject<AssetMaintenanceSummary[]>([]);
   private loadingSubject = new BehaviorSubject<boolean>(false);
@@ -35,7 +34,6 @@ export class MaintenanceService {
   public error$ = this.errorSubject.asObservable();
   public filters$ = this.filterSubject.asObservable();
 
-  // Filtered records pipeline
   public filteredRecords$: Observable<MaintenanceRecord[]> = combineLatest([
     this.recordsSubject,
     this.filterSubject,
@@ -57,7 +55,6 @@ export class MaintenanceService {
     })
   );
 
-  // Stats calculation pipeline
   public stats$: Observable<MaintenanceStats> = combineLatest([
     this.recordsSubject,
     this.assetsSubject,
@@ -79,8 +76,6 @@ export class MaintenanceService {
 
   constructor(private http: HttpClient) {}
 
-  // ── Data Loading ──
-
   loadMaintenanceRecords(): void {
     this.loadingSubject.next(true);
     this.errorSubject.next(null);
@@ -89,7 +84,6 @@ export class MaintenanceService {
     let params = new HttpParams();
     
     if (filters.statusFilter && filters.statusFilter !== 'all') {
-      // Need to map frontend status back to backend status
       const reverseMap: Record<string, string> = {
         'scheduled': 'Scheduled',
         'in-progress': 'In Progress',
@@ -105,12 +99,6 @@ export class MaintenanceService {
 
     if (filters.endDate) {
       params = params.set('endDate', filters.endDate);
-    }
-    
-    if (filters.searchQuery) {
-      // While backend doesn't explicitly filter by search query in history, 
-      // we might just filter on frontend if we want, but wait, the backend doesn't support searchQuery.
-      // So we will let the combineLatest filter continue doing the text search locally.
     }
 
     this.http.get<any>(`${this.baseUrl}/history`, { params }).subscribe({
@@ -151,8 +139,6 @@ export class MaintenanceService {
     });
   }
 
-  // ── CRUD ──
-
   requestNewMaintenance(req: NewMaintenanceRequest): Observable<any> {
     const payload = {
       assetId: req.assetId,
@@ -188,16 +174,12 @@ export class MaintenanceService {
     );
   }
 
-  // ── Filters ──
-
   updateFilters(newFilters: Partial<MaintenanceFilterOptions>): void {
     this.filterSubject.next({
       ...this.filterSubject.value,
       ...newFilters,
     });
   }
-
-  // ── Mapping helpers ──
 
   private mapBackendRecords(records: any[]): MaintenanceRecord[] {
     return records.map((r: any) => {

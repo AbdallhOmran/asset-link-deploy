@@ -1,0 +1,226 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background-color: #0c1527;
+  color: #94a3b8;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, sans-serif;
+  position: fixed; /* لتثبيت السايدبار في مكانه */
+  top: 0;
+  left: 0;
+  overflow-y: auto; /* لو الشاشة صغيرة يعمل سكرول جوه فقط */
+}
+
+/* لتجميل شريط السكرول لو ظهر */
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 0 4px;
+}
+
+.logo-icon {
+  width: 36px;
+  height: 36px;
+  background-color: #2563eb;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.logo-text h2 {
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.logo-text span {
+  font-size: 9px;
+  color: #64748b;
+  letter-spacing: 1px;
+  font-weight: 600;
+  display: block;
+}
+
+.section-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: #475569;
+  letter-spacing: 1px;
+  margin: 12px 8px 6px;
+}
+
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-item:hover {
+  background-color: #1e293b;
+  color: #f1f5f9;
+}
+
+.nav-item.active {
+  background-color: #2563eb;
+  color: white;
+}
+
+.item-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 12px;
+  background-color: #1e3a8a;
+  color: #60a5fa;
+}
+
+.badge-active {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-top: 1px solid #1e293b;
+  padding-top: 12px;
+  margin-top: 10px;
+}
+
+.inspection-card {
+  background-color: #132238;
+  border: 1px solid #1e3a8a;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.card-header {
+  color: #60a5fa;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background-color: #60a5fa;
+  border-radius: 50%;
+}
+
+.card-sub {
+  color: #64748b;
+  font-size: 10px;
+  margin: 2px 0 0;
+  cursor: pointer;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #0c1527;
+  padding: 4px 0;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #0891b2;
+  color: white;
+  font-weight: bold;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.user-name {
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role {
+  color: #64748b;
+  font-size: 9px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logout-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+}

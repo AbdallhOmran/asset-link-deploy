@@ -1,29 +1,58 @@
 <div class="min-h-screen bg-slate-100 p-6">
   <div class="max-w-7xl mx-auto">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-8">
+    <div
+      class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8"
+    >
       <div>
-        <h1 class="text-3xl font-bold text-slate-900">Asset Dashboard</h1>
+        <h1 class="text-3xl font-bold text-slate-900">Asset Catalog</h1>
 
         <p class="text-slate-500 mt-2">
-          Manage and monitor all company assets.
+          Browse, search, and manage your industrial equipment portfolio.
         </p>
       </div>
 
-      <app-button variant="primary"> + Add Asset </app-button>
+      <div class="flex items-center gap-5">
+        <div class="hidden lg:flex items-center gap-6 text-sm">
+          <span class="text-slate-600">
+            <strong class="text-slate-900">
+              {{ totalAssets }}
+            </strong>
+            Assets
+          </span>
+
+          <span class="text-green-600 font-medium">
+            <strong>
+              {{ availableAssets }}
+            </strong>
+            Available
+          </span>
+        </div>
+
+        <app-button variant="primary"> + Add Asset </app-button>
+      </div>
     </div>
 
-    <!-- Search & Tabs -->
-    <div class="bg-white rounded-xl border border-slate-200 p-5 mb-6">
-      <div
-        class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
-      >
+    <!-- Search -->
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-5 mb-7">
+      <div class="flex flex-col lg:flex-row gap-4">
         <input
           type="text"
-          placeholder="Search assets..."
-          class="border border-slate-300 rounded-lg px-4 py-3 w-full lg:w-96 outline-none"
+          placeholder="Search by asset name, code or category..."
+          class="flex-1 border border-slate-300 rounded-xl px-5 py-3 outline-none focus:border-blue-500"
         />
 
+        <div class="flex gap-3 flex-wrap">
+          <app-button variant="secondary"> Filter </app-button>
+
+          <app-button variant="secondary"> Sort </app-button>
+
+          <app-button variant="secondary"> Export </app-button>
+        </div>
+      </div>
+
+      <div class="mt-6">
         <app-tabs
           [tabs]="['All Assets', 'Available', 'Rented', 'Maintenance']"
           [activeTab]="0"
@@ -33,62 +62,40 @@
     </div>
 
     <!-- Statistics -->
+
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
       <app-stat-card title="Total Assets" value="128" icon="📦">
       </app-stat-card>
 
-      <app-stat-card title="Available Assets" value="94" icon="✅">
-      </app-stat-card>
+      <app-stat-card title="Available" value="94" icon="✅"> </app-stat-card>
 
-      <app-stat-card title="Currently Rented" value="22" icon="🚚">
-      </app-stat-card>
+      <app-stat-card title="Rented" value="22" icon="🚜"> </app-stat-card>
 
       <app-stat-card title="Maintenance" value="12" icon="🔧"> </app-stat-card>
     </div>
 
-    <!-- Asset Cards -->
+    <!-- Cards -->
+
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       <app-card
         *ngFor="let asset of assets"
         [title]="asset.name"
         [subtitle]="asset.category"
+        [company]="asset.company"
+        [code]="asset.code"
+        [location]="asset.location"
+        [price]="asset.price"
+        [weekly]="asset.weekly"
+        [monthly]="asset.monthly"
+        [status]="asset.status"
+        [date]="asset.date"
+        [score]="asset.score"
       >
-        <!-- Image -->
-        <div class="mb-4">
-          <div
-            class="h-44 rounded-xl bg-slate-200 flex items-center justify-center text-6xl"
-          >
-            🚜
-          </div>
-        </div>
-
-        <!-- Price -->
-        <div class="flex justify-between items-center mb-4">
-          <div>
-            <p class="text-xs text-slate-500">Daily Rate</p>
-
-            <p class="text-2xl font-bold text-blue-600">
-              {{ asset.price }}
-            </p>
-          </div>
-
-          <span
-            class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold"
-          >
-            {{ asset.status }}
-          </span>
-        </div>
-
-        <!-- Footer -->
-        <div class="flex justify-between items-center">
-          <span class="text-sm text-slate-500"> 📍 Cairo </span>
-
-          <app-button variant="primary"> View </app-button>
-        </div>
       </app-card>
     </div>
 
     <!-- Pagination -->
+
     <div class="mt-10 flex justify-center">
       <app-pagination
         [currentPage]="1"
