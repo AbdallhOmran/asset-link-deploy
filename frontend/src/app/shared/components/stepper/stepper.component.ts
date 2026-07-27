@@ -1,15 +1,11 @@
 import { Component, Input } from '@angular/core';
 
-// Matches the "Delivery Progress" horizontal circular stepper:
-// - completed: solid blue circle + white icon, connecting line before/after is blue
-// - active: white circle with thick blue border + ring glow, blue icon
-// - upcoming: white circle with gray border, gray icon
 export type StepStatus = 'completed' | 'active' | 'upcoming';
 
 export interface StepperStep {
   label: string;
-  subLabel?: string; // e.g. date "Jul 10 · 8:00 AM" or status "In progress..."
-  icon?: string; // placeholder emoji/symbol - swap with real icon component later
+  subLabel?: string;
+  icon?: string;
 }
 
 @Component({
@@ -18,7 +14,7 @@ export interface StepperStep {
 })
 export class StepperComponent {
   @Input() steps: StepperStep[] = [];
-  @Input() currentStep = 0; // index-based (0 = first step)
+  @Input() currentStep = 0;
 
   getStatus(index: number): StepStatus {
     if (index < this.currentStep) return 'completed';
@@ -26,9 +22,26 @@ export class StepperComponent {
     return 'upcoming';
   }
 
-  // Line segment AFTER step `index` (connecting it to the next step) is blue
-  // only if this step has already been completed.
   isLineCompleted(index: number): boolean {
     return index < this.currentStep;
+  }
+
+  getStepIcon(index: number): string {
+    if (this.steps[index]?.icon) {
+      return this.steps[index].icon!;
+    }
+
+    switch (index) {
+      case 0:
+        return '⬚'; // Package
+      case 1:
+        return '⛟'; // Truck
+      case 2:
+        return '⌖'; // Location
+      case 3:
+        return '✓'; // Delivered
+      default:
+        return '•';
+    }
   }
 }
