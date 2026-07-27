@@ -73,7 +73,11 @@ app.use("/api/reports/assets", assetReportRoutes);
 const startServer = async () => {
   try {
     await connectDB();
-    await connectRedis(); 
+    try {
+      await connectRedis(); 
+    } catch (redisErr) {
+      console.warn("Failed to connect to Redis, continuing without it:", redisErr.message);
+    }
 
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {

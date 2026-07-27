@@ -1,226 +1,222 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, map, tap, catchError, of } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { BehaviorSubject, Observable, map, tap, catchError, of, combineLatest } from 'rxjs';
 import {
   MaintenanceRecord,
   AssetMaintenanceSummary,
   NewMaintenanceRequest,
   MaintenanceFilterOptions,
   MaintenanceStats,
-  MaintenanceStatusType
+  MaintenanceStatusType,
 } from '../models/maintenance.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MaintenanceService {
-  private readonly apiUrl = 'http://localhost:3000/api/maintenances';
+  private readonly baseUrl = 'http://localhost:3000/api/maintenances';
+  private readonly assetUrl = 'http://localhost:3000/api/asset';
 
-  // BehaviorSubjects for reactive state management
-  private assetsSubject = new BehaviorSubject<AssetMaintenanceSummary[]>([]);
   private recordsSubject = new BehaviorSubject<MaintenanceRecord[]>([]);
+  private assetsSubject = new BehaviorSubject<AssetMaintenanceSummary[]>([]);
+  private loadingSubject = new BehaviorSubject<boolean>(false);
+  private errorSubject = new BehaviorSubject<string | null>(null);
   private filterSubject = new BehaviorSubject<MaintenanceFilterOptions>({
     searchQuery: '',
     statusFilter: 'all',
     categoryFilter: 'all',
-    priorityFilter: 'all'
+    priorityFilter: 'all',
   });
 
-  public assets$: Observable<AssetMaintenanceSummary[]> = this.assetsSubject.asObservable();
-  public records$: Observable<MaintenanceRecord[]> = this.recordsSubject.asObservable();
-  public filters$: Observable<MaintenanceFilterOptions> = this.filterSubject.asObservable();
+  public records$ = this.recordsSubject.asObservable();
+  public assets$ = this.assetsSubject.asObservable();
+  public loading$ = this.loadingSubject.asObservable();
+  public error$ = this.errorSubject.asObservable();
+  public filters$ = this.filterSubject.asObservable();
 
-  // Filtered records pipeline
-  public filteredRecords$: Observable<MaintenanceRecord[]> = this.recordsSubject.pipe(
-    map(records => {
-      const filters = this.filterSubject.value;
-      return records.filter(r => {
-        const matchesQuery = !filters.searchQuery ||
-          r.assetName.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
-          r.assetCode.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
-          r.tech.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
-          r.type.toLowerCase().includes(filters.searchQuery.toLowerCase());
+  public filteredRecords$: Observable<MaintenanceRecord[]> = combineLatest([
+    this.recordsSubject,
+    this.filterSubject,
+  ]).pipe(
+    map(([records, filters]) => {
+      return records.filter((r) => {
+        const matchesQuery =
+          !filters.searchQuery ||
+          (r.assetName || '').toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
+          (r.assetCode || '').toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
+          (r.maintenanceCode || '').toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
+          (r.desc || '').toLowerCase().includes(filters.searchQuery.toLowerCase());
 
-        const matchesStatus = filters.statusFilter === 'all' || r.status === filters.statusFilter;
-        const matchesCategory = filters.categoryFilter === 'all' || r.category === filters.categoryFilter;
-        const matchesPriority = filters.priorityFilter === 'all' || r.priority === filters.priorityFilter;
+        const matchesStatus =
+          filters.statusFilter === 'all' || r.status === filters.statusFilter;
 
-        return matchesQuery && matchesStatus && matchesCategory && matchesPriority;
+        return matchesQuery && matchesStatus;
       });
     })
   );
 
-  // Statistics calculation pipeline
-  public stats$: Observable<MaintenanceStats> = this.assets$.pipe(
-    map(assets => {
-      const records = this.recordsSubject.value;
+  public stats$: Observable<MaintenanceStats> = combineLatest([
+    this.recordsSubject,
+    this.assetsSubject,
+  ]).pipe(
+    map(([records, assets]) => {
       return {
-        totalAssets: assets.length,
-        currentCount: assets.filter(a => a.maintenanceStatus === 'current').length,
-        upcomingCount: assets.filter(a => a.maintenanceStatus === 'upcoming').length,
-        inProgressCount: assets.filter(a => a.maintenanceStatus === 'in-progress').length,
-        overdueCount: assets.filter(a => a.maintenanceStatus === 'overdue').length,
-        totalMaintenanceCostThisMonth: records.reduce((sum, r) => sum + (r.cost || 0), 0)
+        totalAssets: assets.length || records.length,
+        currentCount: records.filter((r) => r.status === 'completed').length,
+        upcomingCount: records.filter((r) => r.status === 'scheduled').length,
+        inProgressCount: records.filter((r) => r.status === 'in-progress').length,
+        overdueCount: records.filter((r) => r.status === 'scheduled').length,
+        totalMaintenanceCostThisMonth: records.reduce(
+          (sum, r) => sum + (r.cost || 0),
+          0
+        ),
       };
     })
   );
 
-  constructor(private http: HttpClient) {
-    this.loadMaintenanceHistory();
-  }
+  constructor(private http: HttpClient) {}
 
-  // ── Data Loading from API ──
+  loadMaintenanceRecords(): void {
+    this.loadingSubject.next(true);
+    this.errorSubject.next(null);
 
-  /**
-   * Load maintenance history from backend API
-   * Maps backend fields to frontend MaintenanceRecord model
-   */
-  public loadMaintenanceHistory(): void {
-    this.http.get<any[]>(`${this.apiUrl}/history`).pipe(
-      map(backendRecords => this.mapBackendToRecords(backendRecords)),
-      catchError(err => {
-        console.error('Failed to load maintenance history:', err);
-        return of([]);
-      })
-    ).subscribe(records => {
-      this.recordsSubject.next(records);
-      this.buildAssetSummaries(records);
+    const filters = this.filterSubject.value;
+    let params = new HttpParams();
+    
+    if (filters.statusFilter && filters.statusFilter !== 'all') {
+      const reverseMap: Record<string, string> = {
+        'scheduled': 'Scheduled',
+        'in-progress': 'In Progress',
+        'completed': 'Completed',
+        'cancelled': 'Cancelled',
+      };
+      params = params.set('status', reverseMap[filters.statusFilter] || filters.statusFilter);
+    }
+    
+    if (filters.startDate) {
+      params = params.set('startDate', filters.startDate);
+    }
+
+    if (filters.endDate) {
+      params = params.set('endDate', filters.endDate);
+    }
+
+    this.http.get<any>(`${this.baseUrl}/history`, { params }).subscribe({
+      next: (res) => {
+        const data = res.data || res || [];
+        const mapped = this.mapBackendRecords(Array.isArray(data) ? data : []);
+        this.recordsSubject.next(mapped);
+        this.loadingSubject.next(false);
+      },
+      error: (err) => {
+        this.errorSubject.next(
+          err.error?.message || err.error?.error || 'Failed to load maintenance records'
+        );
+        this.loadingSubject.next(false);
+      },
     });
   }
 
-  /**
-   * Map backend maintenance records to frontend MaintenanceRecord model
-   * Backend: { _id, maintenanceCode, assetId (populated), issueDescription, maintenanceCost, maintenanceDate, notes, status }
-   * Frontend: { id, assetId, assetName, assetCode, category, type, tech, date, hrs, status, desc, priority, cost }
-   */
-  private mapBackendToRecords(backendRecords: any[]): MaintenanceRecord[] {
-    return backendRecords.map(r => {
+  loadAssets(): void {
+    this.http.get<any>(this.assetUrl).pipe(
+      catchError(() => of([]))
+    ).subscribe((res) => {
+      const assets = Array.isArray(res) ? res : res.data || res.assets || [];
+      const mapped: AssetMaintenanceSummary[] = assets.map((a: any) => ({
+        assetId: a._id,
+        assetCode: a.assetCode || '',
+        assetName: a.assetName || '',
+        category: a.assetCategoryId?.name || 'General',
+        company: a.companyId?.companyName || '',
+        maintenanceStatus: a.status === 'Maintenance' ? 'in-progress' as MaintenanceStatusType : 'current' as MaintenanceStatusType,
+        lastMaintenance: '',
+        nextMaintenance: '',
+        hoursOperated: 0,
+        healthScore: a.healthScore || 100,
+        thresholdHours: 3000,
+      }));
+      this.assetsSubject.next(mapped);
+    });
+  }
+
+  requestNewMaintenance(req: NewMaintenanceRequest): Observable<any> {
+    const payload = {
+      assetId: req.assetId,
+      issueDescription: `${req.maintenanceType}: ${req.notes}`,
+      maintenanceCost: req.estimatedHours ? req.estimatedHours * 120 : 500,
+      maintenanceDate: req.scheduledDate,
+      notes: req.notes,
+    };
+
+    return this.http.post<any>(this.baseUrl, payload).pipe(
+      tap(() => this.loadMaintenanceRecords()),
+      catchError((err) => {
+        throw err.error?.error || 'Failed to create maintenance';
+      })
+    );
+  }
+
+  updateMaintenanceStatus(id: string, status: string): Observable<any> {
+    return this.http.patch<any>(`${this.baseUrl}/${id}/status`, { status }).pipe(
+      tap(() => this.loadMaintenanceRecords()),
+      catchError((err) => {
+        throw err.error?.error || 'Failed to update status';
+      })
+    );
+  }
+
+  deleteMaintenance(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/${id}`).pipe(
+      tap(() => this.loadMaintenanceRecords()),
+      catchError((err) => {
+        throw err.error?.error || 'Failed to delete maintenance';
+      })
+    );
+  }
+
+  updateFilters(newFilters: Partial<MaintenanceFilterOptions>): void {
+    this.filterSubject.next({
+      ...this.filterSubject.value,
+      ...newFilters,
+    });
+  }
+
+  private mapBackendRecords(records: any[]): MaintenanceRecord[] {
+    return records.map((r: any) => {
       const asset = r.assetId || {};
       return {
-        id: r._id || r.maintenanceCode,
-        assetId: typeof r.assetId === 'object' ? r.assetId._id : r.assetId,
-        assetName: asset.assetName || asset.name || 'Unknown Asset',
-        assetCode: asset.assetCode || r.maintenanceCode || '',
-        category: asset.category || 'General',
-        type: r.issueDescription || 'Maintenance',
-        tech: r.assignedTo || 'Unassigned',
-        date: r.maintenanceDate ? new Date(r.maintenanceDate).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : '',
-        hrs: asset.hoursOperated || 0,
-        status: this.mapBackendStatus(r.status),
-        priority: r.priority || 'medium',
+        id: r._id,
+        maintenanceCode: r.maintenanceCode || '',
+        assetId: typeof r.assetId === 'object' ? r.assetId?._id : r.assetId,
+        assetCode: asset.assetCode || '',
+        assetName: asset.assetName || 'Unknown Asset',
+        category: asset.assetCategoryId?.name || 'General',
+        type: r.issueDescription || '',
+        tech: 'Assigned',
+        date: r.maintenanceDate
+          ? new Date(r.maintenanceDate).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            })
+          : '',
+        hrs: 0,
+        status: this.mapStatus(r.status),
+        priority: 'medium' as any,
         desc: r.notes || r.issueDescription || '',
-        cost: r.maintenanceCost || 0
+        cost: r.maintenanceCost || 0,
       };
     });
   }
 
-  /**
-   * Map backend status strings to frontend status types
-   */
-  private mapBackendStatus(status: string): 'completed' | 'in-progress' | 'scheduled' | 'cancelled' {
-    const statusMap: Record<string, 'completed' | 'in-progress' | 'scheduled' | 'cancelled'> = {
-      'Completed': 'completed',
-      'In Progress': 'in-progress',
-      'Scheduled': 'scheduled',
+  private mapStatus(backendStatus: string): any {
+    const map: Record<string, string> = {
       'Pending': 'scheduled',
-      'Cancelled': 'cancelled'
+      'Scheduled': 'scheduled',
+      'In Progress': 'in-progress',
+      'Completed': 'completed',
+      'Cancelled': 'cancelled',
     };
-    return statusMap[status] || 'scheduled';
-  }
-
-  /**
-   * Build asset summaries from maintenance records
-   */
-  private buildAssetSummaries(records: MaintenanceRecord[]): void {
-    const assetMap = new Map<string, AssetMaintenanceSummary>();
-
-    records.forEach(r => {
-      if (!assetMap.has(r.assetId)) {
-        let maintenanceStatus: MaintenanceStatusType = 'current';
-        if (r.status === 'in-progress') maintenanceStatus = 'in-progress';
-        else if (r.status === 'scheduled') maintenanceStatus = 'upcoming';
-
-        assetMap.set(r.assetId, {
-          assetId: r.assetId,
-          assetCode: r.assetCode,
-          assetName: r.assetName,
-          category: r.category,
-          company: '',
-          maintenanceStatus,
-          lastMaintenance: r.status === 'completed' ? r.date : '',
-          nextMaintenance: r.status === 'scheduled' ? r.date : '',
-          hoursOperated: r.hrs,
-          healthScore: r.status === 'completed' ? 90 : r.status === 'in-progress' ? 70 : 80,
-          thresholdHours: r.hrs + 500
-        });
-      }
-    });
-
-    this.assetsSubject.next(Array.from(assetMap.values()));
-  }
-
-  // ── Actions ──
-
-  public updateFilters(newFilters: Partial<MaintenanceFilterOptions>): void {
-    this.filterSubject.next({
-      ...this.filterSubject.value,
-      ...newFilters
-    });
-  }
-
-  /**
-   * Create a new maintenance request via API
-   * Maps frontend NewMaintenanceRequest to backend expected payload
-   */
-  public requestNewMaintenance(req: NewMaintenanceRequest): Observable<MaintenanceRecord> {
-    const apiPayload = {
-      assetId: req.assetId,
-      issueDescription: req.maintenanceType,
-      maintenanceCost: req.estimatedHours ? req.estimatedHours * 120 : 500,
-      maintenanceDate: req.scheduledDate,
-      notes: req.notes
-    };
-
-    return this.http.post<any>(this.apiUrl, apiPayload).pipe(
-      map(backendRecord => {
-        const mapped = this.mapBackendToRecords([backendRecord])[0];
-        // Update local state with the new record
-        const updatedRecords = [mapped, ...this.recordsSubject.value];
-        this.recordsSubject.next(updatedRecords);
-        this.buildAssetSummaries(updatedRecords);
-        return mapped;
-      }),
-      catchError(err => {
-        console.error('Failed to create maintenance:', err);
-        throw err;
-      })
-    );
-  }
-
-  /**
-   * Update maintenance status via API
-   */
-  public updateMaintenanceStatus(id: string, status: string): Observable<any> {
-    return this.http.patch<any>(`${this.apiUrl}/${id}/status`, { status }).pipe(
-      tap(() => this.loadMaintenanceHistory()),
-      catchError(err => {
-        console.error('Failed to update maintenance status:', err);
-        throw err;
-      })
-    );
-  }
-
-  /**
-   * Delete maintenance via API
-   */
-  public deleteMaintenance(id: string): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/${id}`).pipe(
-      tap(() => this.loadMaintenanceHistory()),
-      catchError(err => {
-        console.error('Failed to delete maintenance:', err);
-        throw err;
-      })
-    );
+    return map[backendStatus] || backendStatus?.toLowerCase() || 'scheduled';
   }
 }
-
