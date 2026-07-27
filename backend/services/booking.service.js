@@ -80,8 +80,8 @@ const createBooking = async (bookingData) => {
   const bookingCode = await generateBookingCode();
 
   // Start transaction session
-  const session = await mongoose.startSession();
-  session.startTransaction();
+  // const session = await mongoose.startSession();
+  // session.startTransaction();
 
   try {
     // Create and save booking inside transaction
@@ -97,13 +97,13 @@ const createBooking = async (bookingData) => {
       notes
     });
 
-    await newBooking.save({ session });
+    // await newBooking.save({ session });
 
     // Update asset status to Booked inside the same transaction
     const updatedAsset = await assetModel.findByIdAndUpdate(
       assetId,
       { status: "Booked" },
-      { new: true, runValidators: true, session }
+      { new: true, runValidators: true }
     );
 
     if (!updatedAsset) {
@@ -111,16 +111,16 @@ const createBooking = async (bookingData) => {
     }
 
     // Both operations succeeded — commit
-    await session.commitTransaction();
+    // await session.commitTransaction();
 
     return newBooking;
   } catch (err) {
     // Any failure — rollback all database changes
-    await session.abortTransaction();
+    // await session.abortTransaction();
     throw err;
   } finally {
     // Always close the session
-    session.endSession();
+    // session.endSession();
   }
 };
 

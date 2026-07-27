@@ -1,10 +1,11 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const swaggerUi = require("swagger-ui-express");
+const swaggerFile = require("./swagger-output.json");
 
 const connectDB = require("./config/db");
 const { connectRedis } = require("./config/redis");
-
 // Routes Import
 const authRoutes = require("./routes/auth.routes");
 const assetRouter = require("./routes/asset.routes");
@@ -62,6 +63,13 @@ app.use("/api/deliveries", deliveryRoutes);
 app.use("/api/maintenances", maintenanceRoutes);
 app.use("/api/reports/assets", assetReportRoutes);
 
+
+
+  app.use(
+    "/api-docs",
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerFile)
+  );
 const startServer = async () => {
   try {
     await connectDB();

@@ -1,62 +1,109 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const companySchema = new mongoose.Schema(
   {
     companyName: {
       type: String,
-      required: [true, "Name Company is required"],
+      required: [true, "Company Name is required"],
       minlength: 2,
-      trim: true
+      trim: true,
+    },
+    displayName: {
+      type: String,
+      trim: true,
+      default: "",
     },
     companyEmail: {
       type: String,
       required: [true, "Company Email is required"],
       unique: true,
       lowercase: true,
-      trim: true
+      trim: true,
     },
     phoneNumber: {
       type: String,
-      required: true
+      required: true,
+      trim: true,
     },
     password: {
       type: String,
       required: true,
-      minlength: 8
+      minlength: 8,
     },
     companyLogo: {
-      type: String
+      type: String,
+      default: "",
+    },
+    description: {
+      type: String,
+      default: "",
+      trim: true,
     },
     companyAddress: {
       type: String,
-      trim: true
+      default: "",
+      trim: true,
+    },
+    industry: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    companySize: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    yearFounded: {
+      type: Number,
+      default: null,
+    },
+    website: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    city: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    state: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    zipCode: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    country: {
+      type: String,
+      default: "",
+      trim: true,
     },
     commercialRegistrationNumber: {
       type: String,
       unique: true,
       sparse: true,
-      trim: true
+      trim: true,
     },
     role: {
       type: String,
       enum: ["Company", "Admin"],
-      default: "Company"
+      default: "Company",
     },
-
     isVerified: {
       type: Boolean,
-      default: false
+      default: false,
     },
-
-    // Forgot Password
     resetPasswordToken: {
-      type: String
+      type: String,
     },
-
     resetPasswordExpire: {
-      type: Date
-    }
-
+      type: Date,
+    },
   },
   {
     timestamps: true,
