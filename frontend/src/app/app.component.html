@@ -7,8 +7,5 @@
   <!-- <app-maintenance-schedule></app-maintenance-schedule> -->
    <!-- <app-negotiation-room></app-negotiation-room> -->
     <!-- <app-company-profile></app-company-profile> -->
-<app-sidebar *ngIf="!hideSidebar"></app-sidebar>
 
-<div [ngClass]="hideSidebar ? '' : 'ml-60'">
   <router-outlet></router-outlet>
-</div>

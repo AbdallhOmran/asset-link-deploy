@@ -32,7 +32,6 @@ import { DateRangePickerComponent } from './components/date-range-picker/date-ra
 import { DataTableComponent } from './components/data-table/data-table.component'; 
 import { AuthLayoutComponent } from './components/auth-layout/auth-layout.component';
 import { FileDropzoneComponent } from './components/file-dropzone/file-dropzone.component';
-import { SidebarComponent } from './components/sidebar/sidebar.component';
 
 @NgModule({
   declarations: [
@@ -54,8 +53,7 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
     // AuthLayoutComponent,
     AuthLayoutComponent,
     StatusBadgeComponent,
-    FileDropzoneComponent,
-    SidebarComponent
+    FileDropzoneComponent
   ],
   imports: [
     CommonModule,
@@ -95,7 +93,6 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
     AuthLayoutComponent,
     StatusBadgeComponent,
     FileDropzoneComponent,
-    SidebarComponent
   ],
 })
 export class SharedModule {}
