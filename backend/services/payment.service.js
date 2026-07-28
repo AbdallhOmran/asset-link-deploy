@@ -62,15 +62,16 @@ const completePayment = async (bookingId) => {
     };
 };
 
-const getDashboard = async () => {
+const getDashboard = async (companyId) => {
 
     // ===========================
     // Summary Cards
     // ===========================
-
-    const payments = await Payment.find();
-    const escrows = await Escrow.find();
-
+ console.log("companyId =", companyId);
+    const payments = await Payment.find({companyId});
+    console.log("payments =", payments);
+    const escrows = await Escrow.find({$or: [{ companyId },{ ownerCompanyId: companyId }]});
+    console.log("escrows =", escrows);
     const totalProcessed = payments
         .filter(p => p.paymentStatus === "Completed")
         .reduce((sum, p) => sum + p.amount, 0);
@@ -97,7 +98,7 @@ const getDashboard = async () => {
     // Ledger
     // ===========================
 
-    const ledger = await Escrow.find()
+    const ledger = await Escrow.find({$or: [{ companyId: companyId },{ ownerCompanyId: companyId }]})
         .populate("companyId", "companyName")
         .populate("ownerCompanyId", "companyName")
         .populate("bookingId")

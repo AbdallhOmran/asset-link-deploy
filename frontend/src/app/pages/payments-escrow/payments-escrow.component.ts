@@ -28,22 +28,22 @@ export class PaymentsEscrowComponent implements OnInit {
     {
       title: 'TOTAL PROCESSED',
       value: res.data.summary.totalProcessed,
-      icon: '💰'
+      // icon: '💰'
     },
     {
       title: 'CURRENTLY IN ESCROW',
       value: res.data.summary.currentlyInEscrow,
-      icon: '🏦'
+      // icon: '🏦'
     },
     {
       title: 'RELEASED (MTD)',
       value: res.data.summary.releasedMTD,
-      icon: '✅'
+      // icon: '✅'
     },
     {
       title: 'PLATFORM FEE (MTD)',
       value: res.data.summary.platformFee,
-      icon: '💳'
+      // icon: '💳'
     }
   ];
 
