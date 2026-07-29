@@ -1,25 +1,67 @@
-<div class="shipment-card">
-  <div class="shipment-item">
-    <span class="label">ASSET</span>
-    <h4>TE-EXC-001</h4>
-    <p>Caterpillar 390F Excavator</p>
-  </div>
+<div class="bg-white rounded-xl border border-slate-200 p-6 mb-6">
+  <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-6">
+    Shipment Details
+  </h4>
 
-  <div class="shipment-item">
-    <span class="label">CARRIER</span>
-    <h4>HeavyHaul Logistics</h4>
-    <p>OR-HV-9142</p>
-  </div>
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div>
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+        ASSET
+      </p>
+      <h5 class="font-bold text-slate-900 text-sm">
+        {{
+          delivery?.bookingId?.equipment?.code ||
+            delivery?.bookingId?.assetCode ||
+            "-"
+        }}
+      </h5>
+      <p class="text-xs text-slate-500 mt-0.5">
+        {{
+          delivery?.bookingId?.equipment?.name ||
+            delivery?.bookingId?.assetName ||
+            ""
+        }}
+      </p>
+    </div>
 
-  <div class="shipment-item">
-    <span class="label">DRIVER</span>
-    <h4>Diego Reyes</h4>
-    <p>+1 (503) 882-4410</p>
-  </div>
+    <div>
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+        CARRIER
+      </p>
+      <h5 class="font-bold text-slate-900 text-sm">
+        {{ delivery?.carrier || delivery?.bookingId?.carrier || "-" }}
+      </h5>
+      <p class="text-xs text-slate-500 mt-0.5">
+        {{ delivery?.carrierCode || "" }}
+      </p>
+    </div>
 
-  <div class="shipment-item">
-    <span class="label">DISTANCE</span>
-    <h4>8.4 mi</h4>
-    <p>ETA 11:30 AM</p>
+    <div>
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+        DRIVER
+      </p>
+      <h5 class="font-bold text-slate-900 text-sm">
+        {{ delivery?.driverName || "-" }}
+      </h5>
+      <p class="text-xs text-slate-500 mt-0.5">
+        {{ delivery?.driverPhone || "" }}
+      </p>
+    </div>
+
+    <div>
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+        DISTANCE
+      </p>
+      <h5 class="font-bold text-slate-900 text-sm">
+        {{ delivery?.distance ? delivery?.distance + " mi" : "-" }}
+      </h5>
+      <p class="text-xs text-slate-500 mt-0.5">
+        {{
+          delivery?.estimatedArrival
+            ? "ETA " + (delivery?.estimatedArrival | date: "shortTime")
+            : ""
+        }}
+      </p>
+    </div>
   </div>
 </div>

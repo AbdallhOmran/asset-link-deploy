@@ -1,66 +1,66 @@
-<!-- استخدمنا ngIf عشان مفيش حاجة تضرب إيرور لحد ما الداتا تحمل -->
 <div
   *ngIf="currentOffer?.currentVersion"
   class="bg-white rounded-xl border border-slate-200 p-6"
 >
   <h2 class="text-xl font-bold text-slate-900 mb-5">Current Offer</h2>
 
-  <div class="space-y-3">
-    <div class="flex justify-between">
+  <div *ngIf="offer; else noOffer" class="space-y-3">
+    <div *ngIf="offer.assetName" class="flex justify-between">
       <span class="text-slate-500">Asset</span>
-      <!-- ممكن تتغير بعدين لو الـ Asset بييجي من الباك إند -->
-      <span class="font-semibold">Excavator CAT 320</span>
+      <span class="font-semibold">{{ offer.assetName }}</span>
     </div>
 
     <div class="flex justify-between">
       <span class="text-slate-500">Rent Price</span>
-      <span class="font-semibold text-blue-600"
-        >${{ currentOffer.currentVersion.rentPrice }} /
-        {{ currentOffer.currentVersion.durationUnit }}</span
-      >
+      <span class="font-semibold text-blue-600">${{ offer.rentPrice | number }} / {{ offer.durationUnit }}</span>
     </div>
 
     <div class="flex justify-between">
       <span class="text-slate-500">Deposit</span>
-      <span class="font-semibold"
-        >${{ currentOffer.currentVersion.securityDeposit }}</span
-      >
+      <span class="font-semibold">${{ offer.securityDeposit | number }}</span>
     </div>
 
     <div class="flex justify-between">
       <span class="text-slate-500">Duration</span>
-      <span class="font-semibold"
-        >{{ currentOffer.currentVersion.rentalDuration }}
-        {{ currentOffer.currentVersion.durationUnit }}</span
-      >
+      <span class="font-semibold">{{ offer.rentalDuration }} {{ offer.durationUnit }}</span>
+    </div>
+
+    <div class="flex justify-between">
+      <span class="text-slate-500">Last Offer By</span>
+      <span class="font-semibold capitalize">
+        {{ offer.counterBy === 'ownerCompany' ? 'Owner Company' : 'Renter Company' }}
+      </span>
     </div>
   </div>
 
+  <ng-template #noOffer>
+    <p class="text-sm text-slate-400">No active offer found.</p>
+  </ng-template>
+
   <hr class="my-6" />
 
-  <div class="flex gap-2">
-    <app-button variant="success" (click)="acceptOffer()">
+  <div class="flex flex-wrap gap-2">
+    <app-button variant="success" [disabled]="!offer" (click)="acceptOffer()">
       Accept Offer
     </app-button>
 
-    <!-- بعتنا داتا وهمية للتيست بس لحد ما تعملوا الـ Form -->
     <app-button
       variant="primary"
+      [disabled]="!offer"
       (click)="
         submitCounterOffer({
-          rentPrice: currentOffer.currentVersion.rentPrice - 100,
-          securityDeposit: currentOffer.currentVersion.securityDeposit,
-          rentalDuration: currentOffer.currentVersion.rentalDuration,
-          durationUnit: currentOffer.currentVersion.durationUnit,
-          counterBy: 'renterCompany',
-          notes: 'Test counter offer',
+          rentPrice: offer.rentPrice - 100,
+          securityDeposit: offer.securityDeposit,
+          rentalDuration: offer.rentalDuration,
+          durationUnit: offer.durationUnit,
+          notes: 'Test counter offer'
         })
       "
     >
       Counter Offer
     </app-button>
 
-    <app-button variant="danger" (click)="rejectOffer()">
+    <app-button variant="danger" [disabled]="!offer" (click)="rejectOffer()">
       Reject Offer
     </app-button>
   </div>

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 
 export interface CompanyInfo {
@@ -31,35 +31,17 @@ export interface RegisterFormData {
 }
 
 const initialData: RegisterFormData = {
-  company: {
-    companyName: '',
-    industry: '',
-    companySize: '',
-    country: 'United States',
-    website: ''
-  },
-  contact: {
-    firstName: '',
-    lastName: '',
-    jobTitle: '',
-    email: '',
-    phone: ''
-  },
-  account: {
-    password: '',
-    confirmPassword: '',
-    agreeTerms: false
-  }
+  company: { companyName: '', industry: '', companySize: '', country: 'United States', website: '' },
+  contact: { firstName: '', lastName: '', jobTitle: '', email: '', phone: '' },
+  account: { password: '', confirmPassword: '', agreeTerms: false },
 };
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RegisterStateService {
   private formDataSubject = new BehaviorSubject<RegisterFormData>(initialData);
   public formData$: Observable<RegisterFormData> = this.formDataSubject.asObservable();
-
-  /** Store email after registration so OTP page can read it */
   private registeredEmail: string = '';
 
   constructor(private authService: AuthService) {}
@@ -74,26 +56,17 @@ export class RegisterStateService {
 
   updateCompanyInfo(info: Partial<CompanyInfo>): void {
     const current = this.currentData;
-    this.formDataSubject.next({
-      ...current,
-      company: { ...current.company, ...info }
-    });
+    this.formDataSubject.next({ ...current, company: { ...current.company, ...info } });
   }
 
   updateContactDetails(contact: Partial<ContactDetails>): void {
     const current = this.currentData;
-    this.formDataSubject.next({
-      ...current,
-      contact: { ...current.contact, ...contact }
-    });
+    this.formDataSubject.next({ ...current, contact: { ...current.contact, ...contact } });
   }
 
   updateAccountSetup(account: Partial<AccountSetup>): void {
     const current = this.currentData;
-    this.formDataSubject.next({
-      ...current,
-      account: { ...current.account, ...account }
-    });
+    this.formDataSubject.next({ ...current, account: { ...current.account, ...account } });
   }
 
   reset(): void {
@@ -101,16 +74,7 @@ export class RegisterStateService {
     this.registeredEmail = '';
   }
 
-  /**
-   * Submit complete registration data to Backend API
-   * Maps frontend form fields to backend expected fields:
-   * - companyName     ← company.companyName
-   * - companyEmail    ← contact.email
-   * - phoneNumber     ← contact.phone
-   * - password        ← account.password
-   * - confirmPassword ← account.confirmPassword
-   */
-  submitRegistration(): Observable<{ success: boolean; message: string }> {
+  submitRegistration(): Observable<any> {
     const payload = this.currentData;
 
     const apiPayload = {
@@ -119,6 +83,7 @@ export class RegisterStateService {
       phoneNumber: payload.contact.phone || '',
       password: payload.account.password,
       confirmPassword: payload.account.confirmPassword,
+      companyAddress: payload.company.country
     };
 
     this.registeredEmail = payload.contact.email;
@@ -126,4 +91,3 @@ export class RegisterStateService {
     return this.authService.register(apiPayload);
   }
 }
-

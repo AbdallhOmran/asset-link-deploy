@@ -1,0 +1,154 @@
+<div
+  *ngIf="isOpen"
+  class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
+>
+  <div class="bg-white rounded-card w-full max-w-lg max-h-[90vh] overflow-y-auto">
+    <!-- Header -->
+    <div class="flex items-center justify-between p-5 border-b border-border">
+      <div>
+        <h3 class="text-lg font-bold text-text">New Booking</h3>
+        <p class="text-xs text-text-muted mt-0.5">
+          Step {{ currentStep + 1 }} of 3 ·
+          {{ currentStep === 0 ? 'Asset Selection' : currentStep === 1 ? 'Date Range' : 'Renter Details' }}
+        </p>
+      </div>
+      <button (click)="onCancel()" class="text-text-muted hover:text-text text-lg">✕</button>
+    </div>
+
+    <div class="p-5">
+      <!-- Stepper header with running total -->
+      <div class="flex items-center justify-between mb-5">
+        <div class="flex-1">
+          <app-stepper
+            [steps]="[{ label: 'Asset' }, { label: 'Dates' }, { label: 'Renter' }]"
+            [currentStep]="currentStep"
+          ></app-stepper>
+        </div>
+        <div *ngIf="estimatedTotal > 0" class="text-right ml-4">
+          <div class="text-xs text-text-muted">Est.</div>
+          <div class="text-primary font-bold">${{ estimatedTotal | number }}</div>
+        </div>
+      </div>
+
+      <p *ngIf="errorMessage" class="text-sm text-danger bg-danger-bg p-2 rounded-md mb-4">
+        {{ errorMessage }}
+      </p>
+
+      <!-- Step 1: Asset -->
+      <div *ngIf="currentStep === 0">
+        <label class="text-xs font-semibold text-text-muted tracking-wide">SELECT ASSET *</label>
+        <input
+          type="text"
+          [(ngModel)]="assetSearchTerm"
+          placeholder="Search available assets..."
+          class="w-full mt-1 mb-3 px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30"
+        />
+
+        <div class="space-y-2 max-h-72 overflow-y-auto">
+          <div
+            *ngFor="let asset of filteredAssets"
+            (click)="selectAsset(asset)"
+            class="border rounded-lg p-3 cursor-pointer transition-colors"
+            [ngClass]="selectedAsset?._id === asset._id ? 'border-primary bg-primary/5' : 'border-border hover:bg-page'"
+          >
+            <div class="font-semibold text-sm text-text">{{ asset.assetName }}</div>
+            <div class="text-xs text-text-muted">{{ asset.location }}</div>
+            <div class="text-sm text-primary font-semibold mt-1">${{ asset.price?.daily }}/day</div>
+          </div>
+
+          <p *ngIf="filteredAssets.length === 0" class="text-sm text-text-muted text-center py-4">
+            No available assets found.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 2: Dates -->
+      <div *ngIf="currentStep === 1">
+        <div class="bg-page rounded-lg p-3 mb-4">
+          <div class="font-semibold text-sm text-text">{{ selectedAsset?.assetName }}</div>
+          <div class="text-xs text-primary font-medium">${{ dailyRate }}/day</div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div>
+            <label class="text-xs font-semibold text-text-muted tracking-wide">START DATE *</label>
+            <input
+              type="date"
+              [(ngModel)]="startDate"
+              class="w-full mt-1 px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30"
+            />
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-text-muted tracking-wide">END DATE *</label>
+            <input
+              type="date"
+              [(ngModel)]="endDate"
+              class="w-full mt-1 px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30"
+            />
+          </div>
+        </div>
+
+        <div *ngIf="rentalDays > 0" class="bg-page rounded-lg p-3 text-sm space-y-1.5">
+          <div class="flex justify-between text-text-muted">
+            <span>Rental Duration</span><span class="text-text font-medium">{{ rentalDays }} days</span>
+          </div>
+          <div class="flex justify-between text-text-muted">
+            <span>Daily Rate</span><span class="text-text font-medium">${{ dailyRate }}</span>
+          </div>
+          <div class="flex justify-between text-text-muted border-t border-border pt-1.5 mt-1.5">
+            <span>Estimated Total</span><span class="text-primary font-bold">${{ estimatedTotal | number }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Renter/Notes -->
+      <div *ngIf="currentStep === 2">
+        <label class="text-xs font-semibold text-text-muted tracking-wide">NOTES</label>
+        <textarea
+          [(ngModel)]="notes"
+          rows="4"
+          placeholder="Special requirements, delivery instructions, or site conditions..."
+          class="w-full mt-1 mb-4 px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30"
+        ></textarea>
+
+        <div class="bg-primary/5 rounded-lg p-3 text-sm space-y-1.5">
+          <div class="font-semibold text-text mb-1">Booking Summary</div>
+          <div class="flex justify-between text-text-muted">
+            <span>Asset</span><span class="text-text font-medium">{{ selectedAsset?.assetName }}</span>
+          </div>
+          <div class="flex justify-between text-text-muted">
+            <span>Duration</span><span class="text-text font-medium">{{ rentalDays }} days ({{ startDate }} → {{ endDate }})</span>
+          </div>
+          <div class="flex justify-between text-text-muted">
+            <span>Est. Value</span><span class="text-primary font-bold">${{ estimatedTotal | number }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="flex justify-between items-center p-5 border-t border-border">
+      <app-button variant="secondary" *ngIf="currentStep > 0" (clicked)="prevStep()">Back</app-button>
+      <div *ngIf="currentStep === 0"></div>
+
+      <div class="flex gap-2 ml-auto">
+        <app-button variant="secondary" (clicked)="onCancel()">Cancel</app-button>
+        <app-button
+          *ngIf="currentStep < 2"
+          variant="primary"
+          (clicked)="nextStep()"
+        >
+          Continue
+        </app-button>
+        <app-button
+          *ngIf="currentStep === 2"
+          variant="primary"
+          [disabled]="isSubmitting"
+          (clicked)="onCreate()"
+        >
+          {{ isSubmitting ? 'Creating...' : 'Create Booking' }}
+        </app-button>
+      </div>
+    </div>
+  </div>
+</div>
