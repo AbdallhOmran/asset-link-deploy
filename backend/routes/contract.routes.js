@@ -15,9 +15,9 @@ const {
 } = require("../controllers/contract.controller");
 
 
-router.post("/", createContract);
-router.get("/", getContracts);
-router.get("/:id", getContract);
+router.post("/",authMiddleware, createContract);
+router.get("/",authMiddleware, getContracts);
+router.get("/:id",authMiddleware, getContract);
 
 router.patch("/:id/approve", authMiddleware, approveContract);
 router.patch("/:id/reject", authMiddleware, rejectContract);
