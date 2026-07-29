@@ -3,11 +3,16 @@
 <div class="bg-slate-100 min-h-screen p-6">
   <div class="max-w-7xl mx-auto grid grid-cols-12 gap-6">
     <div class="col-span-8">
-      <app-offer-history></app-offer-history>
+      <app-offer-history [history]="history"></app-offer-history>
     </div>
 
     <div class="col-span-4">
-      <app-current-offer (accept)="acceptOffer()" (reject)="rejectOffer()">
+      <app-current-offer
+        [currentOffer]="currentOffer"
+        (accept)="acceptOffer()"
+        (reject)="rejectOffer()"
+        (counter)="submitCounterOffer($event)"
+      >
       </app-current-offer>
     </div>
   </div>

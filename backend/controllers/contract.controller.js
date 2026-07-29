@@ -18,8 +18,11 @@ const createContract = async (req, res) => {
 
 const getContracts = async (req, res) => {
   try {
-    const contracts = await contractService.getAllContracts();
+
+    const contracts = await contractService.getAllContracts(req.user.id);
+
     return res.status(200).send(contracts);
+
   } catch (err) {
     return res.status(500).send({ error: err.message });
   }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NegotiationService } from 'src/app/services/negotiation.service';
+import { NegotiationService } from '../../services/negotiation.service';
 
 @Component({
   selector: 'app-negotiation-room',
@@ -7,76 +7,88 @@ import { NegotiationService } from 'src/app/services/negotiation.service';
   styleUrls: ['./negotiation-room.component.css'],
 })
 export class NegotiationRoomComponent implements OnInit {
-  history: any[] = [];
-  currentOffer: any;
-
-  // مؤقتًا حط أي IDs موجودة عندكم في الداتا بيز
   negotiationId = '6a62c0649fbef2a58ffaca95';
   companyId = '6a5c47c5de4fc73f925b90e3';
+
+  history: any[] = [];
+  currentOffer: any = null;
 
   constructor(private negotiationService: NegotiationService) {}
 
   ngOnInit(): void {
-    if (this.negotiationId) {
-      this.loadHistory();
-    }
-
-    if (this.companyId) {
-      this.loadCurrentOffer();
-    }
+    this.loadNegotiationDetails();
   }
 
-  loadHistory() {
-    this.negotiationService.getHistory(this.negotiationId).subscribe({
-      next: (res: any) => {
-        this.history = res.data || [];
-      },
-      error: (err) => console.error(err),
-    });
-  }
+  loadNegotiationDetails(): void {
+    if (!this.companyId) return;
 
-  loadCurrentOffer() {
+    // 1. جلب العرض الحالي باستخدام companyId
     this.negotiationService.getCurrent(this.companyId).subscribe({
       next: (res: any) => {
-        this.currentOffer = res.data;
+        if (res.success || res.data) {
+          this.currentOffer = res.data || res;
+        }
       },
-      error: (err) => console.error(err),
+      error: (err: any) => console.error('Error fetching current offer:', err),
+    });
+
+    // 2. جلب الهيستوري باستخدام negotiationId
+    if (this.negotiationId) {
+      this.negotiationService.getHistory(this.negotiationId).subscribe({
+        next: (res: any) => {
+          if (res.success || res.data) {
+            this.history = res.data || res;
+          }
+        },
+        error: (err: any) => console.error('Error fetching history:', err),
+      });
+    }
+  }
+
+  acceptOffer(): void {
+    const payload = {
+      negotiationId: this.negotiationId,
+      companyId: this.companyId,
+    };
+
+    this.negotiationService.acceptOffer(payload).subscribe({
+      next: (res: any) => {
+        alert('✅ Term agreement accepted!');
+        this.loadNegotiationDetails();
+      },
+      error: (err: any) => alert('Error accepting offer'),
     });
   }
 
-  acceptOffer() {
-    if (!this.currentOffer) return;
+  rejectOffer(): void {
+    const payload = {
+      negotiationId: this.negotiationId,
+      companyId: this.companyId,
+    };
 
-    this.negotiationService
-      .acceptOffer({
-        negotiationId: this.currentOffer._id,
-        bookingId: this.currentOffer.bookingId,
-      })
-      .subscribe({
-        next: () => {
-          alert('Offer Accepted');
-          this.loadCurrentOffer();
-          this.loadHistory();
-        },
-        error: (err) => console.error(err),
-      });
+    this.negotiationService.rejectOffer(payload).subscribe({
+      next: (res: any) => {
+        alert('❌ Offer rejected.');
+        this.loadNegotiationDetails();
+      },
+      error: (err: any) => alert('Error rejecting offer'),
+    });
   }
 
-  rejectOffer() {
-    if (!this.currentOffer) return;
+  submitCounterOffer(offerData: any): void {
+    const payload = {
+      counterBy: 'renterCompany',
+      ...offerData,
+    };
 
     this.negotiationService
-      .rejectOffer({
-        negotiationId: this.currentOffer._id,
-        bookingId: this.currentOffer.bookingId,
-      })
+      .counterOffer(this.negotiationId, payload)
       .subscribe({
-        next: () => {
-          alert('Offer Rejected');
-          this.loadCurrentOffer();
-          this.loadHistory();
+        next: (res: any) => {
+          alert('🔄 Counter offer sent successfully!');
+          this.loadNegotiationDetails();
         },
-        error: (err) => console.error(err),
+        error: (err: any) => alert('Error sending counter offer'),
       });
   }
 }

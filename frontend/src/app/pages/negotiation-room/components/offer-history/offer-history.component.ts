@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-offer-history',
   templateUrl: './offer-history.component.html',
-  styleUrls: ['./offer-history.component.css']
+  styleUrls: ['./offer-history.component.css'],
 })
 export class OfferHistoryComponent {
-
+  @Input() history: any[] = [];
 }
