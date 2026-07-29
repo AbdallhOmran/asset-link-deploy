@@ -8,12 +8,44 @@ export class AuthService {
   // matches: router.post('/login', authController.login) in auth.routes.js
   private baseUrl = 'http://localhost:3000/api/auth';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // calls the real login controller:
   // expects { companyEmail, password }, returns { message, token, company }
   login(companyEmail: string, password: string) {
     return this.http.post(`${this.baseUrl}/login`, { companyEmail, password });
+  }
+
+  // POST /api/auth/register-company
+  register(data: {
+    companyName: string;
+    companyEmail: string;
+    phoneNumber: string;
+    password: string;
+    confirmPassword: string;
+    commercialRegistrationNumber?: string;
+    companyAddress?: string;
+  }) {
+    return this.http.post<{ success: boolean; message: string }>(
+      `${this.baseUrl}/register-company`,
+      data
+    );
+  }
+
+  // POST /api/auth/verify-otp
+  verifyOtp(email: string, otp: string) {
+    return this.http.post<{ success: boolean; message: string; company?: any }>(
+      `${this.baseUrl}/verify-otp`,
+      { email, otp }
+    );
+  }
+
+  // POST /api/auth/resend-otp
+  resendOtp(email: string) {
+    return this.http.post<{ success: boolean; message: string }>(
+      `${this.baseUrl}/resend-otp`,
+      { email }
+    );
   }
 
   // ===== Token & session helpers =====

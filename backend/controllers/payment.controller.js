@@ -38,8 +38,8 @@ const completePayment = async (req, res) => {
 
 const getDashboard = async (req, res) => {
     try {
-        console.log("Dashboard API called");
-        const dashboard = await paymentService.getDashboard();
+        console.log(req.user);
+        const dashboard = await paymentService.getDashboard(req.user.id);
 
         console.log("Dashboard Result:", dashboard);
 

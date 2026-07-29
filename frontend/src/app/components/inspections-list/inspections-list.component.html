@@ -1,0 +1,47 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Equipment Inspections</h2>
+    <span class="badge bg-primary fs-6">{{ inspections.length }} Total Inspections</span>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body p-0">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Inspection ID</th>
+            <th>Equipment Name</th>
+            <th>Asset Code</th>
+            <th>Renter</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let inspection of inspections">
+            <td class="fw-bold">{{ inspection.id }}</td>
+            <td>{{ inspection.assetName }}</td>
+            <td><span class="text-muted">{{ inspection.assetCode }}</span></td>
+            <td>{{ inspection.renter }}</td>
+            <td>{{ inspection.inspectionDate }}</td>
+            <td>
+              <span class="badge" [ngClass]="{
+                'bg-success': inspection.status === 'Passed',
+                'bg-danger': inspection.status === 'Action Required',
+                'bg-warning text-dark': inspection.status === 'Pending'
+              }">
+                {{ inspection.status }}
+              </span>
+            </td>
+            <td class="text-end">
+              <button class="btn btn-sm btn-outline-primary" (click)="viewReport(inspection.id)">
+                View Report
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,7 +1,11 @@
 const bcrypt = require("bcryptjs");
 const Company = require('../models/company.model');
+const crypto = require("crypto");
 const generateOTP = require('../utils/otp.util');
-const sendOTPEmail = require('../utils/sendEmail.util');
+const {
+  sendOTPEmail,
+  sendResetPasswordEmail
+} = require('../utils/sendEmail.util');
 const { setCache, getCache, deleteCache } = require('../utils/cache.util');
 
 /**
@@ -56,24 +60,17 @@ const registerCompany = async (data) => {
 
 /**
  * Verify OTP and create company in database
- * - Gets cached data by email
- * - Compares OTP
- * - Creates company in DB with isVerified = true
- * - Deletes cache entry
  */
 const verifyOtp = async (email, otp) => {
-  // 1. Get cached data
   const cachedData = await getCache(`register:${email}`);
   if (!cachedData) {
     throw { statusCode: 400, message: 'OTP has expired or email not found. Please register again.' };
   }
 
-  // 2. Compare OTP
   if (cachedData.otp !== otp) {
     throw { statusCode: 400, message: 'Invalid OTP code' };
   }
 
-  // 3. Create company in database
   const company = await Company.create({
     companyName: cachedData.companyName,
     companyEmail: cachedData.companyEmail,
@@ -84,7 +81,6 @@ const verifyOtp = async (email, otp) => {
     isVerified: true,
   });
 
-  // 4. Delete cached data
   await deleteCache(`register:${email}`);
 
   return {
@@ -100,29 +96,98 @@ const verifyOtp = async (email, otp) => {
 
 /**
  * Resend OTP
- * - Checks if there's a pending registration in cache
- * - Generates a new OTP
- * - Updates cache with new OTP (resets TTL)
- * - Sends new OTP via email
  */
 const resendOtp = async (email) => {
-  // 1. Check if pending registration exists
   const cachedData = await getCache(`register:${email}`);
   if (!cachedData) {
     throw { statusCode: 400, message: 'No pending registration found. Please register first.' };
   }
 
-  // 2. Generate new OTP
   const newOtp = generateOTP();
 
-  // 3. Update cache with new OTP (resets TTL to 5 min)
   cachedData.otp = newOtp;
   await setCache(`register:${email}`, cachedData);
 
-  // 4. Send new OTP
   await sendOTPEmail(email, newOtp);
 
   return { message: 'New OTP sent successfully. Please check your email.' };
 };
 
-module.exports = { registerCompany, verifyOtp, resendOtp };
+/**
+ * Forgot Password
+ */
+const forgotPassword = async (email) => {
+
+  const company = await Company.findOne({ companyEmail: email });
+
+  if (!company) {
+    throw {
+      statusCode: 404,
+      message: "Company not found"
+    };
+  }
+
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  company.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  company.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
+
+  await company.save();
+
+  const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+
+  await sendResetPasswordEmail(company.companyEmail, resetLink);
+
+  return {
+    message: "Password reset link sent to your email"
+  };
+
+};
+
+/**
+ * Reset Password
+ */
+const resetPassword = async (token, newPassword) => {
+
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+
+  const company = await Company.findOne({
+    resetPasswordToken: hashedToken,
+    resetPasswordExpire: { $gt: Date.now() }
+  });
+
+  if (!company) {
+    throw {
+      statusCode: 400,
+      message: "Invalid or expired reset token"
+    };
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  company.password = await bcrypt.hash(newPassword, salt);
+
+  company.resetPasswordToken = undefined;
+  company.resetPasswordExpire = undefined;
+
+  await company.save();
+
+  return {
+    message: "Password has been reset successfully"
+  };
+
+};
+
+module.exports = {
+  registerCompany,
+  verifyOtp,
+  resendOtp,
+  forgotPassword,
+  resetPassword
+};

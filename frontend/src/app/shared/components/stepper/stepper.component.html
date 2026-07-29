@@ -1,35 +1,51 @@
 <div class="flex items-start w-full">
   <ng-container *ngFor="let step of steps; let i = index; let last = last">
-    <!-- Circle + labels -->
-    <div class="flex flex-col items-center text-center" [style.flex]="last ? '0 0 auto' : '1 1 0%'">
+    <div
+      class="flex flex-col items-center text-center"
+      [style.flex]="last ? '0 0 auto' : '1 1 0%'"
+    >
       <div
-        class="w-12 h-12 flex items-center justify-center rounded-full border-2 text-lg transition-colors"
+        class="w-11 h-11 rounded-full flex items-center justify-center border-2 transition-all duration-200 text-[18px] font-semibold"
         [ngClass]="{
-          'bg-primary border-primary text-white': getStatus(i) === 'completed',
-          'bg-white border-primary text-primary ring-4 ring-primary/20': getStatus(i) === 'active',
-          'bg-white border-border text-border': getStatus(i) === 'upcoming'
+          'bg-[#2563EB] border-[#2563EB] text-white':
+            getStatus(i) === 'completed',
+
+          'bg-white border-[#2563EB] text-[#2563EB] shadow-[0_0_0_4px_rgba(37,99,235,.12)]':
+            getStatus(i) === 'active',
+
+          'bg-white border-[#E5E7EB] text-[#D1D5DB]':
+            getStatus(i) === 'upcoming',
         }"
       >
-        <ng-container *ngIf="getStatus(i) === 'completed'; else stepIcon">✓</ng-container>
-        <ng-template #stepIcon>{{ step.icon || (i + 1) }}</ng-template>
+        {{ getStepIcon(i) }}
       </div>
-
       <span
-        class="mt-2 text-sm font-semibold"
-        [ngClass]="getStatus(i) === 'upcoming' ? 'text-text-muted' : 'text-text'"
+        class="mt-3 text-sm font-semibold"
+        [ngClass]="{
+          'text-[#111827]': getStatus(i) !== 'upcoming',
+          'text-[#9CA3AF]': getStatus(i) === 'upcoming',
+        }"
       >
         {{ step.label }}
       </span>
-      <span *ngIf="step.subLabel" class="text-xs text-text-muted mt-0.5">
+
+      <span
+        *ngIf="step.subLabel"
+        class="mt-1 text-xs"
+        [ngClass]="{
+          'text-[#16A34A]': getStatus(i) === 'completed',
+          'text-[#60A5FA]': getStatus(i) === 'active',
+          'text-[#9CA3AF]': getStatus(i) === 'upcoming',
+        }"
+      >
         {{ step.subLabel }}
       </span>
     </div>
 
-    <!-- Connecting line -->
     <div
       *ngIf="!last"
-      class="flex-1 h-0.5 mt-6 mx-1"
-      [ngClass]="isLineCompleted(i) ? 'bg-primary' : 'bg-border'"
+      class="flex-1 h-[2px] mt-[22px] mx-4"
+      [ngClass]="isLineCompleted(i) ? 'bg-[#2563EB]' : 'bg-[#E5E7EB]'"
     ></div>
   </ng-container>
 </div>

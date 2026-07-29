@@ -6,7 +6,6 @@ const contractModel = require("../models/contract.model");
 const bookingModel = require("../models/booking.model");
 const generateContractCode = require("../utils/generateContractCode");
 
-
 const createContract = async (contractData) => {
   const { bookingId, securityDeposit } = contractData;
 
@@ -50,9 +49,15 @@ const createContract = async (contractData) => {
   return contract;
 };
 
-const getAllContracts = async () => {
+const getAllContracts = async (companyId) => {
+
   const contracts = await contractModel
-    .find()
+    .find({
+      $or: [
+        { companyId: companyId },
+        { ownerCompanyId: companyId }
+      ]
+    })
     .populate("bookingId")
     .populate("assetId")
     .populate("companyId")

@@ -161,9 +161,38 @@ const updateMaintenanceStatus = async (id, statusData) => {
   return maintenance;
 };
 
-const getMaintenanceHistory = async () => {
+const getMaintenanceHistory = async (filters = {}) => {
+  const query = {};
+
+  if (filters.status) {
+    query.status = filters.status;
+  }
+
+  if (filters.assetId) {
+    query.assetId = filters.assetId;
+  }
+
+  if (filters.startDate || filters.endDate) {
+    query.maintenanceDate = {};
+    if (filters.startDate) {
+      query.maintenanceDate.$gte = new Date(filters.startDate);
+    }
+    if (filters.endDate) {
+      query.maintenanceDate.$lte = new Date(filters.endDate);
+    }
+  }
+
   const maintenances = await maintenanceModel
-    .find()
+    .find(query)
+    .populate("assetId")
+    .sort({ createdAt: -1 });
+
+  return maintenances;
+};
+
+const getMaintenanceByAsset = async (assetId) => {
+  const maintenances = await maintenanceModel
+    .find({ assetId })
     .populate("assetId")
     .sort({ createdAt: -1 });
 
@@ -203,6 +232,8 @@ module.exports = {
   updateMaintenanceStatus,
 
   getMaintenanceHistory,
+
+  getMaintenanceByAsset,
 
   deleteMaintenance,
 };

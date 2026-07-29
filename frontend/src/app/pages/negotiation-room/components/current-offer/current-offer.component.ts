@@ -7,8 +7,10 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class CurrentOfferComponent {
   @Input() offer: any = null;
+  
   @Output() accept = new EventEmitter<void>();
   @Output() reject = new EventEmitter<void>();
+  @Output() counter = new EventEmitter<any>();
 
   acceptOffer() {
     this.accept.emit();
@@ -16,5 +18,9 @@ export class CurrentOfferComponent {
 
   rejectOffer() {
     this.reject.emit();
+  }
+
+  submitCounterOffer(offerData: any) {
+    this.counter.emit(offerData);
   }
 }

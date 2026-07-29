@@ -18,6 +18,10 @@ export class NegotiationService {
     return this.http.get(`${this.api}/company/${companyId}/current`);
   }
 
+  counterOffer(negotiationId: string, offerData: any): Observable<any> {
+    return this.http.post(`${this.api}/${negotiationId}/offers`, offerData);
+  }
+
   acceptOffer(data: any): Observable<any> {
     return this.http.patch(`${this.api}/${data.negotiationId}/accept`, data);
   }

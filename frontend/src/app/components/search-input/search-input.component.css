@@ -1,0 +1,131 @@
+.notification-container {
+  position: relative;
+}
+
+.bell-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.bell-btn:hover {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+.badge-dot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 8px;
+  height: 8px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.popover {
+  position: absolute;
+  right: 0;
+  top: 46px;
+  width: 300px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  z-index: 50;
+  overflow: hidden;
+}
+
+.popover-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.popover-header h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.unread-tag {
+  font-size: 11px;
+  background-color: #eff6ff;
+  color: #2563eb;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.popover-body {
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #f8fafc;
+  transition: background-color 0.15s;
+}
+
+.notif-item:hover {
+  background-color: #f8fafc;
+}
+
+.notif-item.unread {
+  background-color: #f0f9ff;
+}
+
+.notif-icon {
+  font-size: 10px;
+  margin-top: 3px;
+}
+
+.notif-icon.warning { color: #f59e0b; }
+.notif-icon.success { color: #10b981; }
+.notif-icon.info { color: #3b82f6; }
+
+.notif-title {
+  margin: 0;
+  font-size: 12px;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.notif-time {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.popover-footer {
+  padding: 8px 16px;
+  text-align: center;
+  background-color: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+}
+
+.popover-footer button {
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  color: #2563eb;
+  cursor: pointer;
+  font-weight: 500;
+}

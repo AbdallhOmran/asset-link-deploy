@@ -1,4 +1,7 @@
-<div class="bg-white rounded-xl border border-slate-200 p-6">
+<div
+  *ngIf="currentOffer?.currentVersion"
+  class="bg-white rounded-xl border border-slate-200 p-6"
+>
   <h2 class="text-xl font-bold text-slate-900 mb-5">Current Offer</h2>
 
   <div *ngIf="offer; else noOffer" class="space-y-3">
@@ -9,7 +12,7 @@
 
     <div class="flex justify-between">
       <span class="text-slate-500">Rent Price</span>
-      <span class="font-semibold text-blue-600">${{ offer.rentPrice | number }} / day</span>
+      <span class="font-semibold text-blue-600">${{ offer.rentPrice | number }} / {{ offer.durationUnit }}</span>
     </div>
 
     <div class="flex justify-between">
@@ -36,12 +39,26 @@
 
   <hr class="my-6" />
 
-  <div class="space-y-3">
+  <div class="flex flex-wrap gap-2">
     <app-button variant="success" [disabled]="!offer" (click)="acceptOffer()">
       Accept Offer
     </app-button>
 
-    <app-button variant="primary" [disabled]="!offer"> Counter Offer </app-button>
+    <app-button
+      variant="primary"
+      [disabled]="!offer"
+      (click)="
+        submitCounterOffer({
+          rentPrice: offer.rentPrice - 100,
+          securityDeposit: offer.securityDeposit,
+          rentalDuration: offer.rentalDuration,
+          durationUnit: offer.durationUnit,
+          notes: 'Test counter offer'
+        })
+      "
+    >
+      Counter Offer
+    </app-button>
 
     <app-button variant="danger" [disabled]="!offer" (click)="rejectOffer()">
       Reject Offer

@@ -1,49 +1,274 @@
-<div class="max-w-screen-2xl mx-auto px-6 py-6 space-y-6" style="font-family: 'Inter', system-ui, sans-serif;">
-  
-  <!-- Page Header & Action Bar -->
-  <div class="flex flex-wrap items-center justify-between gap-4">
-    <div>
-      <div class="flex items-center gap-2 mb-1">
-        <h1 class="text-2xl font-black text-slate-900 tracking-tight">Maintenance Schedule</h1>
-        <span class="text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1 rounded-xl">
-          Fleet Health System
-        </span>
-      </div>
-      <p class="text-sm text-slate-500">Monitor scheduled maintenance, track repair operations, and manage asset lifespans.</p>
-    </div>
+<div class="max-w-screen-2xl mx-auto px-6 py-6 space-y-5" style="font-family: 'Inter', system-ui, sans-serif;">
 
-    <!-- Request New Maintenance CTA Button -->
+  <!-- Error State -->
+  <div *ngIf="error$ | async as error" class="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center justify-between mb-4">
     <div class="flex items-center gap-3">
-      <button
-        (click)="openRequestModal()"
-        class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-2xl shadow-lg shadow-blue-600/30 flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
-      >
-        <span class="text-base">+</span>
-        <span>Request New Maintenance</span>
-      </button>
+      <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center text-red-600 font-bold text-lg">⚠️</div>
+      <div>
+        <p class="text-sm font-bold text-red-800">Failed to load maintenance data</p>
+        <p class="text-xs text-red-600">{{ error }}</p>
+      </div>
     </div>
+    <button (click)="retryLoad()" class="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-xl hover:bg-red-700 transition-all">
+      Retry
+    </button>
   </div>
 
-  <!-- Predictive Maintenance Alert Banners -->
+  <!-- Predictive Maintenance Alert Banners (Angular-only feature, kept) -->
   <app-predictive-alerts
     *ngIf="assets$ | async as assets"
     [assets]="assets"
   ></app-predictive-alerts>
 
-  <!-- Fleet Maintenance KPI Cards -->
-  <app-maintenance-stats
-    [stats]="stats$ | async"
-    [activeFilter]="activeStatusFilter"
-    (filterChange)="onFilterStatus($event)"
-  ></app-maintenance-stats>
+  <!-- KPI bar (matching Figma) -->
+  <ng-container *ngIf="stats$ | async as stats">
+    <div class="grid grid-cols-4 gap-4">
+      <!-- Total Tasks -->
+      <div class="flex items-center gap-4 p-4 bg-white rounded-xl border shadow-sm bg-blue-50 border-blue-100">
+        <div class="w-10 h-10 rounded-xl bg-white/70 flex items-center justify-center flex-shrink-0">
+          <lucide-icon name="clipboard-list" [size]="17" class="text-blue-600"></lucide-icon>
+        </div>
+        <div>
+          <p class="text-2xl font-black text-blue-600">{{ stats.totalAssets }}</p>
+          <p class="text-xs font-medium text-slate-500">Total Tasks</p>
+        </div>
+      </div>
+      <!-- In Progress -->
+      <div class="flex items-center gap-4 p-4 bg-white rounded-xl border shadow-sm bg-amber-50 border-amber-100">
+        <div class="w-10 h-10 rounded-xl bg-white/70 flex items-center justify-center flex-shrink-0">
+          <lucide-icon name="activity" [size]="17" class="text-amber-600"></lucide-icon>
+        </div>
+        <div>
+          <p class="text-2xl font-black text-amber-600">{{ stats.inProgressCount }}</p>
+          <p class="text-xs font-medium text-slate-500">In Progress</p>
+        </div>
+      </div>
+      <!-- Overdue -->
+      <div class="flex items-center gap-4 p-4 bg-white rounded-xl border shadow-sm bg-red-50 border-red-100">
+        <div class="w-10 h-10 rounded-xl bg-white/70 flex items-center justify-center flex-shrink-0">
+          <lucide-icon name="alert-triangle" [size]="17" class="text-red-600"></lucide-icon>
+        </div>
+        <div>
+          <p class="text-2xl font-black text-red-600">{{ stats.overdueCount }}</p>
+          <p class="text-xs font-medium text-slate-500">Overdue</p>
+        </div>
+      </div>
+      <!-- Completed -->
+      <div class="flex items-center gap-4 p-4 bg-white rounded-xl border shadow-sm bg-emerald-50 border-emerald-100">
+        <div class="w-10 h-10 rounded-xl bg-white/70 flex items-center justify-center flex-shrink-0">
+          <lucide-icon name="check-circle-2" [size]="17" class="text-emerald-600"></lucide-icon>
+        </div>
+        <div>
+          <p class="text-2xl font-black text-emerald-600">{{ stats.currentCount }}</p>
+          <p class="text-xs font-medium text-slate-500">Completed</p>
+        </div>
+      </div>
+    </div>
 
-  <!-- Main Maintenance Table & Search/Filter Section -->
-  <app-maintenance-table
-    [records]="filteredRecords$ | async"
-    [activeStatusFilter]="activeStatusFilter"
-    (searchChange)="onSearch($event)"
-    (statusFilterChange)="onFilterStatus($event)"
-  ></app-maintenance-table>
+    <!-- Total cost banner -->
+    <div class="flex items-center gap-3 px-5 py-3.5 bg-white rounded-xl shadow-sm border border-slate-100">
+      <lucide-icon name="dollar-sign" [size]="15" class="text-slate-400 flex-shrink-0"></lucide-icon>
+      <p class="text-sm text-slate-600">
+        Total estimated maintenance spend this period:
+        <span class="font-black text-slate-900">{{ formatCost(stats.totalMaintenanceCostThisMonth) }}</span>
+      </p>
+      <div class="ml-auto flex items-center gap-2">
+        <button class="flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 border border-blue-100 bg-blue-50 px-3 py-1.5 rounded-xl">
+          <lucide-icon name="download" [size]="11"></lucide-icon> Export
+        </button>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Toolbar -->
+  <div class="flex items-center gap-3 flex-wrap">
+    <!-- Status filter tabs -->
+    <div class="flex bg-white border border-slate-200 rounded-xl p-1 gap-0.5">
+      <button
+        *ngFor="let f of [
+          { key: 'all', label: 'All' },
+          { key: 'scheduled', label: 'Scheduled' },
+          { key: 'in-progress', label: 'In Progress' },
+          { key: 'completed', label: 'Completed' },
+          { key: 'overdue', label: 'Overdue' }
+        ]"
+        (click)="onFilterStatus($any(f.key))"
+        class="px-3 py-1.5 text-xs font-semibold rounded-lg transition-all"
+        [ngClass]="activeStatusFilter === f.key ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'">
+        {{ f.label }}
+      </button>
+    </div>
+
+    <!-- Type filter -->
+    <div class="relative">
+      <select
+        [(ngModel)]="typeFilter"
+        class="appearance-none pl-3.5 pr-8 py-2.5 text-xs font-semibold border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer text-slate-700">
+        <option value="all">All Types</option>
+        <option *ngFor="let t of maintTypes" [value]="t">{{ t }}</option>
+      </select>
+      <lucide-icon name="chevron-down" [size]="11" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></lucide-icon>
+    </div>
+
+    <!-- Search -->
+    <div class="relative flex-1">
+      <lucide-icon name="search" [size]="13" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></lucide-icon>
+      <input
+        #searchInput
+        (input)="onSearch(searchInput.value)"
+        placeholder="Search task ID, asset, or technician…"
+        class="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
+    <!-- Log Maintenance button -->
+    <button
+      (click)="openRequestModal()"
+      class="flex items-center gap-2 px-4 py-2.5 text-xs font-bold bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-sm">
+      <lucide-icon name="plus" [size]="13"></lucide-icon> Log Maintenance
+    </button>
+  </div>
+
+  <!-- Table -->
+  <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+    <!-- Loading -->
+    <div *ngIf="loading$ | async" class="px-6 py-16 text-center">
+      <div class="w-10 h-10 border-3 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+      <p class="text-sm font-semibold text-slate-500">Loading maintenance records...</p>
+    </div>
+
+    <ng-container *ngIf="!(loading$ | async)">
+      <table class="w-full">
+        <thead>
+          <tr class="bg-slate-50 border-b border-slate-100">
+            <th class="text-left px-5 py-3 text-xs font-medium text-slate-400 uppercase tracking-wide whitespace-nowrap">Task ID</th>
+            <th class="text-left px-5 py-3 text-xs font-medium text-slate-400 uppercase tracking-wide whitespace-nowrap">Asset</th>
+            <th class="text-left px-5 py-3 text-xs font-medium text-slate-400 uppercase tracking-wide whitespace-nowrap">Type</th>
+            <th class="text-left px-5 py-3 text-xs font-medium text-slate-400 uppercase tracking-wide whitespace-nowrap">Description</th>
+            <th class="text-left px-5 py-3 text-xs font-medium text-slate-400 uppercase tracking-wide whitespace-nowrap">Technician</th>
+            <th class="text-left px-5 py-3 text-xs font-medium text-slate-400 uppercase tracking-wide whitespace-nowrap">Scheduled</th>
+            <th class="text-left px-5 py-3 text-xs font-medium text-slate-400 uppercase tracking-wide whitespace-nowrap">Cost Est.</th>
+            <th class="text-left px-5 py-3 text-xs font-medium text-slate-400 uppercase tracking-wide whitespace-nowrap">Status</th>
+            <th class="text-left px-5 py-3 text-xs font-medium text-slate-400 uppercase tracking-wide whitespace-nowrap"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-50">
+          <ng-container *ngFor="let task of filteredRecords$ | async">
+            <tr class="hover:bg-slate-50/70 transition-colors group">
+              <!-- Task ID -->
+              <td class="px-5 py-4">
+                <div>
+                  <span class="font-mono text-xs text-blue-600 font-semibold">{{ task.maintenanceCode || task.id }}</span>
+                  <div class="flex items-center gap-1 mt-0.5">
+                    <span class="w-1.5 h-1.5 rounded-full" [ngClass]="getPriorityDot(task.priority)"></span>
+                    <span class="text-[9px] font-semibold capitalize text-slate-400">{{ task.priority }}</span>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Asset -->
+              <td class="px-5 py-4">
+                <p class="text-xs font-semibold text-slate-900 max-w-[140px] truncate">{{ task.assetName }}</p>
+                <div class="flex items-center gap-1 mt-0.5">
+                  <span class="font-mono text-[10px] text-slate-400">{{ task.assetCode }}</span>
+                </div>
+              </td>
+
+              <!-- Type -->
+              <td class="px-5 py-4">
+                <span
+                  class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border"
+                  [ngClass]="getTypeMeta(task.type).bg + ' ' + getTypeMeta(task.type).border + ' ' + getTypeMeta(task.type).color">
+                  <lucide-icon [name]="getTypeMeta(task.type).icon" [size]="9"></lucide-icon>
+                  {{ task.type }}
+                </span>
+              </td>
+
+              <!-- Description -->
+              <td class="px-5 py-4 max-w-[200px]">
+                <p class="text-xs text-slate-600 leading-relaxed line-clamp-2">{{ task.desc }}</p>
+              </td>
+
+              <!-- Technician -->
+              <td class="px-5 py-4">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 rounded-full bg-gradient-to-br from-slate-400 to-slate-600 flex items-center justify-center text-white text-[8px] font-black flex-shrink-0">
+                    {{ getInitials(task.tech) }}
+                  </div>
+                  <span class="text-xs text-slate-700 font-medium leading-tight max-w-[90px] truncate">{{ task.tech }}</span>
+                </div>
+              </td>
+
+              <!-- Scheduled Date -->
+              <td class="px-5 py-4">
+                <p class="text-xs font-semibold text-slate-800">{{ task.date }}</p>
+                <p *ngIf="task.completedDate" class="text-[10px] text-emerald-600">Done {{ task.completedDate }}</p>
+              </td>
+
+              <!-- Cost Estimate -->
+              <td class="px-5 py-4">
+                <p class="font-mono text-sm font-bold text-slate-900">{{ formatCost(task.cost || 0) }}</p>
+              </td>
+
+              <!-- Status -->
+              <td class="px-5 py-4">
+                <span
+                  class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border"
+                  [ngClass]="getStatusMeta(task.status).bg + ' ' + getStatusMeta(task.status).border + ' ' + getStatusMeta(task.status).color">
+                  <span
+                    class="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                    [ngClass]="getStatusMeta(task.status).dot + (getStatusMeta(task.status).pulse ? ' animate-pulse' : '')">
+                  </span>
+                  {{ getStatusMeta(task.status).label }}
+                </span>
+              </td>
+
+              <!-- Actions -->
+              <td class="px-5 py-4">
+                <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                  <button class="p-1.5 rounded-lg hover:bg-blue-50 text-slate-400 hover:text-blue-600 transition-colors">
+                    <lucide-icon name="eye" [size]="13"></lucide-icon>
+                  </button>
+                  <button class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
+                    <lucide-icon name="edit" [size]="13"></lucide-icon>
+                  </button>
+                  <button (click)="confirmDelete(task)" class="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600 transition-colors">
+                    <lucide-icon name="x" [size]="13"></lucide-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+
+          <!-- Empty State -->
+          <tr *ngIf="(filteredRecords$ | async)?.length === 0">
+            <td colspan="9" class="px-5 py-12 text-center">
+              <lucide-icon name="wrench" [size]="28" class="text-slate-200 mx-auto mb-3"></lucide-icon>
+              <p class="text-sm text-slate-400 font-medium">No maintenance tasks match your filters.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination Footer -->
+      <div class="flex items-center justify-between px-5 py-3.5 border-t border-slate-100 bg-slate-50/50">
+        <p class="text-xs text-slate-400">
+          Showing <span class="font-semibold text-slate-700">{{ (filteredRecords$ | async)?.length || 0 }}</span> tasks
+        </p>
+        <div class="flex items-center gap-1">
+          <button class="w-7 h-7 flex items-center justify-center rounded-lg text-xs font-medium border border-slate-200 bg-white text-slate-300 cursor-not-allowed">
+            <lucide-icon name="chevron-left" [size]="13"></lucide-icon>
+          </button>
+          <button class="w-7 h-7 flex items-center justify-center rounded-lg text-xs font-medium bg-blue-600 text-white shadow-sm">
+            1
+          </button>
+          <button class="w-7 h-7 flex items-center justify-center rounded-lg text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50">
+            <lucide-icon name="chevron-right" [size]="13"></lucide-icon>
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </div>
 
   <!-- Request New Maintenance Modal -->
   <app-request-maintenance-modal
@@ -53,5 +278,30 @@
     (close)="closeRequestModal()"
     (submitRequest)="handleNewRequest($event)"
   ></app-request-maintenance-modal>
+
+  <!-- Delete Confirmation Modal -->
+  <app-modal
+    [isOpen]="showDeleteConfirm"
+    title="Delete Maintenance Record"
+    subtitle="This action cannot be undone"
+    icon="🗑️"
+    size="sm"
+    confirmText="Delete"
+    cancelText="Cancel"
+    (closed)="cancelDelete()"
+    (cancel)="cancelDelete()"
+    (confirm)="executeDelete()"
+  >
+    <div class="space-y-3">
+      <p class="text-sm text-slate-600">
+        Are you sure you want to delete maintenance
+        <strong class="font-mono">{{ maintenanceToDelete?.maintenanceCode || maintenanceToDelete?.id }}</strong>
+        for <strong>{{ maintenanceToDelete?.assetName || 'this asset' }}</strong>?
+      </p>
+      <div *ngIf="deleteError" class="bg-red-50 border border-red-200 rounded-xl p-3">
+        <p class="text-xs text-red-700 font-semibold">{{ deleteError }}</p>
+      </div>
+    </div>
+  </app-modal>
 
 </div>

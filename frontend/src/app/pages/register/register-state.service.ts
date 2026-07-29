@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
 
 export interface CompanyInfo {
   companyName: string;
@@ -42,14 +42,16 @@ const initialData: RegisterFormData = {
 export class RegisterStateService {
   private formDataSubject = new BehaviorSubject<RegisterFormData>(initialData);
   public formData$: Observable<RegisterFormData> = this.formDataSubject.asObservable();
+  private registeredEmail: string = '';
 
-  // matches: router.post('/register-company', authController.registerCompany) in auth.routes.js
-  private registerUrl = 'http://localhost:3000/api/auth/register-company';
-
-  constructor(private http: HttpClient) {}
+  constructor(private authService: AuthService) {}
 
   get currentData(): RegisterFormData {
     return this.formDataSubject.value;
+  }
+
+  getRegisteredEmail(): string {
+    return this.registeredEmail || this.currentData.contact.email;
   }
 
   updateCompanyInfo(info: Partial<CompanyInfo>): void {
@@ -69,24 +71,23 @@ export class RegisterStateService {
 
   reset(): void {
     this.formDataSubject.next(initialData);
+    this.registeredEmail = '';
   }
 
-  // ✅ fixed: now actually calls the backend instead of a fake setTimeout.
-  // maps the front-end wizard fields to what auth.controller.js's
-  // registerCompany actually expects (companyName, companyEmail, phoneNumber,
-  // password, confirmPassword, companyAddress, commercialRegistrationNumber)
   submitRegistration(): Observable<any> {
-    const { company, contact, account } = this.currentData;
+    const payload = this.currentData;
 
-    const payload = {
-      companyName: company.companyName,
-      companyEmail: contact.email,
-      phoneNumber: contact.phone,
-      password: account.password,
-      confirmPassword: account.confirmPassword,
-      companyAddress: company.country, // TODO: confirm mapping with backend field if a dedicated address field exists
+    const apiPayload = {
+      companyName: payload.company.companyName,
+      companyEmail: payload.contact.email,
+      phoneNumber: payload.contact.phone || '',
+      password: payload.account.password,
+      confirmPassword: payload.account.confirmPassword,
+      companyAddress: payload.company.country
     };
 
-    return this.http.post(this.registerUrl, payload);
+    this.registeredEmail = payload.contact.email;
+
+    return this.authService.register(apiPayload);
   }
 }
