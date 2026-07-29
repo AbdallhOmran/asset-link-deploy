@@ -1,39 +1,84 @@
-<div class="bg-white rounded-xl border border-slate-200 p-6">
-  <div class="flex items-center justify-between mb-6">
+<div class="bg-white rounded-xl border border-slate-200 p-6 mb-6">
+  <div class="flex items-center justify-between mb-10">
     <div>
-      <h3 class="text-xl font-bold text-slate-900">Delivery Progress</h3>
-
+      <h3 class="text-lg font-bold text-slate-900">Delivery Progress</h3>
       <p class="text-sm text-slate-500 mt-1">
-        DEL-2026-001 • HeavyHaul Logistics
+        {{ delivery?.deliveryCode }}
+        <ng-container *ngIf="delivery?.carrier"
+          >• {{ delivery?.carrier }}</ng-container
+        >
       </p>
     </div>
 
-    <span
-      class="px-4 py-2 rounded-full bg-green-100 text-green-700 text-sm font-semibold"
-    >
-      ● Live Tracking
-    </span>
+    <div class="flex items-center gap-4">
+      <span
+        *ngIf="delivery?.status === 'Delivered'"
+        class="px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 text-sm font-semibold flex items-center gap-2"
+      >
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M5 13l4 4L19 7"
+          ></path>
+        </svg>
+        Delivered
+      </span>
+
+      <span
+        *ngIf="delivery?.status !== 'Delivered'"
+        class="px-3 py-1.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100 text-sm font-semibold flex items-center gap-2"
+      >
+        <span class="w-2 h-2 rounded-full bg-blue-600"></span> Live Tracking
+      </span>
+
+      <span class="text-sm text-slate-400 font-medium">
+        {{
+          delivery?.estimatedArrival
+            ? "ETA " + (delivery?.estimatedArrival | date: "shortTime")
+            : "ETA 10:00 AM"
+        }}
+      </span>
+    </div>
   </div>
 
-  <app-stepper [steps]="deliverySteps" [currentStep]="2"> </app-stepper>
+  <app-stepper [steps]="deliverySteps" [currentStep]="currentStep">
+  </app-stepper>
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+  <div
+    class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 pt-6 border-t border-slate-100 text-center"
+  >
     <div>
-      <p class="text-xs text-slate-400">FROM</p>
-
-      <h5 class="font-semibold text-slate-900">Portland Depot</h5>
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+        FROM
+      </p>
+      <h5 class="font-bold text-slate-900">
+        {{ delivery?.pickupLocation || "-" }}
+      </h5>
     </div>
 
     <div>
-      <p class="text-xs text-slate-400">DRIVER</p>
-
-      <h5 class="font-semibold text-slate-900">Diego Reyes</h5>
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+        DRIVER
+      </p>
+      <h5 class="font-bold text-slate-900">
+        {{ delivery?.driverName || "-" }}
+      </h5>
     </div>
 
     <div>
-      <p class="text-xs text-slate-400">TO</p>
-
-      <h5 class="font-semibold text-slate-900">Apex Construction Site</h5>
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+        TO
+      </p>
+      <h5 class="font-bold text-slate-900">
+        {{ delivery?.deliveryLocation || "-" }}
+      </h5>
     </div>
   </div>
 </div>
