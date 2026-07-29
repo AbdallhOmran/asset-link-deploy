@@ -51,20 +51,27 @@ assets: any[] = [];
   this.getMyAssets();
 }
   getCompanyProfile(): void {
-    this.companyService.getProfile().subscribe({
-      next: (res: any) => {
-        this.company = {
-          ...this.company,
-          ...res.data
-        };
+  this.companyService.getProfile().subscribe({
+    next: (res: any) => {
 
-        console.log('Company Profile:', this.company);
-      },
-      error: (err) => {
-        console.error('Error loading profile:', err);
-      }
-    });
-  }
+      this.company = {
+        ...this.company,
+        ...res.data,
+        stats: {
+          ...this.company.stats,
+          bookings: res.data.totalBookings
+        }
+      };
+
+      console.log('Company Profile:', this.company);
+
+    },
+
+    error: (err) => {
+      console.error('Error loading profile:', err);
+    }
+  });
+}
   getMyAssets(): void {
   this.companyService.getMyAssets().subscribe({
     next: (res: any) => {
