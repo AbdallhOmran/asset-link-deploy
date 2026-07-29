@@ -1,134 +1,166 @@
-<app-modal
-  [isOpen]="isOpen"
-  title="Request Maintenance"
-  subtitle="Schedule routine service or repair work for fleet equipment"
-  icon="🛠️"
-  [showConfirmButton]="false"
-  [showCancelButton]="false"
-  (closed)="closeModal()"
->
-  <!-- Modal Form -->
-  <form [formGroup]="maintenanceForm" (ngSubmit)="onSubmit()" class="space-y-4" dir="ltr">
+<div
+  *ngIf="isOpen"
+  class="fixed inset-0 z-50 flex items-center justify-center p-4"
+  style="background: rgba(15,23,42,0.55); backdrop-filter: blur(4px);"
+  (click)="$event.target === $event.currentTarget ? closeModal() : null">
+  <div class="bg-white rounded-[12px] shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh] overflow-hidden">
 
-    <!-- Asset Selection -->
-    <div>
-      <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
-        Equipment <span class="text-red-500">*</span>
-      </label>
-      <select
-        formControlName="assetId"
-        class="w-full px-4 py-2.5 text-sm border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer transition-all"
-        [ngClass]="isFieldInvalid('assetId') ? 'border-red-300 bg-red-50/20' : 'border-slate-200'"
-      >
-        <option value="" disabled selected>Select equipment from fleet...</option>
-        <option *ngFor="let asset of assets" [value]="asset.assetId">
-          {{ asset.assetCode }} - {{ asset.assetName }} ({{ asset.category }})
-        </option>
-      </select>
-      <p *ngIf="isFieldInvalid('assetId')" class="text-[11px] text-red-500 mt-1">Equipment selection is required.</p>
-    </div>
-
-    <!-- Grid 2 Columns: Maintenance Type & Scheduled Date -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      
-      <!-- Maintenance Type -->
-      <div>
-        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
-          Service Type <span class="text-red-500">*</span>
-        </label>
-        <select
-          formControlName="maintenanceType"
-          class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-        >
-          <option *ngFor="let type of maintenanceTypes" [value]="type">{{ type }}</option>
-        </select>
+    <!-- Header -->
+    <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center">
+          <lucide-icon name="wrench" [size]="14" class="text-amber-600"></lucide-icon>
+        </div>
+        <div>
+          <h2 class="text-sm font-bold text-slate-900">Log Maintenance</h2>
+          <p class="text-[10px] text-slate-400">Record a repair or scheduled service task.</p>
+        </div>
       </div>
-
-      <!-- Scheduled Date -->
-      <div>
-        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
-          Scheduled Date <span class="text-red-500">*</span>
-        </label>
-        <input
-          type="date"
-          formControlName="scheduledDate"
-          class="w-full px-4 py-2.5 text-sm border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          [ngClass]="isFieldInvalid('scheduledDate') ? 'border-red-300 bg-red-50/20' : 'border-slate-200'"
-        />
-        <p *ngIf="isFieldInvalid('scheduledDate')" class="text-[11px] text-red-500 mt-1">Please select a valid scheduled date.</p>
-      </div>
-    </div>
-
-    <!-- Grid 2 Columns: Technician & Priority -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-      <!-- Technician -->
-      <div>
-        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
-          Assigned Technician <span class="text-red-500">*</span>
-        </label>
-        <select
-          formControlName="technician"
-          class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-          [ngClass]="isFieldInvalid('technician') ? 'border-red-300 bg-red-50/20' : 'border-slate-200'"
-        >
-          <option value="" disabled selected>Select assigned technician...</option>
-          <option *ngFor="let tech of technicians" [value]="tech">{{ tech }}</option>
-        </select>
-        <p *ngIf="isFieldInvalid('technician')" class="text-[11px] text-red-500 mt-1">Please assign a technician responsible for maintenance.</p>
-      </div>
-
-      <!-- Priority Level -->
-      <div>
-        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
-          Priority Level
-        </label>
-        <select
-          formControlName="priority"
-          class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-        >
-          <option value="low">Low Priority</option>
-          <option value="medium">Medium Priority (Standard)</option>
-          <option value="high">High Priority</option>
-          <option value="urgent">Urgent / Emergency</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Notes & Scope of Work -->
-    <div>
-      <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
-        Notes & Scope of Work <span class="text-red-500">*</span>
-      </label>
-      <textarea
-        formControlName="notes"
-        rows="3"
-        placeholder="Enter inspection notes or required replacement parts (at least 10 characters)..."
-        class="w-full px-4 py-3 text-sm border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-        [ngClass]="isFieldInvalid('notes') ? 'border-red-300 bg-red-50/20' : 'border-slate-200'"
-      ></textarea>
-      <p *ngIf="isFieldInvalid('notes')" class="text-[11px] text-red-500 mt-1">Notes are required and must be at least 10 characters.</p>
-    </div>
-
-    <!-- Modal Footer Action Buttons -->
-    <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
-      <button
-        type="button"
-        (click)="closeModal()"
-        class="px-5 py-2.5 border border-slate-200 text-slate-700 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-colors"
-      >
-        Cancel
-      </button>
-      
-      <button
-        type="submit"
-        [disabled]="isSubmitting"
-        class="px-6 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 shadow-md shadow-blue-600/30 flex items-center gap-2 transition-all disabled:opacity-50"
-      >
-        <span *ngIf="isSubmitting" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-        <span>Confirm & Schedule Maintenance</span>
+      <button (click)="closeModal()" class="p-2 rounded-xl hover:bg-slate-100 text-slate-400">
+        <lucide-icon name="x" [size]="15"></lucide-icon>
       </button>
     </div>
 
-  </form>
-</app-modal>
+    <!-- Success State -->
+    <div *ngIf="saved" class="px-6 py-10 flex flex-col items-center text-center">
+      <div class="w-14 h-14 rounded-3xl bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-4">
+        <lucide-icon name="check-circle-2" [size]="26" class="text-emerald-600"></lucide-icon>
+      </div>
+      <h3 class="text-sm font-bold text-slate-900 mb-1">Maintenance Logged</h3>
+      <p class="text-xs text-slate-500 mb-1">
+        <span class="font-semibold">{{ selectedType }}</span> task for <span class="font-semibold">{{ selectedAsset?.assetName }}</span>
+      </p>
+      <p class="text-xs text-slate-400 mb-6">Scheduled for <span class="font-semibold text-slate-600">{{ maintenanceForm.value.scheduledDate }}</span></p>
+      <div class="flex gap-3 w-full">
+        <button (click)="logAnother()" class="flex-1 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50">
+          Log Another
+        </button>
+        <button (click)="closeModal()" class="flex-1 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700">Done</button>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <ng-container *ngIf="!saved">
+      <div class="flex-1 overflow-y-auto px-6 py-5 space-y-4">
+
+        <!-- Asset selector -->
+        <div>
+          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Asset <span class="text-red-500">*</span></label>
+          <div class="relative">
+            <select
+              [formControl]="$any(maintenanceForm.get('assetId'))"
+              class="w-full appearance-none px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 cursor-pointer text-slate-900">
+              <option value="">Select an asset…</option>
+              <option *ngFor="let a of assets" [value]="a.assetId">{{ a.assetName }} — {{ a.assetCode }}</option>
+            </select>
+            <lucide-icon name="chevron-down" [size]="13" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></lucide-icon>
+          </div>
+          <div *ngIf="selectedAsset" class="flex items-center gap-2 mt-2 px-3 py-2 bg-slate-50 rounded-xl border border-slate-100">
+            <div class="w-8 h-8 rounded-lg bg-slate-200 flex items-center justify-center flex-shrink-0">
+              <lucide-icon name="hard-hat" [size]="14" class="text-slate-500"></lucide-icon>
+            </div>
+            <div>
+              <p class="text-xs font-semibold text-slate-800">{{ selectedAsset.category }}</p>
+              <p class="text-[10px] text-slate-400">Health: {{ selectedAsset.healthScore }}%</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Maintenance type grid -->
+        <div>
+          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Maintenance Type <span class="text-red-500">*</span></label>
+          <div class="grid grid-cols-5 gap-1.5">
+            <button
+              *ngFor="let t of maintTypes"
+              type="button"
+              (click)="selectType(t.key)"
+              class="flex flex-col items-center gap-1.5 py-3 px-1 rounded-xl border-2 text-center transition-all"
+              [ngClass]="selectedType === t.key ? t.bg + ' ' + t.border : 'border-slate-100 hover:border-slate-200 bg-white'">
+              <lucide-icon [name]="t.icon" [size]="14" [ngClass]="selectedType === t.key ? t.color : 'text-slate-400'"></lucide-icon>
+              <span class="text-[9px] font-bold leading-tight" [ngClass]="selectedType === t.key ? t.color : 'text-slate-500'">{{ t.key }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Description <span class="text-red-500">*</span></label>
+          <textarea
+            [formControl]="$any(maintenanceForm.get('notes'))"
+            rows="3"
+            placeholder="Describe the maintenance task, parts involved, or issue found…"
+            class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none placeholder-slate-400"
+          ></textarea>
+        </div>
+
+        <!-- Technician + Date -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Technician / Vendor</label>
+            <div class="relative">
+              <lucide-icon name="hard-hat" [size]="12" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></lucide-icon>
+              <input
+                [formControl]="$any(maintenanceForm.get('technician'))"
+                placeholder="Name or company"
+                class="w-full pl-10 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+          <div>
+            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Scheduled Date <span class="text-red-500">*</span></label>
+            <input
+              type="date"
+              [formControl]="$any(maintenanceForm.get('scheduledDate'))"
+              class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
+            />
+          </div>
+        </div>
+
+        <!-- Cost + Priority -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Cost Estimate ($) <span class="text-red-500">*</span></label>
+            <div class="relative">
+              <lucide-icon name="dollar-sign" [size]="12" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></lucide-icon>
+              <input
+                type="number"
+                [formControl]="$any(maintenanceForm.get('estimatedCost'))"
+                placeholder="0"
+                min="0"
+                class="w-full pl-9 pr-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+          <div>
+            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Priority</label>
+            <div class="flex flex-col gap-1">
+              <button
+                *ngFor="let p of ['high', 'medium', 'low']"
+                type="button"
+                (click)="selectPriority($any(p))"
+                class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border text-left transition-all"
+                [ngClass]="selectedPriority === p
+                  ? (p === 'high' ? 'bg-red-50 border-red-200 text-red-700' : p === 'medium' ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-slate-50 border-slate-200 text-slate-600')
+                  : 'border-slate-100 hover:border-slate-200 text-slate-400'">
+                <span class="w-2 h-2 rounded-full flex-shrink-0"
+                  [ngClass]="p === 'high' ? 'bg-red-500' : p === 'medium' ? 'bg-amber-400' : 'bg-slate-300'"></span>
+                <span class="text-xs font-semibold capitalize">{{ p }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-6 py-4 border-t border-slate-100 flex items-center gap-3 flex-shrink-0">
+        <button (click)="closeModal()" class="flex-1 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50">Cancel</button>
+        <button
+          (click)="onSubmit()"
+          [disabled]="!canSubmit"
+          class="flex-1 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+          <lucide-icon name="wrench" [size]="13"></lucide-icon> Log Task
+        </button>
+      </div>
+    </ng-container>
+  </div>
+</div>

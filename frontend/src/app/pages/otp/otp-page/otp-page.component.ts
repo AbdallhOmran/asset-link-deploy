@@ -1,5 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
+import { RegisterStateService } from '../../register/register-state.service';
 
 @Component({
   selector: 'app-otp-page',
@@ -18,14 +20,17 @@ export class OtpPageComponent implements OnInit, OnDestroy {
   public canResend: boolean = false;
   private timerRef: any = null;
 
-  public userEmail: string = 'marcus.chen@terraequip.com';
+  public userEmail: string = '';
 
   constructor(
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService,
+    private registerState: RegisterStateService
   ) {}
 
   ngOnInit(): void {
+    this.userEmail = this.registerState.getRegisteredEmail();
     this.startCountdown();
   }
 
@@ -81,37 +86,45 @@ export class OtpPageComponent implements OnInit, OnDestroy {
     this.isInvalid = false;
     this.errorMessage = '';
 
-    // TODO: Replace with actual OTP Verification API call
-    setTimeout(() => {
-      this.isLoading = false;
-
-      // Mock test validation: if code is '000000', simulate invalid code
-      if (this.otpCode === '000000') {
-        this.isInvalid = true;
-        this.errorMessage = 'Verification code is invalid or expired. Please try again.';
-      } else {
+    this.authService.verifyOtp(this.userEmail, this.otpCode).subscribe({
+      next: (res) => {
+        this.isLoading = false;
         this.isSuccess = true;
+        this.cdr.markForCheck();
         setTimeout(() => {
           this.router.navigate(['/dashboard']);
         }, 1200);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.isInvalid = true;
+        this.errorMessage = err.error?.message || 'Verification code is invalid or expired. Please try again.';
+        this.cdr.markForCheck();
       }
-      this.cdr.markForCheck();
-    }, 1200);
+    });
   }
 
   public resendCode(): void {
     if (!this.canResend || this.isLoading) return;
 
     this.isLoading = true;
-    // TODO: Replace with actual Resend OTP API call
-    setTimeout(() => {
-      this.isLoading = false;
-      this.otpCode = '';
-      this.isInvalid = false;
-      this.errorMessage = '';
-      this.startCountdown();
-      this.cdr.markForCheck();
-    }, 800);
+
+    this.authService.resendOtp(this.userEmail).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.otpCode = '';
+        this.isInvalid = false;
+        this.errorMessage = '';
+        this.startCountdown();
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = err.error?.message || 'Failed to resend OTP. Please try again.';
+        this.isInvalid = true;
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   public formatTimer(seconds: number): string {
@@ -120,3 +133,4 @@ export class OtpPageComponent implements OnInit, OnDestroy {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }
 }
+

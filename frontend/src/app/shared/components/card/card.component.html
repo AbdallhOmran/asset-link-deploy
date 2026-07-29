@@ -1,58 +1,127 @@
 <div
-  class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition duration-200 w-[320px]"
+  class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
 >
-  <!-- Image -->
-  <div class="relative h-44 bg-slate-900 flex items-center justify-center">
+  <!-- Header -->
+  <div
+    class="relative h-44 overflow-hidden flex items-center justify-center"
+    style="
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        #1b2238;
+      background-size: 20px 20px;
+    "
+  >
+    <!-- Background -->
+    <div
+      class="absolute -left-10 top-4 w-40 h-40 rounded-full bg-indigo-500/10"
+    ></div>
+
+    <div
+      class="absolute -right-6 bottom-0 w-44 h-44 rounded-full bg-indigo-400/10"
+    ></div>
+
+    <!-- Status -->
     <span
-      class="absolute top-3 left-3 bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full"
+      class="absolute left-3 top-3 px-3 py-1 rounded-full text-xs font-semibold"
+      [ngClass]="statusClass"
     >
-      Available
+      {{ status }}
     </span>
 
+    <!-- Health Score -->
     <span
-      class="absolute top-3 right-3 bg-white text-slate-700 text-xs font-bold w-8 h-8 rounded-full flex items-center justify-center"
+      class="absolute right-3 top-3 px-3 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow"
+      [ngClass]="statusClass"
     >
-      98
+      {{ score }}
     </span>
 
-    <div class="text-center text-white">
-      <div class="text-4xl mb-2">🏗️</div>
-      <p class="text-sm opacity-80">Industrial Asset</p>
+    <!-- Asset Icon -->
+    <div class="text-center text-white z-10">
+      <div class="text-5xl">🏗️</div>
+
+      <div
+        class="uppercase tracking-[5px] text-[10px] mt-3 opacity-80 font-semibold"
+      >
+        {{ subtitle }}
+      </div>
     </div>
   </div>
 
-  <!-- Content -->
-  <div class="p-4">
-    <h3 class="text-lg font-bold text-slate-900">
-      {{ title }}
-    </h3>
+  <!-- Body -->
+  <div class="p-5">
+    <!-- Title -->
+    <div class="flex justify-between items-start">
+      <h3 class="font-bold text-lg text-slate-900 leading-6">
+        {{ title }}
+      </h3>
 
-    <p class="text-sm text-slate-500 mt-1">
-      {{ subtitle }}
-    </p>
-
-    <div class="flex items-center gap-2 mt-3 text-sm text-yellow-500">
-      ⭐ 4.8
-      <span class="text-slate-500"> • 53 Rentals </span>
+      <button class="text-slate-400 hover:text-slate-600 text-xl">⋯</button>
     </div>
 
-    <div class="mt-4">
-      <span class="text-3xl font-bold text-slate-900"> $560 </span>
+    <!-- Company -->
+    <div class="flex items-center gap-2 mt-3 text-xs">
+      <span
+        class="bg-slate-100 text-slate-600 px-2 py-1 rounded-md font-medium"
+      >
+        {{ code }}
+      </span>
 
-      <span class="text-slate-500"> /day </span>
+      <span class="text-slate-400">
+        {{ company }}
+      </span>
     </div>
 
-    <div class="mt-5 flex gap-3">
+    <!-- Rating -->
+    <div class="flex items-center mt-3">
+      <span class="text-yellow-400 text-sm"> ★★★★☆ </span>
+
+      <span class="text-slate-500 text-sm ml-2"> 4.8 · 53 Rentals </span>
+    </div>
+
+    <!-- Price -->
+    <div class="flex items-end mt-4">
+      <span class="text-[40px] font-semibold leading-none text-slate-900">
+        {{ priceValue }}
+      </span>
+
+      <span class="text-slate-400 text-lg ml-1 mb-1">
+        {{ priceUnit }}
+      </span>
+    </div>
+
+    <!-- Weekly / Monthly -->
+    <div class="text-xs text-slate-500 mt-1 font-medium">
+      {{ weekly }}
+
+      &nbsp;&nbsp;
+
+      {{ monthly }}
+    </div>
+
+    <!-- Footer -->
+    <div class="flex justify-between items-center mt-5 text-sm text-slate-500">
+      <span> 📍 {{ location }} </span>
+
+      <span>
+        {{ date }}
+      </span>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex gap-3 mt-5">
       <button
-        class="flex-1 border border-slate-300 rounded-lg py-2 text-sm hover:bg-slate-100"
+        class="flex-1 border border-slate-300 rounded-lg py-2 text-sm font-medium hover:bg-slate-50 transition"
       >
         Details
       </button>
 
       <button
-        class="flex-1 bg-blue-600 text-white rounded-lg py-2 text-sm hover:bg-blue-700"
+        class="flex-1 rounded-lg py-2 text-sm font-medium transition"
+        [ngClass]="bookButtonClass"
       >
-        Book Now
+        {{ buttonText }}
       </button>
     </div>
   </div>

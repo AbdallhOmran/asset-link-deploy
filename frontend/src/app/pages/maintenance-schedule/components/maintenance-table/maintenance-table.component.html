@@ -15,6 +15,13 @@
       />
     </div>
 
+    <!-- Date Range Filter -->
+    <div class="flex-shrink-0">
+      <app-date-range-picker 
+        (rangeChange)="onDateRangeChange($event)"
+      ></app-date-range-picker>
+    </div>
+
     <!-- Status Tabs -->
     <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
       <button
@@ -109,9 +116,25 @@
 
             <!-- Actions -->
             <td class="px-5 py-4 text-center">
-              <button class="text-xs text-blue-600 font-bold hover:underline">
-                {{ expandedRowId === record.id ? 'Hide ▲' : 'Details ▼' }}
-              </button>
+              <div class="flex items-center justify-center gap-2">
+                <button class="text-xs text-blue-600 font-bold hover:underline">
+                  {{ expandedRowId === record.id ? 'Hide ▲' : 'Details ▼' }}
+                </button>
+                <select
+                  (click)="$event.stopPropagation()"
+                  (change)="onStatusChange($event, record)"
+                  class="text-[10px] border border-slate-200 rounded-lg px-1.5 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer"
+                >
+                  <option value="" disabled selected>Status</option>
+                  <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
+                </select>
+                <button
+                  (click)="onDelete($event, record)"
+                  class="text-xs text-red-500 font-bold hover:underline hover:text-red-700 transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
             </td>
           </tr>
 
@@ -120,7 +143,12 @@
             <td colspan="7" class="px-6 py-4">
               <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-inner space-y-2">
                 <div class="flex items-center justify-between text-xs">
-                  <span class="font-bold text-slate-800">Service Description & Completed Work:</span>
+                  <div class="flex items-center gap-2">
+                    <span class="font-bold text-slate-800">Service Description & Completed Work:</span>
+                    <span *ngIf="record.maintenanceCode" class="font-mono text-[10px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                      {{ record.maintenanceCode }}
+                    </span>
+                  </div>
                   <span *ngIf="record.cost" class="font-mono text-emerald-700 font-bold bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md">
                     Estimated Cost: ${{ record.cost | number }}
                   </span>

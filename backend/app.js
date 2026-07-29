@@ -1,10 +1,16 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+// const swaggerUi = require("swagger-ui-express");
+// const swaggerFile = require("./swagger-output.json");
+
+const dns = require('dns');
+dns.setDefaultResultOrder('ipv4first');
+dns.setServers(['8.8.8.8', '8.8.4.4']);
+
 
 const connectDB = require("./config/db");
 const { connectRedis } = require("./config/redis");
-
 // Routes Import
 const authRoutes = require("./routes/auth.routes");
 const assetRouter = require("./routes/asset.routes");
@@ -62,10 +68,21 @@ app.use("/api/deliveries", deliveryRoutes);
 app.use("/api/maintenances", maintenanceRoutes);
 app.use("/api/reports/assets", assetReportRoutes);
 
+
+
+  // app.use(
+  //   "/api-docs",
+  //   swaggerUi.serve,
+  //   swaggerUi.setup(swaggerFile)
+  // );
 const startServer = async () => {
   try {
     await connectDB();
-    await connectRedis(); 
+    try {
+      await connectRedis(); 
+    } catch (redisErr) {
+      console.warn("Failed to connect to Redis, continuing without it:", redisErr.message);
+    }
 
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {

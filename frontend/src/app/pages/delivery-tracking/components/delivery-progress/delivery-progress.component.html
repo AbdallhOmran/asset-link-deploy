@@ -1,59 +1,39 @@
-<div class="progress-card">
-  <div class="card-header">
+<div class="bg-white rounded-xl border border-slate-200 p-6">
+  <div class="flex items-center justify-between mb-6">
     <div>
-      <h3>Delivery Progress</h3>
-      <p>DEL-2026-001 • HeavyHaul Logistics</p>
+      <h3 class="text-xl font-bold text-slate-900">Delivery Progress</h3>
+
+      <p class="text-sm text-slate-500 mt-1">
+        DEL-2026-001 • HeavyHaul Logistics
+      </p>
     </div>
 
-    <div class="live-badge">● Live Tracking</div>
+    <span
+      class="px-4 py-2 rounded-full bg-green-100 text-green-700 text-sm font-semibold"
+    >
+      ● Live Tracking
+    </span>
   </div>
 
-  <div class="timeline">
-    <div class="step completed">
-      <div class="circle"></div>
-      <h4>Preparing</h4>
-      <span>Jul 10 - 8:00 AM</span>
-    </div>
+  <app-stepper [steps]="deliverySteps" [currentStep]="2"> </app-stepper>
 
-    <div class="line active"></div>
-
-    <div class="step completed">
-      <div class="circle"></div>
-      <h4>Picked Up</h4>
-      <span>Jul 10 - 9:15 AM</span>
-    </div>
-
-    <div class="line active"></div>
-
-    <div class="step current">
-      <div class="circle"></div>
-      <h4>In Transit</h4>
-      <span>In Progress</span>
-    </div>
-
-    <div class="line"></div>
-
-    <div class="step">
-      <div class="circle"></div>
-      <h4>Delivered</h4>
-      <span>ETA 11:30 AM</span>
-    </div>
-  </div>
-
-  <div class="locations">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
     <div>
-      <small>FROM</small>
-      <h5>Portland Depot</h5>
+      <p class="text-xs text-slate-400">FROM</p>
+
+      <h5 class="font-semibold text-slate-900">Portland Depot</h5>
     </div>
 
     <div>
-      <small>DRIVER</small>
-      <h5>Diego Reyes</h5>
+      <p class="text-xs text-slate-400">DRIVER</p>
+
+      <h5 class="font-semibold text-slate-900">Diego Reyes</h5>
     </div>
 
     <div>
-      <small>TO</small>
-      <h5>Apex Construction Site</h5>
+      <p class="text-xs text-slate-400">TO</p>
+
+      <h5 class="font-semibold text-slate-900">Apex Construction Site</h5>
     </div>
   </div>
 </div>

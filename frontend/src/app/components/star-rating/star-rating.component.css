@@ -1,0 +1,27 @@
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.star {
+  font-size: 15px;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.star.filled {
+  color: #f59e0b;
+}
+
+.star.readonly {
+  cursor: default;
+}
+
+.rating-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  margin-left: 4px;
+}

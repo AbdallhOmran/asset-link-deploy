@@ -76,8 +76,33 @@ const updateStatus = async (req, res) => {
 
 const getMaintenanceHistory = async (req, res) => {
   try {
-    const maintenances = await maintenanceService.getMaintenanceHistory();
-    return res.status(200).send(maintenances);
+    const filters = {
+      status: req.query.status,
+      assetId: req.query.assetId,
+      startDate: req.query.startDate,
+      endDate: req.query.endDate,
+    };
+    const maintenances = await maintenanceService.getMaintenanceHistory(filters);
+    return res.status(200).json({
+      success: true,
+      count: maintenances.length,
+      data: maintenances,
+    });
+  } catch (err) {
+    return res.status(500).send({ error: err.message });
+  }
+};
+
+const getMaintenanceByAsset = async (req, res) => {
+  try {
+    const maintenances = await maintenanceService.getMaintenanceByAsset(
+      req.params.assetId
+    );
+    return res.status(200).json({
+      success: true,
+      count: maintenances.length,
+      data: maintenances,
+    });
   } catch (err) {
     return res.status(500).send({ error: err.message });
   }
@@ -102,5 +127,6 @@ module.exports = {
   updateMaintenance,
   updateStatus,
   getMaintenanceHistory,
+  getMaintenanceByAsset,
   deleteMaintenance,
 };

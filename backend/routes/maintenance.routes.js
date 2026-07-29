@@ -7,12 +7,15 @@ const {
   updateMaintenance,
   updateStatus,
   getMaintenanceHistory,
+  getMaintenanceByAsset,
   deleteMaintenance,
 } = require("../controllers/maintenance.controller");
 
 router.post("/", createMaintenance);
 
 router.get("/history", getMaintenanceHistory);
+
+router.get("/asset/:assetId", getMaintenanceByAsset);
 
 router.get("/:id", getMaintenance);
 
