@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { NegotiationService } from '../../services/negotiation.service';
+import { NegotiationService } from 'src/app/services/negotiation.service';
+import { BookingService } from 'src/app/services/booking.service';
 
 @Component({
   selector: 'app-negotiation-room',
@@ -7,32 +8,50 @@ import { NegotiationService } from '../../services/negotiation.service';
   styleUrls: ['./negotiation-room.component.css'],
 })
 export class NegotiationRoomComponent implements OnInit {
+  history: any[] = [];
+  currentOffer: any;
+  currentBooking: any;
+
   negotiationId = '6a62c0649fbef2a58ffaca95';
   companyId = '6a5c47c5de4fc73f925b90e3';
 
-  history: any[] = [];
-  currentOffer: any = null;
-
-  constructor(private negotiationService: NegotiationService) {}
+  constructor(
+    private negotiationService: NegotiationService,
+    private bookingService: BookingService
+  ) {}
 
   ngOnInit(): void {
     this.loadNegotiationDetails();
   }
 
+  get currentVersionDetails(): any {
+    if (!this.currentOffer || !this.history || this.history.length === 0) {
+      return null;
+    }
+
+    const currentVersionId = this.currentOffer.currentVersion?._id || this.currentOffer.currentVersion;
+    const match = this.history.find((v: any) => v._id === currentVersionId);
+    const version = match || this.history[this.history.length - 1];
+
+    return {
+      ...version,
+      assetName: this.currentBooking?.assetId?.assetName || null,
+    };
+  }
+
   loadNegotiationDetails(): void {
     if (!this.companyId) return;
 
-    // 1. جلب العرض الحالي باستخدام companyId
     this.negotiationService.getCurrent(this.companyId).subscribe({
       next: (res: any) => {
         if (res.success || res.data) {
           this.currentOffer = res.data || res;
+          this.loadBookingDetails();
         }
       },
       error: (err: any) => console.error('Error fetching current offer:', err),
     });
 
-    // 2. جلب الهيستوري باستخدام negotiationId
     if (this.negotiationId) {
       this.negotiationService.getHistory(this.negotiationId).subscribe({
         next: (res: any) => {
@@ -45,7 +64,27 @@ export class NegotiationRoomComponent implements OnInit {
     }
   }
 
+  loadBookingDetails(): void {
+    const bookingId = this.currentOffer?.bookingId?._id || this.currentOffer?.bookingId;
+    if (!bookingId) {
+      this.currentBooking = null;
+      return;
+    }
+
+    this.bookingService.getBookingById(bookingId).subscribe({
+      next: (res: any) => {
+        this.currentBooking = res.data || res;
+      },
+      error: (err) => {
+        console.error('Error fetching booking details:', err);
+        this.currentBooking = null;
+      },
+    });
+  }
+
   acceptOffer(): void {
+    if (!this.currentOffer) return;
+
     const payload = {
       negotiationId: this.negotiationId,
       companyId: this.companyId,
@@ -53,7 +92,9 @@ export class NegotiationRoomComponent implements OnInit {
 
     this.negotiationService.acceptOffer(payload).subscribe({
       next: (res: any) => {
-        alert('✅ Term agreement accepted!');
+        alert('Term agreement accepted!');
+        this.currentOffer = res.data || res;
+        this.loadBookingDetails();
         this.loadNegotiationDetails();
       },
       error: (err: any) => alert('Error accepting offer'),
@@ -68,7 +109,7 @@ export class NegotiationRoomComponent implements OnInit {
 
     this.negotiationService.rejectOffer(payload).subscribe({
       next: (res: any) => {
-        alert('❌ Offer rejected.');
+        alert('Offer rejected.');
         this.loadNegotiationDetails();
       },
       error: (err: any) => alert('Error rejecting offer'),
@@ -85,7 +126,7 @@ export class NegotiationRoomComponent implements OnInit {
       .counterOffer(this.negotiationId, payload)
       .subscribe({
         next: (res: any) => {
-          alert('🔄 Counter offer sent successfully!');
+          alert('Counter offer sent successfully!');
           this.loadNegotiationDetails();
         },
         error: (err: any) => alert('Error sending counter offer'),

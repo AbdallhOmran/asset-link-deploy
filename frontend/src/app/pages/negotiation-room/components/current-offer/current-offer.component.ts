@@ -6,8 +6,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styleUrls: ['./current-offer.component.css'],
 })
 export class CurrentOfferComponent {
-  @Input() currentOffer: any;
-
+  @Input() offer: any = null;
+  
   @Output() accept = new EventEmitter<void>();
   @Output() reject = new EventEmitter<void>();
   @Output() counter = new EventEmitter<any>();

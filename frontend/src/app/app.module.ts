@@ -3,17 +3,24 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { 
-  LucideAngularModule, 
-  CheckCircle2, 
-  Clock3, 
-  Mail, 
-  Phone, 
-  Globe, 
-  MapPin, 
+import {
+  LucideAngularModule,
+  CheckCircle2,
+  Clock3,
+  Mail,
+  Phone,
+  Globe,
+  MapPin,
+  LayoutDashboard,
+  CalendarDays,
+  FileText,
+  MessageSquare,
+  Truck,
+  CreditCard,
+  Building2,
+  KeyRound,
   LogOut,
-  Building2, 
-  Shield, 
+  Shield,
   Image,
   BriefcaseBusiness,
   Users,
@@ -26,7 +33,6 @@ import { SharedModule } from './shared/shared.module';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { DashboardLayoutComponent } from './shared/layout/dashboard-layout/dashboard-layout.component';
 
-// import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { TopbarComponent } from './components/topbar/topbar.component';
 import { SearchInputComponent } from './components/search-input/search-input.component';
 import { StarRatingComponent } from './components/star-rating/star-rating.component';
@@ -38,6 +44,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { AssetDashboardComponent } from './pages/asset-dashboard/asset-dashboard.component';
 import { PaymentsEscrowComponent } from './pages/payments-escrow/payments-escrow.component';
 import { BookingsComponent } from './pages/bookings/bookings.component';
+import { NewBookingModalComponent } from './pages/bookings/components/new-booking-modal/new-booking-modal.component';
 import { ContractsComponent } from './pages/contracts/contracts.component';
 import { CompanyProfileComponent } from './pages/company-profile/company-profile.component';
 import { EditCompanyProfileComponent } from './pages/edit-company-profile/edit-company-profile.component';
@@ -57,7 +64,6 @@ import { DeliveryEventLogComponent } from './pages/delivery-tracking/components/
 @NgModule({
   declarations: [
     AppComponent,
-    // SidebarComponent,
     TopbarComponent,
     SearchInputComponent,
     StarRatingComponent,
@@ -82,6 +88,7 @@ import { DeliveryEventLogComponent } from './pages/delivery-tracking/components/
     ShipmentDetailsComponent,
     DeliveryEventLogComponent,
     CompanyProfileComponent,
+    NewBookingModalComponent,
     DashboardLayoutComponent,
     EditCompanyProfileComponent
   ],
@@ -100,8 +107,15 @@ import { DeliveryEventLogComponent } from './pages/delivery-tracking/components/
       Phone,
       Globe,
       MapPin,
-      LogOut,
+      LayoutDashboard,
+      CalendarDays,
+      FileText,
+      MessageSquare,
+      Truck,
+      CreditCard,
       Building2,
+      KeyRound,
+      LogOut,
       Shield,
       Image,
       BriefcaseBusiness,

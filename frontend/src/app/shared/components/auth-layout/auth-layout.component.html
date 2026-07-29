@@ -1,58 +1,87 @@
-<div class="h-screen flex overflow-hidden">
-  <!-- Left branding panel -->
-  <div class="hidden lg:flex lg:w-1/2 bg-primary-sidebar text-white flex-col justify-center p-8 xl:p-10">
-    <div class="flex items-center gap-2.5 mb-6">
-      <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-bold text-sm">A</div>
-      <div>
-        <div class="font-bold text-sm leading-none">AssetLink</div>
-        <div class="text-[10px] text-white/50 tracking-widest mt-0.5">ENTERPRISE</div>
+<div class="min-h-screen flex bg-slate-50 font-sans">
+  <!-- Left Brand Panel — now exactly half the screen on large viewports -->
+  <div class="hidden lg:flex lg:w-1/2 flex-col justify-between p-10 relative overflow-hidden bg-slate-900 text-white">
+    <!-- Background grid pattern -->
+    <div
+      class="absolute inset-0 opacity-[0.04] pointer-events-none"
+      style="background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 40px 40px;"
+    ></div>
+    <!-- Ambient glow blobs -->
+    <div class="absolute top-20 left-10 w-64 h-64 rounded-full opacity-10 pointer-events-none" style="background: radial-gradient(circle, #1A6CFF, transparent);"></div>
+    <div class="absolute bottom-32 right-0 w-48 h-48 rounded-full opacity-10 pointer-events-none" style="background: radial-gradient(circle, #14B8A6, transparent);"></div>
+
+    <div class="relative z-10">
+      <div class="flex items-center gap-3 mb-12">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-900/50">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+            <polyline points="2 17 12 22 22 17"/>
+            <polyline points="2 12 12 17 22 12"/>
+          </svg>
+        </div>
+        <div>
+          <span class="text-white font-bold text-lg tracking-tight">AssetLink</span>
+          <span class="block text-[10px] text-slate-400 font-semibold uppercase tracking-widest -mt-0.5">Enterprise</span>
+        </div>
+      </div>
+
+      <h2 class="text-3xl font-bold text-white leading-tight mb-4">
+        Equipment & Asset<br />
+        <span class="text-blue-400">Rental Platform.</span>
+      </h2>
+      <p class="text-slate-400 text-sm leading-relaxed mb-8">
+        Connect with trusted companies to rent heavy equipment securely — complete with integrated digital contracts, enterprise escrows, and technical inspection workflows.
+      </p>
+
+      <div class="space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="w-7 h-7 rounded-lg bg-white/10 border border-white/10 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+          </div>
+          <span class="text-sm text-slate-300">Enterprise Escrow Financial Protection</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-7 h-7 rounded-lg bg-white/10 border border-white/10 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <span class="text-sm text-slate-300">Digital Contracts & Rental Management</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-7 h-7 rounded-lg bg-white/10 border border-white/10 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </div>
+          <span class="text-sm text-slate-300">Pre & Post Rental Asset Inspection</span>
+        </div>
       </div>
     </div>
 
-    <h1 class="text-2xl xl:text-3xl font-bold leading-snug mb-3">
-      The platform for
-      <span class="text-primary-cyan">industrial asset rentals.</span>
-    </h1>
-    <p class="text-white/60 text-sm max-w-sm leading-relaxed mb-6">
-      Connect with verified companies to rent heavy equipment securely — with built-in contracts, escrow, and inspection workflows.
-    </p>
-
-    <ul class="space-y-2.5 text-sm">
-      <li class="flex items-center gap-3">
-        <span class="w-7 h-7 shrink-0 rounded-md bg-white/10 flex items-center justify-center text-sm">🛡️</span>
-        Enterprise-grade escrow protection
-      </li>
-      <li class="flex items-center gap-3">
-        <span class="w-7 h-7 shrink-0 rounded-md bg-white/10 flex items-center justify-center text-sm">📄</span>
-        Digital contract management
-      </li>
-      <li class="flex items-center gap-3">
-        <span class="w-7 h-7 shrink-0 rounded-md bg-white/10 flex items-center justify-center text-sm">✅</span>
-        Pre &amp; post-rental inspections
-      </li>
-      <li class="flex items-center gap-3">
-        <span class="w-7 h-7 shrink-0 rounded-md bg-white/10 flex items-center justify-center text-sm">📈</span>
-        Real-time fleet analytics
-      </li>
-    </ul>
-
-    <blockquote class="bg-white/5 rounded-lg p-4 mt-7">
-      <p class="text-white/80 text-sm leading-relaxed">
-        "AssetLink cut our equipment procurement time by 60%. The escrow system gave us peace of mind on every rental."
+    <div class="relative z-10 p-4 rounded-2xl bg-white/5 border border-white/10 mt-8">
+      <p class="text-xs text-slate-300 italic leading-relaxed mb-3">
+        "AssetLink reduced our equipment procurement and rental timeline by 60%. The escrow system gives us complete peace of mind on every transaction."
       </p>
-      <footer class="mt-3 flex items-center gap-2.5">
-        <div class="w-7 h-7 shrink-0 rounded-full bg-primary-cyan flex items-center justify-center text-xs font-bold">JR</div>
-        <div>
-          <div class="font-semibold text-sm leading-tight">James Reyes</div>
-          <div class="text-white/50 text-xs leading-tight">VP Operations · Apex Construction</div>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white text-xs font-bold">
+          JR
         </div>
-      </footer>
-    </blockquote>
+        <div>
+          <p class="text-xs font-semibold text-white">James Reyes</p>
+          <p class="text-xs text-slate-400">VP Operations · Apex Construction</p>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Right form panel -->
-  <div class="w-full lg:w-1/2 flex items-center justify-center px-8 py-6 bg-white">
-    <div class="w-full max-w-sm">
+  <!-- Right form panel: content projected from whoever uses <app-auth-layout> -->
+  <div class="flex-1 flex items-center justify-center p-6 sm:p-10">
+    <div class="w-full max-w-[460px]">
+      <!-- Mobile-only brand header (shown when the left panel is hidden on small screens) -->
+      <div class="flex items-center gap-2 mb-8 lg:hidden">
+        <div class="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg>
+        </div>
+        <span class="font-bold text-slate-900 text-lg">AssetLink</span>
+      </div>
+
       <ng-content></ng-content>
     </div>
   </div>

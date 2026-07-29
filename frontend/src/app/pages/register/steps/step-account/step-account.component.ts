@@ -6,13 +6,14 @@ import { RegisterStateService } from '../../register-state.service';
 @Component({
   selector: 'app-step-account',
   templateUrl: './step-account.component.html',
-  styleUrls: ['./step-account.component.css']
+  styleUrls: ['./step-account.component.css'],
 })
 export class StepAccountComponent implements OnInit {
   public form!: FormGroup;
   public showPassword: boolean = false;
   public showConfirmPassword: boolean = false;
   public isSubmitting: boolean = false;
+  public submitError: string = ''; // ✅ added to surface backend errors to the user
 
   constructor(
     private fb: FormBuilder,
@@ -23,16 +24,29 @@ export class StepAccountComponent implements OnInit {
   ngOnInit(): void {
     const saved = this.registerState.currentData.account;
 
-    this.form = this.fb.group({
-      password: [saved.password || '', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: [saved.confirmPassword || '', [Validators.required]],
-      agreeTerms: [saved.agreeTerms || false, [Validators.requiredTrue]]
-    }, {
-      validators: this.passwordMatchValidator
-    });
+    this.form = this.fb.group(
+      {
+        // ✅ fixed: matches the backend's actual password rule exactly
+        // (auth.controller.js passwordRegex: 8+ chars, upper, lower, digit, special char)
+        password: [
+          saved.password || '',
+          [
+            Validators.required,
+            Validators.minLength(8),
+            Validators.pattern(
+              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/
+            ),
+          ],
+        ],
+        confirmPassword: [saved.confirmPassword || '', [Validators.required]],
+        agreeTerms: [saved.agreeTerms || false, [Validators.requiredTrue]],
+      },
+      {
+        validators: this.passwordMatchValidator,
+      }
+    );
   }
 
-  // Custom password match validator
   private passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
     const password = control.get('password')?.value;
     const confirm = control.get('confirmPassword')?.value;
@@ -44,24 +58,40 @@ export class StepAccountComponent implements OnInit {
     return null;
   }
 
-  // Calculate password strength score (1 to 4)
+  // ✅ fixed: score based on actual character variety, not just length.
+  // Each criterion (length, lowercase, uppercase, digit, special char)
+  // contributes to the score, matching what the backend actually requires.
   get passwordStrengthScore(): number {
     const pwd = this.form.get('password')?.value || '';
     if (pwd.length === 0) return 0;
-    if (pwd.length < 4) return 1; // Weak
-    if (pwd.length < 7) return 2; // Fair
-    if (pwd.length < 10) return 3; // Good
-    return 4; // Strong
+
+    let score = 0;
+    if (pwd.length >= 8) score++;
+    if (/[a-z]/.test(pwd)) score++;
+    if (/[A-Z]/.test(pwd)) score++;
+    if (/\d/.test(pwd)) score++;
+    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd)) score++;
+
+    // map 0-5 raw criteria met -> 1-4 display scale
+    if (score <= 1) return 1; // Weak
+    if (score === 2 || score === 3) return 2; // Fair
+    if (score === 4) return 3; // Good
+    return 4; // Strong (all 5 criteria met)
   }
 
   get passwordStrengthText(): string {
     const score = this.passwordStrengthScore;
     switch (score) {
-      case 1: return 'Weak';
-      case 2: return 'Fair';
-      case 3: return 'Good';
-      case 4: return 'Strong';
-      default: return '';
+      case 1:
+        return 'Weak';
+      case 2:
+        return 'Fair';
+      case 3:
+        return 'Good';
+      case 4:
+        return 'Strong';
+      default:
+        return '';
     }
   }
 
@@ -85,19 +115,21 @@ export class StepAccountComponent implements OnInit {
     }
 
     this.isSubmitting = true;
+    this.submitError = '';
     this.registerState.updateAccountSetup(this.form.value);
 
-    // Call service to complete registration, then navigate to OTP verification route
     this.registerState.submitRegistration().subscribe({
-      next: (res) => {
+      next: () => {
         this.isSubmitting = false;
-        // Navigate to OTP page for email verification
         this.router.navigate(['/otp']);
       },
       error: (err) => {
         this.isSubmitting = false;
-        console.error('Registration submit error:', err);
-      }
+        // ✅ fixed: surface the real backend error message to the user
+        // instead of only logging it silently to the console
+        this.submitError =
+          err.error?.message || 'Something went wrong while creating your account. Please try again.';
+      },
     });
   }
 }
