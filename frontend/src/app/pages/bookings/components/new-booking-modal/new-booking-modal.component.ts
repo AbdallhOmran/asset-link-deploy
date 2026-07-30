@@ -9,23 +9,23 @@ import { AuthService } from '../../../../services/auth.service';
 })
 export class NewBookingModalComponent implements OnInit {
   @Input() isOpen = false;
+  @Input() preselectedAssetId?: string;
   @Output() closed = new EventEmitter<void>();
   @Output() bookingCreated = new EventEmitter<any>();
 
-  currentStep = 0; // 0=Asset, 1=Dates, 2=Renter
+  currentStep = 0; // 0=Dates, 1=Renter
   isSubmitting = false;
   errorMessage = '';
 
-  // Step 1: Asset
+  // Asset Info
   assets: any[] = [];
-  assetSearchTerm = '';
   selectedAsset: any = null;
 
-  // Step 2: Dates
+  // Step 0: Dates
   startDate = '';
   endDate = '';
 
-  // Step 3: Renter (booking notes; renter company itself comes from logged-in session)
+  // Step 1: Renter
   notes = '';
 
   constructor(
@@ -34,65 +34,76 @@ export class NewBookingModalComponent implements OnInit {
     private authService: AuthService
   ) {}
 
-  ngOnInit(): void {
-    this.loadAssets();
+  ngOnInit(): void {}
+
+  ngOnChanges(changes: any): void {
+    if (changes.isOpen || changes.preselectedAssetId) {
+      if (this.isOpen) {
+        this.fetchAssetDetails();
+      } else {
+        this.resetForm();
+      }
+    }
   }
 
-  loadAssets() {
-    this.assetService.getAssets().subscribe({
+  fetchAssetDetails() {
+    if (!this.preselectedAssetId) return;
+    
+    this.assetService.getAssetDetails(this.preselectedAssetId).subscribe({
       next: (res: any) => {
-        this.assets = (res || []).filter((a: any) => a.status === 'Available');
+        // Handle both possible wrapper structures based on API response
+        this.selectedAsset = res?.data ?? res;
       },
       error: () => {
-        this.assets = [];
-      },
+        this.errorMessage = 'Failed to load asset details.';
+        this.selectedAsset = null;
+      }
     });
-  }
-
-  get filteredAssets() {
-    const term = this.assetSearchTerm.trim().toLowerCase();
-    if (!term) return this.assets;
-    return this.assets.filter((a) => a.assetName?.toLowerCase().includes(term));
   }
 
   get rentalDays(): number {
     if (!this.startDate || !this.endDate) return 0;
     const start = new Date(this.startDate);
     const end = new Date(this.endDate);
-    const diff = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-    return diff > 0 ? diff : 0;
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) return 0;
+    const diff = end.getTime() - start.getTime();
+    const days = Math.ceil(diff / (1000 * 3600 * 24));
+    return days > 0 ? days : 0;
   }
 
   get dailyRate(): number {
-    return this.selectedAsset?.price?.daily || 0;
+    if (!this.selectedAsset || !this.selectedAsset.price) return 0;
+    return this.selectedAsset.price.daily || 0;
   }
 
   get estimatedTotal(): number {
     return this.rentalDays * this.dailyRate;
   }
 
-  selectAsset(asset: any) {
-    this.selectedAsset = asset;
-  }
-
   nextStep() {
     this.errorMessage = '';
 
-    if (this.currentStep === 0 && !this.selectedAsset) {
-      this.errorMessage = 'Please select an asset to continue';
-      return;
+    if (this.currentStep === 0) {
+      if (!this.startDate || !this.endDate) {
+        this.errorMessage = 'Please select both start and end dates.';
+        return;
+      }
+      if (this.rentalDays <= 0) {
+        this.errorMessage = 'End date must be after start date.';
+        return;
+      }
+      if (!this.selectedAsset) {
+        this.errorMessage = 'Asset information is missing.';
+        return;
+      }
+      this.currentStep = 1;
     }
-    if (this.currentStep === 1 && (!this.startDate || !this.endDate)) {
-      this.errorMessage = 'Please select both start and end dates';
-      return;
-    }
-
-    if (this.currentStep < 2) this.currentStep++;
   }
 
   prevStep() {
-    this.errorMessage = '';
-    if (this.currentStep > 0) this.currentStep--;
+    if (this.currentStep > 0) {
+      this.currentStep--;
+    }
   }
 
   onCancel() {
@@ -103,17 +114,26 @@ export class NewBookingModalComponent implements OnInit {
   onCreate() {
     this.errorMessage = '';
 
+    if (!this.selectedAsset) {
+      this.errorMessage = 'No asset selected.';
+      return;
+    }
+
+    if (this.rentalDays <= 0) {
+      this.errorMessage = 'Invalid date range.';
+      return;
+    }
+
     const loggedInCompany = this.authService.getCompany();
     if (!loggedInCompany?.id) {
       this.errorMessage = 'Session expired. Please log in again.';
       return;
     }
 
-    // matches booking.service.js createBooking required fields
-    const payload = {
+    const bookingData = {
       assetId: this.selectedAsset._id,
-      companyId: loggedInCompany.id, // renter = currently logged-in company
-      ownerCompanyId: this.selectedAsset.companyId, // asset owner
+      companyId: loggedInCompany.id,
+      ownerCompanyId: this.selectedAsset.companyId?._id || this.selectedAsset.companyId,
       startDate: this.startDate,
       endDate: this.endDate,
       priceType: 'Daily',
@@ -122,16 +142,17 @@ export class NewBookingModalComponent implements OnInit {
     };
 
     this.isSubmitting = true;
-    this.bookingService.createBooking(payload).subscribe({
+    this.bookingService.createBooking(bookingData).subscribe({
       next: (res: any) => {
         this.isSubmitting = false;
-        this.bookingCreated.emit(res);
+        // Optionally show success toast here
+        this.bookingCreated.emit(res.booking);
         this.resetForm();
         this.closed.emit();
       },
       error: (err) => {
         this.isSubmitting = false;
-        this.errorMessage = err.error?.message || err.error?.error || 'Failed to create booking';
+        this.errorMessage = err.error?.error || err.error?.message || 'Failed to create booking. Please try again.';
       },
     });
   }
@@ -139,7 +160,6 @@ export class NewBookingModalComponent implements OnInit {
   resetForm() {
     this.currentStep = 0;
     this.selectedAsset = null;
-    this.assetSearchTerm = '';
     this.startDate = '';
     this.endDate = '';
     this.notes = '';
