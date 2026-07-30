@@ -38,7 +38,7 @@ export class AddAssetComponent implements OnInit {
   ];
 
   get stepperSteps(): StepperStep[] {
-    return this.navSections.map(s => ({ label: s.label }));
+    return this.navSections.map(s => ({ label: s.label, icon: s.icon }));
   }
 
   form!: FormGroup;

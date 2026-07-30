@@ -48,9 +48,6 @@ const routes: Routes = [
         path: 'dashboard',
         component: AssetDashboardComponent
       },
-      { path: 'assets/add', component: AddAssetComponent },
-      { path: 'assets/edit/:id', component: AddAssetComponent },
-      { path: 'assets/details/:id', component: AssetDetailsComponent },
       { path: 'smart-matches', component: SmartMatchesComponent },
       {
         path: 'company-profile',
