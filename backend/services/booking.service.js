@@ -79,12 +79,8 @@ const createBooking = async (bookingData) => {
   // Generate booking code
   const bookingCode = await generateBookingCode();
 
-  // Start transaction session
-  // const session = await mongoose.startSession();
-  // session.startTransaction();
-
   try {
-    // Create and save booking inside transaction
+    // Create and save booking
     const newBooking = new bookingModel({
       bookingCode,
       assetId,
@@ -97,9 +93,9 @@ const createBooking = async (bookingData) => {
       notes
     });
 
-    // await newBooking.save({ session });
+    await newBooking.save();
 
-    // Update asset status to Booked inside the same transaction
+    // Update asset status to Booked
     const updatedAsset = await assetModel.findByIdAndUpdate(
       assetId,
       { status: "Booked" },
@@ -110,17 +106,9 @@ const createBooking = async (bookingData) => {
       throw new Error("Failed to update asset status");
     }
 
-    // Both operations succeeded — commit
-    // await session.commitTransaction();
-
     return newBooking;
   } catch (err) {
-    // Any failure — rollback all database changes
-    // await session.abortTransaction();
     throw err;
-  } finally {
-    // Always close the session
-    // session.endSession();
   }
 };
 
@@ -246,28 +234,22 @@ const cancelBooking = async (id, cancelReason, userId) => {
     throw e;
   }
 
-  // use a transaction so booking + asset update are atomic (same pattern as createBooking) - by Eman
-  const session = await mongoose.startSession();
-  session.startTransaction();
+  // Remove transaction for local environments without replica sets
   try {
     booking.status = "Cancelled";
     booking.cancelReason = cancelReason.trim();
-    await booking.save({ session });
+    await booking.save();
 
     // return the asset to Available after cancellation - by Eman
     await assetModel.findByIdAndUpdate(
       booking.assetId,
       { status: "Available" },
-      { new: true, session }
+      { new: true }
     );
 
-    await session.commitTransaction();
     return booking;
   } catch (err) {
-    await session.abortTransaction();
     throw err;
-  } finally {
-    session.endSession();
   }
 };
 

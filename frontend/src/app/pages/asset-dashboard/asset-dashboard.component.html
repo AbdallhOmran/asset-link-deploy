@@ -1,110 +1,170 @@
-<div class="min-h-screen bg-slate-100 p-6">
-  <div class="max-w-7xl mx-auto">
-    <!-- Header -->
-    <div
-      class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8"
-    >
+<div class="min-h-[calc(100vh-80px)] bg-slate-50 p-6 lg:p-8">
+  <div class="max-w-[1400px] mx-auto">
+    <!-- Breadcrumb & Header -->
+    <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-6">
       <div>
-        <h1 class="text-3xl font-bold text-slate-900">Asset Catalog</h1>
-
-        <p class="text-slate-500 mt-2">
-          Browse, search, and manage your industrial equipment portfolio.
-        </p>
-      </div>
-
-      <div class="flex items-center gap-5">
-        <div class="hidden lg:flex items-center gap-6 text-sm">
-          <span class="text-slate-600">
-            <strong class="text-slate-900">
-              {{ totalAssets }}
-            </strong>
-            Assets
-          </span>
-
-          <span class="text-green-600 font-medium">
-            <strong>
-              {{ availableAssets }}
-            </strong>
-            Available
-          </span>
+        <div class="text-[10px] font-medium text-slate-400 mb-1 flex items-center gap-1.5">
+          <span>Platform</span>
+          <lucide-icon name="chevron-right" class="w-3 h-3"></lucide-icon>
+          <span class="text-slate-900 font-semibold">Asset Catalog</span>
         </div>
-
-        <app-button variant="primary" (clicked)="goToAddAsset()"> + Add Asset </app-button>
+        <h1 class="text-[22px] font-extrabold text-slate-900 tracking-tight leading-none mb-1.5">Asset Catalog</h1>
+        <p class="text-[11px] text-slate-500">Browse, search, and manage your full industrial equipment portfolio.</p>
+      </div>
+      <div class="flex items-center gap-3 text-[10px] font-semibold text-slate-600 mt-4 lg:mt-0">
+        <div class="flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-full border border-slate-200 shadow-sm">
+          <lucide-icon name="users" class="w-3 h-3 text-slate-400"></lucide-icon>
+          {{ totalAssets }} assets registered
+        </div>
+        <div class="flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-full border border-slate-200 shadow-sm">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          {{ availableAssets }} available
+        </div>
       </div>
     </div>
 
-    <!-- Search -->
-
-    <div class="bg-white rounded-2xl border border-slate-200 p-5 mb-7">
-      <div class="flex flex-col lg:flex-row gap-4">
+    <!-- Search + Action Bar -->
+    <div class="flex flex-wrap lg:flex-nowrap items-center gap-2 mb-6 bg-white border border-slate-200 rounded-[14px] p-1.5 shadow-sm">
+      <div class="relative flex-1 min-w-[200px]">
+        <lucide-icon name="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></lucide-icon>
         <input
           type="text"
-          placeholder="Search by asset name, code or category..."
-          class="flex-1 border border-slate-300 rounded-xl px-5 py-3 outline-none focus:border-blue-500"
+          [value]="searchQuery"
+          (input)="onSearch($any($event))"
+          [placeholder]="'Search by ' + currentFilterLabel + '...'"
+          class="w-full pl-10 pr-4 py-2.5 bg-transparent border-none text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-0"
         />
+      </div>
 
-        <div class="flex gap-3 flex-wrap">
-          <app-button variant="secondary"> Filter </app-button>
+      <div class="hidden lg:block w-px h-6 bg-slate-200 mx-1"></div>
 
-          <app-button variant="secondary"> Sort </app-button>
+      <div class="flex items-center gap-2 w-full lg:w-auto">
+        
+        <!-- Filter Dropdown -->
+        <div class="relative">
+          <app-button variant="secondary" class="flex-1 lg:flex-none" (clicked)="toggleFilterDropdown()">
+            <lucide-icon name="sliders-horizontal" class="w-3.5 h-3.5 mr-1.5"></lucide-icon>
+            {{ currentFilterLabel }}
+            <lucide-icon name="chevron-down" class="w-3 h-3 ml-1.5"></lucide-icon>
+          </app-button>
+          
+          <!-- Dropdown Menu -->
+          <div *ngIf="isFilterOpen" class="absolute right-0 top-full mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg z-50 py-2">
+            <button 
+              *ngFor="let option of filterOptions" 
+              (click)="selectFilter(option.value)"
+              class="w-full text-left px-4 py-2 text-[13px] font-medium hover:bg-slate-50 transition-colors flex items-center justify-between"
+              [class.text-blue-600]="filterType === option.value"
+              [class.bg-blue-50]="filterType === option.value"
+              [class.text-slate-800]="filterType !== option.value"
+            >
+              {{ option.label }}
+              <span *ngIf="filterType === option.value" class="text-blue-600">✓</span>
+            </button>
+          </div>
+        </div>
 
-          <app-button variant="secondary"> Export </app-button>
+        <div class="flex items-center border border-slate-200 rounded-lg p-1 gap-0.5 bg-slate-50 shrink-0">
+          <button class="p-1.5 rounded bg-blue-600 text-white shadow-sm">
+            <lucide-icon name="layout-grid" class="w-3.5 h-3.5"></lucide-icon>
+          </button>
+          <button class="p-1.5 rounded text-slate-400 hover:text-slate-600 hover:bg-white transition-all">
+            <lucide-icon name="list" class="w-3.5 h-3.5"></lucide-icon>
+          </button>
+        </div>
+
+        <app-button variant="secondary" class="shrink-0 hidden sm:flex">
+          <lucide-icon name="download" class="w-3.5 h-3.5 mr-1.5"></lucide-icon>
+          Export
+        </app-button>
+        <app-button variant="primary" (clicked)="goToAddAsset()" class="shrink-0">
+          <lucide-icon name="plus" class="w-3.5 h-3.5 mr-1"></lucide-icon>
+          Add Asset
+        </app-button>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="flex flex-col lg:flex-row gap-6">
+      
+      <!-- Category Sidebar -->
+      <aside class="w-full lg:w-[220px] flex-shrink-0">
+        <div class="bg-white rounded-[18px] border border-slate-200 shadow-sm p-4 sticky top-6">
+          <h3 class="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-2 mb-3">Categories</h3>
+          <div class="flex flex-col gap-1">
+            <button
+              *ngFor="let cat of categories"
+              (click)="selectCategory(cat.name)"
+              class="flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200"
+              [ngClass]="activeCategory === cat.name
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
+            >
+              <span>{{ cat.name }}</span>
+              <span
+                class="text-[10px] font-bold rounded-full px-2 py-0.5"
+                [ngClass]="activeCategory === cat.name ? 'bg-blue-500 text-white' : 'bg-slate-100 text-slate-500'"
+              >{{ cat.count }}</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Asset Grid Area -->
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between mb-4">
+          <p class="text-[13px] font-semibold text-slate-700">
+            <span class="text-slate-900">{{ filteredAssets.length }}</span> assets
+          </p>
+        </div>
+
+        <div *ngIf="isLoading" class="flex items-center justify-center py-20 text-slate-400">
+          <lucide-icon name="loader-circle" class="w-8 h-8 animate-spin"></lucide-icon>
+        </div>
+
+        <div *ngIf="!isLoading && filteredAssets.length === 0" class="flex flex-col items-center justify-center py-20 text-slate-400 bg-white border border-slate-200 rounded-[18px] border-dashed">
+          <lucide-icon name="inbox" class="w-12 h-12 mb-3 opacity-30"></lucide-icon>
+          <p class="font-medium text-slate-600">No assets found</p>
+          <p class="text-sm mt-1">Try a different category or search term</p>
+        </div>
+
+        <div *ngIf="!isLoading && filteredAssets.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+          <div 
+            *ngFor="let asset of paginatedAssets"
+            class="cursor-pointer"
+            (click)="goToAssetDetails(asset._id || asset.id)">
+            <app-card
+              [title]="asset.name"
+              [subtitle]="asset.category"
+              [company]="asset.company"
+              [code]="asset.code"
+              [location]="asset.location"
+              [price]="asset.price"
+              [weekly]="asset.weekly"
+              [monthly]="asset.monthly"
+              [status]="asset.status"
+              [date]="asset.date"
+              [score]="asset.score"
+              [image]="asset.images && asset.images.length > 0 ? asset.images[0] : ''"
+              (bookClick)="bookNow(asset._id || asset.id)"
+            >
+            </app-card>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="mt-10 flex justify-center" *ngIf="!isLoading && filteredAssets.length > pageSize">
+          <app-pagination
+            [currentPage]="currentPage"
+            [totalPages]="totalPages"
+            [showing]="showingCount"
+            [total]="filteredAssets.length"
+            itemName="assets"
+            (pageChanged)="onPageChange($event)"
+          >
+          </app-pagination>
         </div>
       </div>
-
-      <div class="mt-6">
-        <app-tabs
-          [tabs]="['All Assets', 'Available', 'Rented', 'Maintenance']"
-          [activeTab]="0"
-        >
-        </app-tabs>
-      </div>
-    </div>
-
-    <!-- Statistics -->
-
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
-      <app-stat-card title="Total Assets" value="128" icon="📦">
-      </app-stat-card>
-
-      <app-stat-card title="Available" value="94" icon="✅"> </app-stat-card>
-
-      <app-stat-card title="Rented" value="22" icon="🚜"> </app-stat-card>
-
-      <app-stat-card title="Maintenance" value="12" icon="🔧"> </app-stat-card>
-    </div>
-
-    <!-- Cards -->
-
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-      <app-card
-        *ngFor="let asset of assets"
-        [title]="asset.name"
-        [subtitle]="asset.category"
-        [company]="asset.company"
-        [code]="asset.code"
-        [location]="asset.location"
-        [price]="asset.price"
-        [weekly]="asset.weekly"
-        [monthly]="asset.monthly"
-        [status]="asset.status"
-        [date]="asset.date"
-        [score]="asset.score"
-      >
-      </app-card>
-    </div>
-
-    <!-- Pagination -->
-
-    <div class="mt-10 flex justify-center">
-      <app-pagination
-        [currentPage]="1"
-        [totalPages]="5"
-        [showing]="6"
-        [total]="32"
-        itemName="assets"
-      >
-      </app-pagination>
     </div>
   </div>
 </div>

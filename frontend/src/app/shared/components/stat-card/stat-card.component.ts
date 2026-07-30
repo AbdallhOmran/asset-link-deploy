@@ -9,4 +9,5 @@ export class StatCardComponent {
   @Input() title: string = '';
   @Input() value: string = '';
   @Input() icon: string = '';
+  @Input() subtitle: string = '';
 }

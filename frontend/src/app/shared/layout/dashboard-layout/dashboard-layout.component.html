@@ -16,3 +16,11 @@
   </div>
 
 </div>
+
+<!-- Global Booking Modal -->
+<app-new-booking-modal
+  [isOpen]="isBookingModalOpen"
+  [preselectedAssetId]="preselectedAssetId"
+  (closed)="closeBookingModal()"
+  (bookingCreated)="onBookingCreated($event)"
+></app-new-booking-modal>

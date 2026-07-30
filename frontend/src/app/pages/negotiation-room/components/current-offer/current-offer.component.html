@@ -1,4 +1,7 @@
-<div *ngIf="offer?.currentVersion" class="bg-white rounded-xl border border-slate-200 p-6">
+<div
+  *ngIf="offer"
+  class="bg-white rounded-xl border border-slate-200 p-6"
+>
   <h2 class="text-xl font-bold text-slate-900 mb-5">Current Offer</h2>
 
   <div *ngIf="offer; else noOffer" class="space-y-3">

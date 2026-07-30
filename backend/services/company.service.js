@@ -1,4 +1,5 @@
 const Company = require("../models/company.model");
+const Booking = require("../models/booking.model");
 
 const getProfile = async (companyId) => {
 
@@ -10,8 +11,20 @@ const getProfile = async (companyId) => {
             message: "Company not found"
         };
     }
+
+    const totalBookings = await Booking.countDocuments({
+        $or: [
+            { companyId: company._id },
+            { ownerCompanyId: company._id }
+        ]
+    });
+
     company.password = undefined;
-    return company;
+
+    return {
+        ...company.toObject(),
+        totalBookings
+    };
 };
 
 const updateProfile = async (companyId, data) => {
@@ -80,4 +93,4 @@ const updateProfile = async (companyId, data) => {
 module.exports = {
     getProfile,
     updateProfile
-};
+};  

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -60,6 +60,17 @@ export class AssetService {
     return this.http.get(`${this.baseUrl}/asset/${id}`);
   }
 
+  /** GET /api/asset/search — search assets with filters */
+  searchAssets(query: any): Observable<any> {
+    let params = new HttpParams();
+    Object.keys(query).forEach(key => {
+      if (query[key] !== null && query[key] !== undefined && query[key] !== '') {
+        params = params.append(key, query[key]);
+      }
+    });
+    return this.http.get(`${this.baseUrl}/asset/search`, { params });
+  }
+
   /** PUT /api/asset/:id — update asset */
   updateAsset(id: string, payload: Partial<AssetPayload>): Observable<any> {
     return this.http.put(`${this.baseUrl}/asset/${id}`, payload);
@@ -68,5 +79,29 @@ export class AssetService {
   /** GET /api/assetCategory/viewCategories — list categories for dropdown */
   getCategories(): Observable<any> {
     return this.http.get(`${this.baseUrl}/assetCategory/viewCategories`);
+  }
+
+  /** GET /api/asset/:id/availability — check asset availability */
+  getAssetAvailability(id: string, startDate: string, endDate: string): Observable<any> {
+    let params = new HttpParams().set('startDate', startDate).set('endDate', endDate);
+    return this.http.get(`${this.baseUrl}/asset/${id}/availability`, { params });
+  }
+
+  /** GET /api/asset/:id/availability without dates — returns all active bookings */
+  getAssetBookings(id: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/asset/${id}/availability`);
+  }
+
+  /** GET /api/asset/recommended — get recommended assets based on smart AI matching */
+  getRecommendedAssets(query?: any): Observable<any> {
+    let params = new HttpParams();
+    if (query) {
+      Object.keys(query).forEach(key => {
+        if (query[key] !== null && query[key] !== undefined && query[key] !== '') {
+          params = params.append(key, query[key]);
+        }
+      });
+    }
+    return this.http.get(`${this.baseUrl}/asset/recommended`, { params });
   }
 }

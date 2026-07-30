@@ -12,7 +12,6 @@ export class BookingsComponent implements OnInit {
   errorMessage = '';
   searchTerm = '';
   viewMode: 'list' | 'calendar' = 'list';
-  isModalOpen = false; // ✅ new
 
   columns = [
     { field: 'bookingCode', header: 'Booking ID' },
@@ -80,26 +79,5 @@ export class BookingsComponent implements OnInit {
 
   onBookingAction(booking: any) {
     console.log('View booking:', booking);
-  }
-
-  // ✅ new: modal handlers
-  openNewBookingModal() {
-    this.isModalOpen = true;
-  }
-
-  closeNewBookingModal() {
-    this.isModalOpen = false;
-  }
-
-  onBookingCreated(newBooking: any) {
-    // add it to the top of the table immediately, no full reload needed
-    const enriched = {
-      ...newBooking,
-      assetName: newBooking.assetId?.assetName,
-      renterName: newBooking.companyId?.companyName,
-      ownerName: newBooking.ownerCompanyId?.companyName,
-    };
-    this.bookings = [enriched, ...this.bookings];
-    this.applyFilter();
   }
 }

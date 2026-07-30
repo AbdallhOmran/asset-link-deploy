@@ -44,7 +44,7 @@ export class BasicInfoSectionComponent implements OnInit {
   }
 
   goToAddCategory(): void {
-    this.router.navigate(['/assets/category/add']);
+    this.router.navigate(['/app/assets/category/add']);
   }
 
   isInvalid(field: string): boolean {

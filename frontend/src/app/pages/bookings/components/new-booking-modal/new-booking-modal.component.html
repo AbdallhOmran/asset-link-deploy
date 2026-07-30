@@ -8,11 +8,11 @@
       <div>
         <h3 class="text-lg font-bold text-text">New Booking</h3>
         <p class="text-xs text-text-muted mt-0.5">
-          Step {{ currentStep + 1 }} of 3 ·
-          {{ currentStep === 0 ? 'Asset Selection' : currentStep === 1 ? 'Date Range' : 'Renter Details' }}
+          Step {{ currentStep + 1 }} of 2 &mdash;
+          {{ currentStep === 0 ? 'Date Range' : 'Renter Details' }}
         </p>
       </div>
-      <button (click)="onCancel()" class="text-text-muted hover:text-text text-lg">✕</button>
+      <button (click)="onCancel()" class="text-text-muted hover:text-text text-lg">&times;</button>
     </div>
 
     <div class="p-5">
@@ -20,7 +20,7 @@
       <div class="flex items-center justify-between mb-5">
         <div class="flex-1">
           <app-stepper
-            [steps]="[{ label: 'Asset' }, { label: 'Dates' }, { label: 'Renter' }]"
+            [steps]="[{ label: 'Dates' }, { label: 'Renter' }]"
             [currentStep]="currentStep"
           ></app-stepper>
         </div>
@@ -34,36 +34,8 @@
         {{ errorMessage }}
       </p>
 
-      <!-- Step 1: Asset -->
+      <!-- Step 0: Dates -->
       <div *ngIf="currentStep === 0">
-        <label class="text-xs font-semibold text-text-muted tracking-wide">SELECT ASSET *</label>
-        <input
-          type="text"
-          [(ngModel)]="assetSearchTerm"
-          placeholder="Search available assets..."
-          class="w-full mt-1 mb-3 px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30"
-        />
-
-        <div class="space-y-2 max-h-72 overflow-y-auto">
-          <div
-            *ngFor="let asset of filteredAssets"
-            (click)="selectAsset(asset)"
-            class="border rounded-lg p-3 cursor-pointer transition-colors"
-            [ngClass]="selectedAsset?._id === asset._id ? 'border-primary bg-primary/5' : 'border-border hover:bg-page'"
-          >
-            <div class="font-semibold text-sm text-text">{{ asset.assetName }}</div>
-            <div class="text-xs text-text-muted">{{ asset.location }}</div>
-            <div class="text-sm text-primary font-semibold mt-1">${{ asset.price?.daily }}/day</div>
-          </div>
-
-          <p *ngIf="filteredAssets.length === 0" class="text-sm text-text-muted text-center py-4">
-            No available assets found.
-          </p>
-        </div>
-      </div>
-
-      <!-- Step 2: Dates -->
-      <div *ngIf="currentStep === 1">
         <div class="bg-page rounded-lg p-3 mb-4">
           <div class="font-semibold text-sm text-text">{{ selectedAsset?.assetName }}</div>
           <div class="text-xs text-primary font-medium">${{ dailyRate }}/day</div>
@@ -101,8 +73,8 @@
         </div>
       </div>
 
-      <!-- Step 3: Renter/Notes -->
-      <div *ngIf="currentStep === 2">
+      <!-- Step 1: Renter/Notes -->
+      <div *ngIf="currentStep === 1">
         <label class="text-xs font-semibold text-text-muted tracking-wide">NOTES</label>
         <textarea
           [(ngModel)]="notes"
@@ -117,7 +89,7 @@
             <span>Asset</span><span class="text-text font-medium">{{ selectedAsset?.assetName }}</span>
           </div>
           <div class="flex justify-between text-text-muted">
-            <span>Duration</span><span class="text-text font-medium">{{ rentalDays }} days ({{ startDate }} → {{ endDate }})</span>
+            <span>Duration</span><span class="text-text font-medium">{{ rentalDays }} days ({{ startDate }} &rarr; {{ endDate }})</span>
           </div>
           <div class="flex justify-between text-text-muted">
             <span>Est. Value</span><span class="text-primary font-bold">${{ estimatedTotal | number }}</span>
@@ -134,14 +106,14 @@
       <div class="flex gap-2 ml-auto">
         <app-button variant="secondary" (clicked)="onCancel()">Cancel</app-button>
         <app-button
-          *ngIf="currentStep < 2"
+          *ngIf="currentStep < 1"
           variant="primary"
           (clicked)="nextStep()"
         >
           Continue
         </app-button>
         <app-button
-          *ngIf="currentStep === 2"
+          *ngIf="currentStep === 1"
           variant="primary"
           [disabled]="isSubmitting"
           (clicked)="onCreate()"

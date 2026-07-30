@@ -60,6 +60,7 @@ import { DeliveryHeaderComponent } from './pages/delivery-tracking/components/de
 import { DeliveryProgressComponent } from './pages/delivery-tracking/components/delivery-progress/delivery-progress.component';
 import { ShipmentDetailsComponent } from './pages/delivery-tracking/components/shipment-details/shipment-details.component';
 import { DeliveryEventLogComponent } from './pages/delivery-tracking/components/delivery-event-log/delivery-event-log.component';
+import { SmartMatchesComponent } from './pages/smart-matches/smart-matches.component';
 
 @NgModule({
   declarations: [
@@ -90,7 +91,8 @@ import { DeliveryEventLogComponent } from './pages/delivery-tracking/components/
     CompanyProfileComponent,
     NewBookingModalComponent,
     DashboardLayoutComponent,
-    EditCompanyProfileComponent
+    EditCompanyProfileComponent,
+    SmartMatchesComponent
   ],
   imports: [
     BrowserModule,

@@ -3,6 +3,19 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import {LucideAngularModule,
+        Tractor,
+        Zap,
+        Wind,
+        ArrowUpCircle,
+        Box,
+        MoreHorizontal,
+        Star,
+        StarHalf,
+        SlidersHorizontal,
+        LayoutGrid,
+        List,
+        Inbox,
+        LoaderCircle,
         Layers,
         LayoutDashboard,
         Boxes,
@@ -125,7 +138,20 @@ import { TopNavbarComponent } from './top-navbar/top-navbar.component';
     Hammer,
     Calendar,
     ChevronLeft,
-    ChevronUp
+    ChevronUp,
+    Tractor,
+    Zap,
+    Wind,
+    ArrowUpCircle,
+    Box,
+    MoreHorizontal,
+    Star,
+    StarHalf,
+    SlidersHorizontal,
+    LayoutGrid,
+    List,
+    Inbox,
+    LoaderCircle
   })
   ],
   exports: [
