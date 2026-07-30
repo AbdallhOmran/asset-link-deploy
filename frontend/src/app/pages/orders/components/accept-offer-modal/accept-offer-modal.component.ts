@@ -19,7 +19,7 @@ export class AcceptOfferModalComponent implements OnChanges {
   rentPrice = 0;
   securityDeposit = 0;
   rentalDuration = 0;
-  durationUnit: 'Daily' | 'Weekly' | 'Monthly' = 'Daily'; // TODO: confirm against version.model.js enum
+  durationUnit: 'Day' | 'Week' | 'Month' = 'Day'; // matches version.model.js enum exactly
   notes = '';
 
   constructor(
@@ -39,8 +39,18 @@ export class AcceptOfferModalComponent implements OnChanges {
     // securityDeposit isn't stored on the booking itself; the owner sets it here
     this.securityDeposit = 0;
     this.rentalDuration = this.calculateDays(this.order.startDate, this.order.endDate);
-    this.durationUnit = this.order.priceType || 'Daily';
+    this.durationUnit = this.mapPriceTypeToDurationUnit(this.order.priceType);
     this.notes = '';
+  }
+
+  // booking.priceType uses Daily/Weekly/Monthly, but version.model.js expects Day/Week/Month
+  private mapPriceTypeToDurationUnit(priceType: string): 'Day' | 'Week' | 'Month' {
+    const map: Record<string, 'Day' | 'Week' | 'Month'> = {
+      Daily: 'Day',
+      Weekly: 'Week',
+      Monthly: 'Month',
+    };
+    return map[priceType] || 'Day';
   }
 
   private calculateDays(start: string, end: string): number {
