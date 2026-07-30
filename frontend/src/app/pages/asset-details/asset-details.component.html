@@ -1,0 +1,287 @@
+<div *ngIf="isLoading" class="min-h-[50vh] flex items-center justify-center">
+  <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+</div>
+
+<div *ngIf="error" class="min-h-[50vh] flex flex-col items-center justify-center">
+  <lucide-icon name="alert-triangle" class="h-10 w-10 text-danger mb-4"></lucide-icon>
+  <h2 class="text-lg font-bold text-slate-900 mb-2">Error Loading Asset</h2>
+  <p class="text-slate-500 mb-6">{{ error }}</p>
+  <app-button variant="secondary" (clicked)="goBack()">Back to Dashboard</app-button>
+</div>
+
+<div *ngIf="!isLoading && !error && asset" class="max-w-[1400px] mx-auto px-6 py-8">
+  <!-- Page Header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-900">Asset Details</h1>
+    <p class="text-sm text-slate-500 mt-1">Full information, rental history, and maintenance records for this asset.</p>
+  </div>
+
+  <!-- Breadcrumbs & Actions Row -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+    <div class="flex items-center text-sm">
+      <button (click)="goBack()" class="text-primary hover:underline flex items-center gap-1 font-medium">
+        <lucide-icon name="arrow-left" class="h-4 w-4"></lucide-icon>
+        Asset Catalog
+      </button>
+      <span class="text-slate-400 mx-2">›</span>
+      <span class="text-slate-600">{{ assetName }}</span>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <app-button variant="secondary">
+        <lucide-icon name="download" class="h-4 w-4"></lucide-icon>
+        Export
+      </app-button>
+      <app-button variant="primary" (clicked)="goToEdit()">
+        <lucide-icon name="edit" class="h-4 w-4"></lucide-icon>
+        Edit Asset
+      </app-button>
+    </div>
+  </div>
+
+  <div class="flex flex-col xl:flex-row gap-8">
+    <!-- Left Column: Main Content -->
+    <div class="flex-1 min-w-0">
+      <!-- Image Gallery -->
+      <div class="mb-8" *ngIf="images && images.length > 0">
+        <div class="aspect-video rounded-2xl overflow-hidden mb-3 border border-slate-200 bg-slate-100 flex items-center justify-center relative">
+          <div class="text-4xl absolute z-0 opacity-50">📷</div>
+          <img [src]="images[0]" class="w-full h-full object-cover relative z-10" alt="Main Asset Image" (error)="onImageError($event)">
+        </div>
+        <div class="grid grid-cols-4 gap-3" *ngIf="images.length > 1">
+          <div *ngFor="let img of images.slice(1, 5)" class="aspect-video rounded-xl overflow-hidden border border-slate-200 opacity-70 hover:opacity-100 transition-opacity cursor-pointer bg-slate-100 flex items-center justify-center relative">
+            <div class="text-xl absolute z-0 opacity-50">📷</div>
+            <img [src]="img" class="w-full h-full object-cover relative z-10" alt="Asset Thumbnail" (error)="onImageError($event)">
+          </div>
+        </div>
+      </div>
+      <div class="mb-8 aspect-video rounded-2xl border border-slate-200 bg-slate-50 flex flex-col items-center justify-center text-slate-400" *ngIf="!images || images.length === 0">
+         <div class="text-4xl mb-2">📷</div>
+         <span class="text-sm font-medium">No images available</span>
+      </div>
+
+      <!-- Tabs -->
+      <div class="mb-6 border-b border-slate-200">
+        <app-tabs [tabs]="tabs" [activeTab]="activeTab" (activeTabChange)="activeTab = $event"></app-tabs>
+      </div>
+
+      <!-- Tab Content: Overview -->
+      <div *ngIf="activeTab === 0" class="space-y-8 animate-fade-in">
+        <!-- About -->
+        <div class="bg-white rounded-xl border border-slate-200 p-6">
+          <h2 class="text-lg font-bold text-slate-900 mb-4">About this Asset</h2>
+          <p class="text-slate-600 leading-relaxed text-sm">
+            {{ description }}
+          </p>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+            <app-stat-card 
+              title="Total Rentals" 
+              value="42" 
+              subtitle="completed">
+            </app-stat-card>
+            <app-stat-card 
+              title="Hours Operated" 
+              value="6,721" 
+              subtitle="lifetime hrs">
+            </app-stat-card>
+            <app-stat-card 
+              title="Year of Manufacture" 
+              value="2021" 
+              subtitle="XRHS 1150 CD7">
+            </app-stat-card>
+          </div>
+        </div>
+
+        <!-- Asset Information -->
+        <div class="bg-white rounded-xl border border-slate-200 p-6">
+          <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-6">Asset Information</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+            <div>
+              <div class="text-xs text-slate-500 mb-1">ASSET CODE</div>
+              <div class="font-medium text-slate-900">{{ assetCode }}</div>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 mb-1">MODEL</div>
+              <div class="font-medium text-slate-900">XRHS 1150 CD7</div>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 mb-1">SERIAL NUMBER</div>
+              <div class="font-medium text-slate-900">AC-XRHS1150-21-03358</div>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 mb-1">CATEGORY</div>
+              <div class="font-medium text-slate-900">{{ categoryName }}</div>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 mb-1">OWNER COMPANY</div>
+              <div class="font-medium text-slate-900">{{ companyName }}</div>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 mb-1">CURRENT LOCATION</div>
+              <div class="font-medium text-slate-900">{{ location }}</div>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 mb-1">FULL ADDRESS</div>
+              <div class="font-medium text-slate-900">1600 W 35th St, Chicago, IL 60609</div>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 mb-1">CURRENT RENTER</div>
+              <div class="font-medium text-slate-900">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Content: Rental History -->
+      <div *ngIf="activeTab === 1" class="bg-white rounded-xl border border-slate-200 p-6 animate-fade-in">
+        <h2 class="text-lg font-bold text-slate-900 mb-6">Rental History</h2>
+        <app-timeline *ngIf="rentalStages.length > 0" [stages]="rentalStages" orientation="vertical"></app-timeline>
+        <p *ngIf="rentalStages.length === 0" class="text-slate-500 text-sm">No rental history available.</p>
+      </div>
+
+      <!-- Tab Content: Maintenance -->
+      <div *ngIf="activeTab === 2" class="bg-white rounded-xl border border-slate-200 p-6 animate-fade-in">
+        <h2 class="text-lg font-bold text-slate-900 mb-4">Maintenance Records</h2>
+        <p class="text-slate-500 text-sm">Maintenance history will be displayed here.</p>
+      </div>
+
+      <!-- Tab Content: Specifications -->
+      <div *ngIf="activeTab === 3" class="bg-white rounded-xl border border-slate-200 p-6 animate-fade-in">
+        <h2 class="text-lg font-bold text-slate-900 mb-4">Technical Specifications</h2>
+        <p class="text-slate-500 text-sm">Detailed specifications will be displayed here.</p>
+      </div>
+    </div>
+
+    <!-- Right Column: Sidebar Actions & Details -->
+    <div class="w-full xl:w-[380px] space-y-6">
+      <!-- Title & Rating Card -->
+      <div class="bg-white rounded-xl border border-slate-200 p-6 relative">
+        <div class="absolute top-6 right-6">
+          <app-status-badge [status]="status"></app-status-badge>
+        </div>
+        <div class="text-xs text-slate-400 mb-2">A-006</div>
+        <h2 class="text-xl font-bold text-slate-900 mb-1 pr-24">{{ assetName }}</h2>
+        <p class="text-sm text-slate-500 mb-6">{{ companyName }} - {{ location }}</p>
+        
+        <div class="flex items-center gap-4 pt-4 border-t border-slate-100">
+          <app-score-widget [score]="healthScore" title="Customer Rating"></app-score-widget>
+        </div>
+      </div>
+
+      <!-- Pricing Card -->
+      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div class="p-6">
+          <h3 class="text-lg font-bold text-slate-900 mb-4">Pricing</h3>
+          
+          <div class="space-y-2 mb-6">
+            <div class="flex items-center justify-between p-3 bg-primary text-white rounded-lg">
+              <span class="text-sm font-medium">Daily Rate</span>
+              <div class="text-right">
+                <span class="text-lg font-bold">{{ priceDaily ? (priceDaily | currency) : '—' }}</span>
+                <span class="text-xs text-primary-100"> /day</span>
+              </div>
+            </div>
+            
+            <div class="flex items-center justify-between p-3 text-slate-700">
+              <span class="text-sm">Weekly Rate</span>
+              <div class="text-right">
+                <span class="text-sm font-bold text-slate-900">{{ priceWeekly ? (priceWeekly | currency) : '—' }}</span>
+                <span class="text-xs text-slate-500"> /week</span>
+              </div>
+            </div>
+            
+            <div class="flex items-center justify-between p-3 text-slate-700">
+              <span class="text-sm">Monthly Rate</span>
+              <div class="text-right">
+                <span class="text-sm font-bold text-slate-900">{{ priceMonthly ? (priceMonthly | currency) : '—' }}</span>
+                <span class="text-xs text-slate-500"> /month</span>
+              </div>
+            </div>
+            
+            <div class="flex items-center justify-between p-3 text-slate-700 pt-4 border-t border-slate-100 mt-2">
+              <span class="text-sm text-slate-500">Security Deposit</span>
+              <div class="text-right">
+                <span class="text-sm font-bold text-slate-900">{{ asset?.securityDeposit ? (asset.securityDeposit | currency) : '—' }}</span>
+                <span class="text-xs text-slate-400"> held in escrow</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="space-y-3">
+            <button class="w-full bg-primary hover:bg-primary-hover text-white font-semibold py-3 rounded-lg transition-colors">
+              Book this Asset
+            </button>
+            <button class="w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-3 rounded-lg transition-colors">
+              Contact Owner
+            </button>
+          </div>
+        </div>
+      <!-- Dynamic Availability Calendar -->
+      <div class="bg-white rounded-xl border border-slate-200 p-6 overflow-hidden">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-bold text-slate-900">Availability</h3>
+          <div class="flex items-center gap-2">
+            <button (click)="prevMonth()" 
+                    [disabled]="!canGoPrevMonth"
+                    [class.opacity-30]="!canGoPrevMonth"
+                    [class.cursor-not-allowed]="!canGoPrevMonth"
+                    class="p-1 hover:bg-slate-100 rounded text-slate-400 transition-colors">
+              <lucide-icon name="chevron-left" class="w-4 h-4"></lucide-icon>
+            </button>
+            <span class="text-sm font-medium text-slate-700 w-24 text-center">{{ monthName }}</span>
+            <button (click)="nextMonth()" class="p-1 hover:bg-slate-100 rounded text-slate-400 transition-colors">
+              <lucide-icon name="chevron-right" class="w-4 h-4"></lucide-icon>
+            </button>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-7 text-center mb-2">
+          <div class="text-xs font-bold text-slate-400">S</div>
+          <div class="text-xs font-bold text-slate-400">M</div>
+          <div class="text-xs font-bold text-slate-400">T</div>
+          <div class="text-xs font-bold text-slate-400">W</div>
+          <div class="text-xs font-bold text-slate-400">T</div>
+          <div class="text-xs font-bold text-slate-400">F</div>
+          <div class="text-xs font-bold text-slate-400">S</div>
+        </div>
+        
+        <div class="grid grid-cols-7 text-center gap-y-2 mb-4">
+          <div *ngFor="let d of calendarDays" 
+               class="py-2 text-sm relative rounded-lg"
+               [ngClass]="{
+                 'text-slate-300': d.isOtherMonth,
+                 'text-slate-400 line-through': d.isPast && !d.isOtherMonth && !d.isBooked,
+                 'bg-danger/10 text-danger font-medium line-through': d.isPast && !d.isOtherMonth && d.isBooked,
+                 'bg-danger/20 text-danger font-bold': !d.isPast && !d.isOtherMonth && d.isBooked,
+                 'bg-success/20 text-success font-bold': !d.isPast && !d.isOtherMonth && !d.isBooked
+               }">
+            {{ d.dayNum }}
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-4 text-xs">
+          <div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-danger"></div><span class="text-slate-500">Booked</span></div>
+          <div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-success"></div><span class="text-slate-500">Available</span></div>
+          <div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-slate-300"></div><span class="text-slate-500">Past</span></div>
+        </div>
+      </div>
+
+      <!-- QR Code -->
+      <app-qr-code-widget title="Asset QR Code" [assetId]="assetId"></app-qr-code-widget>
+
+      <!-- Maintenance Status -->
+      <div class="bg-white rounded-xl border border-slate-200 p-6">
+        <h3 class="text-lg font-bold text-slate-900 mb-4">Maintenance Status</h3>
+        <div class="flex items-start gap-3 p-4 bg-success/10 rounded-xl border border-success/20">
+          <lucide-icon name="check-circle-2" class="h-5 w-5 text-success mt-0.5"></lucide-icon>
+          <div>
+            <div class="text-sm font-bold text-success">Maintenance Current</div>
+            <div class="text-xs text-success/80 mt-1">Next: Oct 1, 2025</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
