@@ -9,7 +9,7 @@ const doc = {
     description: "API Documentation",
   },
   servers: [
-    { url: "http://localhost:3000" },
+    { url: "https://asset-link-api.vercel.app" },
   ],
   components: {
     securitySchemes: {

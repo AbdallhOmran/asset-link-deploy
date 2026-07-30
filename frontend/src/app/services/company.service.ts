@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 })
 export class CompanyService {
 
-  private baseUrl = 'http://localhost:3000/api/company';
+  private baseUrl = 'https://asset-link-api.vercel.app/api/company';
 
   constructor(private http: HttpClient) {}
 

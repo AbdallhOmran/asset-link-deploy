@@ -9,7 +9,7 @@ export interface AssetCategory {
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-  private baseUrl = 'http://localhost:3000/api/assetCategory';
+  private baseUrl = 'https://asset-link-api.vercel.app/api/assetCategory';
 
   constructor(private http: HttpClient) {}
 
