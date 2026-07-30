@@ -151,8 +151,14 @@ const getAssetAvailability = async (assetId, startDate, endDate) => {
     throw new Error("Asset not found");
   }
 
+  // If dates are not provided, return all active future bookings for the calendar
   if (!startDate || !endDate) {
-    throw new Error("startDate and endDate are required");
+    const bookings = await bookingModel.find({
+      assetId: assetId,
+      status: { $in: ["Pending", "Confirmed"] },
+      endDate: { $gte: new Date() }
+    }).select("startDate endDate status");
+    return bookings;
   }
 
   const start = new Date(startDate);
