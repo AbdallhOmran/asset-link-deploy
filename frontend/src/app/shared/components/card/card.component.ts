@@ -22,20 +22,30 @@ export class CardComponent {
   @Input() status = 'Available';
 
   @Input() score = 98;
-
   @Input() bordered = true;
+  @Input() waitlistCount = 0;
 
   @Output() bookClick = new EventEmitter<void>();
+  @Output() waitlistClick = new EventEmitter<void>();
 
   onBookClick(event: any) {
     if (event && event.stopPropagation) {
       event.stopPropagation();
     }
-    this.bookClick.emit();
+    
+    if (this.isRentedOrBooked) {
+      this.waitlistClick.emit();
+    } else {
+      this.bookClick.emit();
+    }
   }
 
   get isAvailable(): boolean {
     return this.status === 'Available';
+  }
+
+  get isRentedOrBooked(): boolean {
+    return this.status === 'Booked' || this.status === 'Rented';
   }
 
   get priceValue(): string {
@@ -51,6 +61,7 @@ export class CardComponent {
       case 'Available':
         return 'bg-green-100 text-green-700';
 
+      case 'Booked':
       case 'Rented':
         return 'bg-blue-100 text-blue-700';
 
@@ -66,7 +77,17 @@ export class CardComponent {
   }
 
   get buttonText(): string {
+    if (this.isRentedOrBooked) {
+      return 'Join Waitlist';
+    }
     return this.isAvailable ? 'Book Now' : 'Unavailable';
+  }
+
+  get buttonVariant(): any {
+    if (this.isRentedOrBooked) {
+      return 'success'; // Green button for Join Waitlist
+    }
+    return this.isAvailable ? 'primary' : 'secondary';
   }
 
   get categoryIcon(): string {
