@@ -43,7 +43,7 @@ export class AddCategoryComponent {
 
   confirmDiscard(): void {
     this.showDiscardModal = false;
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/app/dashboard']);
   }
 
   /** Save and add another — clears form so user can add a second category */
@@ -74,7 +74,7 @@ export class AddCategoryComponent {
         this.form.reset();
 
         if (navigateAfter) {
-          setTimeout(() => this.router.navigate(['/assets/add']), 1200);
+          setTimeout(() => this.router.navigate(['/app/assets/add']), 1200);
         } else {
           setTimeout(() => (this.submitSuccess = false), 2000);
         }

@@ -30,15 +30,6 @@ export class ImageGalleryComponent {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length) {
       this.filesSelected.emit(input.files);
-
-      // Local preview only - actual upload/storage handled by parent via filesSelected
-      Array.from(input.files).forEach((file) => {
-        if (this.images.length < this.maxImages) {
-          const previewUrl = URL.createObjectURL(file);
-          this.images = [...this.images, previewUrl];
-        }
-      });
-      this.imagesChange.emit(this.images);
     }
     input.value = ''; // reset so the same file can be re-selected later
   }
