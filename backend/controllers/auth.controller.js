@@ -73,6 +73,7 @@ const registerCompany = async (req, res) => {
     });
 
   } catch (error) {
+    console.error("REGISTER COMPANY ERROR:", error);
     const statusCode = error.statusCode || 500;
     const message = error.message || 'Internal server error';
     return res.status(statusCode).json({
@@ -116,6 +117,7 @@ const verifyOtp = async (req, res) => {
     });
 
   } catch (error) {
+    console.error("VERIFY OTP ERROR:", error);
     const statusCode = error.statusCode || 500;
     const message = error.message || 'Internal server error';
     return res.status(statusCode).json({
