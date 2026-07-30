@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 const damageReportSchema = new mongoose.Schema(
   {
-    finalInspection: {
+    inspection: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "finalInspection", // fixed: was "FinalInspection"
+      ref: "inspection",
       required: true,
     },
     booking: {

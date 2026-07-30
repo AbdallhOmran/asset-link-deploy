@@ -1,12 +1,9 @@
 const bcrypt = require("bcryptjs");
 const Company = require('../models/company.model');
 const crypto = require("crypto");
-const generateOTP = require('../utils/otp.util');
-const {
-  sendOTPEmail,
-  sendResetPasswordEmail
-} = require('../utils/sendEmail.util');
 const { setCache, getCache, deleteCache } = require('../utils/cache.util');
+const { sendResetPasswordEmail } = require('../utils/sendEmail.util');
+const otpService = require('./otp.service');
 
 /**
  * Register a new company
@@ -18,7 +15,7 @@ const { setCache, getCache, deleteCache } = require('../utils/cache.util');
  * - Sends OTP via email (or console in dev)
  */
 const registerCompany = async (data) => {
-  const { companyName, companyEmail, phoneNumber, password, commercialRegistrationNumber, companyAddress } = data;
+  const { companyName, companyEmail, phoneNumber, password, commercialRegistrationNumber, companyAddress, companyType } = data;
 
   // 1. Check if email already exists in DB
   const existingCompany = await Company.findOne({ companyEmail });
@@ -36,10 +33,10 @@ const registerCompany = async (data) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
-  // 4. Generate OTP
-  const otp = generateOTP();
+  // 4. Generate and send OTP using generic OTP service
+  await otpService.generateAndSendOtp(companyEmail, 'registration');
 
-  // 5. Store in Redis Cache
+  // 5. Store pending company data in Redis Cache (without OTP)
   const cacheData = {
     companyName,
     companyEmail,
@@ -47,13 +44,10 @@ const registerCompany = async (data) => {
     password: hashedPassword,
     commercialRegistrationNumber: commercialRegistrationNumber || null,
     companyAddress: companyAddress || null,
-    otp,
+    companyType: companyType || "Both",
   };
 
   await setCache(`register:${companyEmail}`, cacheData);
-
-  // 6. Send OTP email
-  await sendOTPEmail(companyEmail, otp);
 
   return { message: 'OTP sent successfully. Please check your email.' };
 };
@@ -64,12 +58,11 @@ const registerCompany = async (data) => {
 const verifyOtp = async (email, otp) => {
   const cachedData = await getCache(`register:${email}`);
   if (!cachedData) {
-    throw { statusCode: 400, message: 'OTP has expired or email not found. Please register again.' };
+    throw { statusCode: 400, message: 'Registration data expired. Please register again.' };
   }
 
-  if (cachedData.otp !== otp) {
-    throw { statusCode: 400, message: 'Invalid OTP code' };
-  }
+  // Verify OTP via generic service
+  await otpService.verifyOtp(email, otp, 'registration');
 
   const company = await Company.create({
     companyName: cachedData.companyName,
@@ -78,6 +71,7 @@ const verifyOtp = async (email, otp) => {
     password: cachedData.password,
     commercialRegistrationNumber: cachedData.commercialRegistrationNumber,
     companyAddress: cachedData.companyAddress,
+    companyType: cachedData.companyType,
     isVerified: true,
   });
 
@@ -103,12 +97,7 @@ const resendOtp = async (email) => {
     throw { statusCode: 400, message: 'No pending registration found. Please register first.' };
   }
 
-  const newOtp = generateOTP();
-
-  cachedData.otp = newOtp;
-  await setCache(`register:${email}`, cachedData);
-
-  await sendOTPEmail(email, newOtp);
+  await otpService.generateAndSendOtp(email, 'registration');
 
   return { message: 'New OTP sent successfully. Please check your email.' };
 };

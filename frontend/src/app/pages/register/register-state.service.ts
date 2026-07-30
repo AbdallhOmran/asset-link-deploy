@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth.service';
 
 export interface CompanyInfo {
   companyName: string;
+  companyType: string;
   industry: string;
   companySize: string;
   country: string;
@@ -31,7 +32,7 @@ export interface RegisterFormData {
 }
 
 const initialData: RegisterFormData = {
-  company: { companyName: '', industry: '', companySize: '', country: 'United States', website: '' },
+  company: { companyName: '', companyType: 'Both', industry: '', companySize: '', country: 'United States', website: '' },
   contact: { firstName: '', lastName: '', jobTitle: '', email: '', phone: '' },
   account: { password: '', confirmPassword: '', agreeTerms: false },
 };
@@ -83,7 +84,8 @@ export class RegisterStateService {
       phoneNumber: payload.contact.phone || '',
       password: payload.account.password,
       confirmPassword: payload.account.confirmPassword,
-      companyAddress: payload.company.country
+      companyAddress: payload.company.country,
+      companyType: payload.company.companyType
     };
 
     this.registeredEmail = payload.contact.email;

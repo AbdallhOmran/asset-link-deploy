@@ -37,9 +37,9 @@ const completeRental = async (bookingId) => {
 
   // 1. Verify Final Inspection completion
   // TODO: Query the Inspection model (After Return type) for this booking.
-  // const finalInspection = await inspectionModel.findOne({ bookingId, type: "Final" });
-  // if (!finalInspection || finalInspection.status !== "Completed") {
-  //   throw makeError("Invalid operation. Final inspection must be completed before closing the rental", 400);
+  // const finalInspection = await inspectionModel.findOne({ bookingId, inspectionType: "after_return" });
+  // if (!finalInspection || finalInspection.status !== "Passed") {
+  //   throw makeError("Invalid operation. Final inspection must be passed before closing the rental", 400);
   // }
 
   // 2. Damage decision

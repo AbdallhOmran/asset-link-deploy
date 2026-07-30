@@ -56,6 +56,11 @@ const assetSchema = new mongoose.Schema({
   default: 100,
 },
 
+  nextMaintenanceDate: {
+    type: Date,
+    default: null
+  },
+
   location:{
     type: String,
     trim:true
