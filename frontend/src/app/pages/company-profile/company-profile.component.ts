@@ -26,15 +26,17 @@ assets: any[] = [];
 
     // بيانات مؤقتة لحد ما الـ API يوفرها
     description:
-      'Full-service heavy equipment rental company specializing in excavation, lifting, and site preparation machinery across the Pacific Northwest. Trusted by 120+ contractors since 2018.',
+      '',
 
-    industry: 'Construction & Infrastructure',
+    industry: '',
 
-    website: 'terraequip.com',
+    website: '',
 
-    employees: '51–200 employees',
+    employees: '',
 
-    memberSince: 'Jan 2023',
+    memberSince: '',
+
+    dunsNumber: '11765',
 
     stats: {
       assets: 8,
@@ -51,20 +53,27 @@ assets: any[] = [];
   this.getMyAssets();
 }
   getCompanyProfile(): void {
-    this.companyService.getProfile().subscribe({
-      next: (res: any) => {
-        this.company = {
-          ...this.company,
-          ...res.data
-        };
+  this.companyService.getProfile().subscribe({
+    next: (res: any) => {
 
-        console.log('Company Profile:', this.company);
-      },
-      error: (err) => {
-        console.error('Error loading profile:', err);
-      }
-    });
-  }
+      this.company = {
+        ...this.company,
+        ...res.data,
+        stats: {
+          ...this.company.stats,
+          bookings: res.data.totalBookings
+        }
+      };
+
+      console.log('Company Profile:', this.company);
+
+    },
+
+    error: (err) => {
+      console.error('Error loading profile:', err);
+    }
+  });
+}
   getMyAssets(): void {
   this.companyService.getMyAssets().subscribe({
     next: (res: any) => {
