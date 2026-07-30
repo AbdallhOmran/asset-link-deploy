@@ -1,6 +1,19 @@
 const waitingListModel = require("../models/waitingList.model");
 
 const joinWaitingList = async (waitingData) => {
+  // Check if company is already on the waitlist for this asset
+  const existingEntry = await waitingListModel.findOne({
+    assetId: waitingData.assetId,
+    companyId: waitingData.companyId,
+    status: "Waiting",
+  });
+
+  if (existingEntry) {
+    const error = new Error("You are already on the waiting list for this asset");
+    error.statusCode = 400;
+    throw error;
+  }
+
   const count = await waitingListModel.countDocuments({
     assetId: waitingData.assetId,
     status: "Waiting",

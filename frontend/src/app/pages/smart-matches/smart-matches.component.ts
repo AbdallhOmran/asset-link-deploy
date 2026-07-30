@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AssetService } from '../../services/asset.service';
 import { Router } from '@angular/router';
 import { BookingModalService } from '../../services/booking-modal.service';
+import { WaitingListService } from '../../services/waiting-list.service';
 
 @Component({
   selector: 'app-smart-matches',
@@ -16,7 +17,12 @@ export class SmartMatchesComponent implements OnInit {
 
   tabs = ['All Matches', 'Available Now', 'Closest', 'Best Maintenance', 'Best Value'];
 
-  constructor(private assetService: AssetService, private router: Router, private bookingModalService: BookingModalService) {}
+  constructor(
+    private assetService: AssetService, 
+    private router: Router, 
+    private bookingModalService: BookingModalService,
+    private waitingListService: WaitingListService
+  ) {}
 
   ngOnInit(): void {
     this.fetchMatches();
@@ -34,6 +40,19 @@ export class SmartMatchesComponent implements OnInit {
     this.assetService.getRecommendedAssets(query).subscribe({
       next: (res: any) => {
         this.assets = res.data || [];
+        
+        // Fetch waitlist counts
+        this.assets.forEach(asset => {
+          if (asset.status === 'Booked' || asset.status === 'Rented') {
+            this.waitingListService.getWaitingListByAsset(asset._id).subscribe({
+              next: (waitlist) => {
+                asset.waitlistCount = waitlist.length;
+              },
+              error: (err) => console.error('Failed to fetch waitlist count', err)
+            });
+          }
+        });
+
         this.isLoading = false;
       },
       error: (err) => {

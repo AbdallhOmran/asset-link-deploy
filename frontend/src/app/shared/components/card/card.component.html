@@ -101,18 +101,25 @@
         <lucide-icon name="map-pin" class="w-3 h-3 text-rose-500"></lucide-icon>
         <span class="truncate max-w-[90px]">{{ location }}</span>
       </div>
-      <span [ngClass]="isAvailable ? 'text-emerald-500 font-semibold' : ''">{{ isAvailable ? 'Available now' : ('From ' + date) }}</span>
+      
+      <div *ngIf="isRentedOrBooked && waitlistCount > 0" class="flex items-center gap-1 text-orange-500 font-semibold">
+        <lucide-icon name="user" class="w-3 h-3"></lucide-icon>
+        <span>{{ waitlistCount }} waiting</span>
+      </div>
+      
+      <span *ngIf="!isRentedOrBooked || waitlistCount === 0" [ngClass]="isAvailable ? 'text-emerald-500 font-semibold' : ''">{{ isAvailable ? 'Available now' : ('From ' + date) }}</span>
     </div>
 
     <!-- Actions -->
     <div class="flex items-center gap-2">
-      <app-button variant="secondary" class="flex-1 !py-1.5 !text-[10px] !font-semibold">
+      <app-button variant="secondary" class="flex-1" [fullWidth]="true" (clicked)="bookClick.emit()">
         Details
       </app-button>
       <app-button
-        [variant]="isAvailable ? 'primary' : 'secondary'"
-        class="flex-1 !py-1.5 !text-[10px] !font-semibold"
-        [ngClass]="bookButtonClass"
+        [variant]="buttonVariant"
+        class="flex-1"
+        [fullWidth]="true"
+        [disabled]="!isAvailable && !isRentedOrBooked"
         (clicked)="onBookClick($event)"
       >
         {{ buttonText }}
