@@ -26,15 +26,17 @@ assets: any[] = [];
 
     // بيانات مؤقتة لحد ما الـ API يوفرها
     description:
-      'Full-service heavy equipment rental company specializing in excavation, lifting, and site preparation machinery across the Pacific Northwest. Trusted by 120+ contractors since 2018.',
+      '',
 
-    industry: 'Construction & Infrastructure',
+    industry: '',
 
-    website: 'terraequip.com',
+    website: '',
 
-    employees: '51–200 employees',
+    employees: '',
 
-    memberSince: 'Jan 2023',
+    memberSince: '',
+
+    dunsNumber: '11765',
 
     stats: {
       assets: 8,
