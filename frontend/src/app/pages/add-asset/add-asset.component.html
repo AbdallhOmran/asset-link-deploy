@@ -9,9 +9,9 @@
       </div>
       <div class="flex items-center gap-3">
         <app-button variant="secondary" (clicked)="openDiscardModal()">Discard</app-button>
-        <app-button variant="primary" [disabled]="isSubmitting" (clicked)="register()">
-          <lucide-icon *ngIf="!isSubmitting" name="check" class="h-4 w-4"></lucide-icon>
-          <span>{{ isSubmitting ? 'Registering…' : 'Register Asset' }}</span>
+        <app-button variant="primary" [disabled]="isSubmitting || submitSuccess" (clicked)="register()">
+          <lucide-icon *ngIf="!isSubmitting && !submitSuccess" name="check" class="h-4 w-4"></lucide-icon>
+          <span>{{ isSubmitting ? 'Registering…' : submitSuccess ? 'Redirecting…' : 'Register Asset' }}</span>
         </app-button>
       </div>
     </div>
@@ -77,9 +77,9 @@
           </app-button>
 
           <app-button *ngIf="currentStepIndex === navSections.length - 1" variant="success"
-                      [disabled]="isSubmitting" (clicked)="register()">
+                      [disabled]="isSubmitting || submitSuccess" (clicked)="register()">
             <lucide-icon name="check" class="h-4 w-4"></lucide-icon>
-            Register Asset
+            {{ isSubmitting ? 'Registering…' : submitSuccess ? 'Redirecting…' : 'Register Asset' }}
           </app-button>
         </div>
       </main>
