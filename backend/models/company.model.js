@@ -104,6 +104,15 @@ const companySchema = new mongoose.Schema(
     resetPasswordExpire: {
       type: Date,
     },
+    reputationScore: {
+      type: Number,
+      default: 100,
+    },
+    companyType: {
+      type: String,
+      enum: ["Renter", "Owner", "Both"],
+      default: "Both",
+    },
   },
   {
     timestamps: true,

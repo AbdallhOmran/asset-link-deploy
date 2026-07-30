@@ -11,6 +11,7 @@ dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const connectDB = require("./config/db");
 const { connectRedis } = require("./config/redis");
+const { startCronJobs } = require("./services/cron.service");
 // Routes Import
 const authRoutes = require("./routes/auth.routes");
 const assetRouter = require("./routes/asset.routes");
@@ -18,8 +19,7 @@ const assetCategoryRouter = require("./routes/assetCategory.route");
 const companyRoutes = require("./routes/company.routes");
 const waitingListRoutes = require("./routes/waitingList.route");
 const bookingRoutes = require("./routes/booking.routes");
-const negotiationRoutes = require("./routes/negotiation.routes"); 
-const finalInspection = require("./routes/finalInspection.routes");
+const negotiationRoutes = require("./routes/negotiation.routes");
 const damageReport = require("./routes/damageReport.routes");
 const contractRoutes = require("./routes/contract.routes");
 const escrowRoutes = require("./routes/escrow.routes"); 
@@ -51,7 +51,6 @@ app.use("/api/company", companyRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/waiting-list", waitingListRoutes);
 app.use("/api/negotiation", negotiationRoutes);
-app.use("/api/final-inspection", finalInspection);
 app.use("/api/damage-report", damageReport);
 app.use("/api/contracts", contractRoutes);
 app.use("/api/escrow", escrowRoutes); 
@@ -86,6 +85,7 @@ const startServer = async () => {
     }
 
     const PORT = process.env.PORT || 3000;
+    startCronJobs();
     app.listen(PORT, () => {
       console.log(`Server is running successfully on port ${PORT}`);
     });

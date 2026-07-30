@@ -57,9 +57,30 @@
             required: true
         },
 
+        inspectionType: {
+            type: String,
+            enum: ['before_use', 'after_return'],
+            required: true,
+            default: 'before_use'
+        },
+
+        damageLevel: {
+            type: String,
+            enum: ["none", "minor", "moderate", "severe"],
+            default: "none"
+        },
+        damageCost: {
+            type: Number,
+            default: 0
+        },
+        hasDamage: {
+            type: Boolean,
+            default: false
+        },
+
         status: {
             type: String,
-            enum: ["Passed", "Failed"],
+            enum: ["Passed", "Failed", "pending", "completed"],
             required: true
         }
 

@@ -22,6 +22,12 @@ export class StepCompanyComponent implements OnInit {
     'Energy & Utilities'
   ];
 
+  public companyTypes: string[] = [
+    'Renter',
+    'Owner',
+    'Both'
+  ];
+
   public companySizes: string[] = [
     '1–10 employees',
     '11–50 employees',
@@ -50,6 +56,7 @@ export class StepCompanyComponent implements OnInit {
 
     this.form = this.fb.group({
       companyName: [saved.companyName || '', [Validators.required, Validators.minLength(2)]],
+      companyType: [saved.companyType || 'Both', [Validators.required]],
       industry: [saved.industry || '', [Validators.required]],
       companySize: [saved.companySize || '', [Validators.required]],
       country: [saved.country || 'United States', [Validators.required]],

@@ -2,10 +2,10 @@ const DamageReport = require("../models/damageReport.model");
 const Booking = require("../models/booking.model");
 
 const createDamageReport = async (data) => {
-  const { finalInspection, booking, damageCost, damageLevel, description } = data;
+  const { inspection, booking, damageCost, damageLevel, description } = data;
 
   const damageReport = await DamageReport.create({
-    finalInspection,
+    inspection,
     booking,
     damageCost,
     damageLevel,
@@ -26,14 +26,14 @@ const createDamageReport = async (data) => {
 
 const getDamageReportByBooking = async (bookingId) => {
   return await DamageReport.findOne({ booking: bookingId })
-    .populate("finalInspection")
+    .populate("inspection")
     .populate("booking");
 };
 
 const getAllDamageReports = async () => {
   return await DamageReport.find()
     .populate("booking")
-    .populate("finalInspection");
+    .populate("inspection");
 };
 
 const updateDamageReportStatus = async (id, status) => {

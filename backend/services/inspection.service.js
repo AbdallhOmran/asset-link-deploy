@@ -12,6 +12,7 @@ const createInspection = async (data) => {
 
   const existingInspection = await Inspection.findOne({
     bookingId: data.bookingId,
+    inspectionType: data.inspectionType || 'before_use'
   });
 
   if (existingInspection) {
@@ -27,6 +28,10 @@ const createInspection = async (data) => {
     checklist: data.checklist,
     conditionScore: data.conditionScore,
     status: data.status,
+    inspectionType: data.inspectionType || 'before_use',
+    damageLevel: data.damageLevel || 'none',
+    damageCost: data.damageCost || 0,
+    hasDamage: data.hasDamage || false
   });
 
   if (data.status === "Failed") {
@@ -78,13 +83,13 @@ const getInspectionById = async (id) => {
   return inspection;
 };
 
-const getInspectionByBooking = async (bookingId) => {
-  const inspection = await Inspection.findOne({ bookingId })
+const getInspectionByBooking = async (bookingId, inspectionType = 'before_use') => {
+  const inspection = await Inspection.findOne({ bookingId, inspectionType })
     .populate("bookingId")
     .populate("assetId");
 
   if (!inspection) {
-    throw new Error("Inspection not found for this booking");
+    throw new Error(`Inspection not found for this booking (type: ${inspectionType})`);
   }
 
   return inspection;
@@ -128,6 +133,19 @@ const updateInspection = async (id, data) => {
 
   if (data.inspectorName !== undefined) {
     inspection.inspectorName = data.inspectorName;
+  }
+
+  if (data.inspectionType !== undefined) {
+    inspection.inspectionType = data.inspectionType;
+  }
+  if (data.damageLevel !== undefined) {
+    inspection.damageLevel = data.damageLevel;
+  }
+  if (data.damageCost !== undefined) {
+    inspection.damageCost = data.damageCost;
+  }
+  if (data.hasDamage !== undefined) {
+    inspection.hasDamage = data.hasDamage;
   }
 
   if (data.status !== undefined && data.status !== inspection.status) {

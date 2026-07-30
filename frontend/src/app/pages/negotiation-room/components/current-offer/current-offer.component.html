@@ -44,10 +44,7 @@
       Accept Offer
     </app-button>
 
-    <app-button
-      variant="primary"
-      [disabled]="!offer"
-      (click)="
+    <app-button variant="primary" [disabled]="!offer" (click)="
         submitCounterOffer({
           rentPrice: offer.rentPrice - 100,
           securityDeposit: offer.securityDeposit,
@@ -55,8 +52,7 @@
           durationUnit: offer.durationUnit,
           notes: 'Test counter offer'
         })
-      "
-    >
+      ">
       Counter Offer
     </app-button>
 
