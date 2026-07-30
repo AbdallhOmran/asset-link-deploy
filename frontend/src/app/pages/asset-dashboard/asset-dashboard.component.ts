@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AssetService } from '../../services/asset.service';
 import { BookingModalService } from '../../services/booking-modal.service';
+import { WaitingListService } from '../../services/waiting-list.service';
 
 @Component({
   selector: 'app-asset-dashboard',
@@ -33,7 +34,12 @@ export class AssetDashboardComponent implements OnInit {
   currentPage = 1;
   pageSize = 6;
 
-  constructor(private router: Router, private assetService: AssetService, private bookingModalService: BookingModalService) {}
+  constructor(
+    private router: Router, 
+    private assetService: AssetService, 
+    private bookingModalService: BookingModalService,
+    private waitingListService: WaitingListService
+  ) {}
 
   ngOnInit(): void {
     this.fetchAssets();
@@ -76,6 +82,19 @@ export class AssetDashboardComponent implements OnInit {
       const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
       return dateB - dateA;
     });
+
+    // Fetch waitlist counts for booked/rented assets
+    this.assets.forEach(asset => {
+      if (asset.status === 'Booked' || asset.status === 'Rented') {
+        this.waitingListService.getWaitingListByAsset(asset._id).subscribe({
+          next: (waitlist) => {
+            asset.waitlistCount = waitlist.length;
+          },
+          error: (err) => console.error('Failed to fetch waitlist count', err)
+        });
+      }
+    });
+
     this.buildCategories();
     this.applyFilters();
     this.isLoading = false;
