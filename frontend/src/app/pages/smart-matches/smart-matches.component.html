@@ -190,8 +190,10 @@
             <button *ngIf="asset.status === 'Available'" (click)="bookNow(asset._id)" class="py-2.5 px-4 rounded-xl text-sm font-bold text-white bg-primary hover:bg-primary-hover transition-colors text-center shadow-sm">
               Book Now
             </button>
-            <button *ngIf="asset.status !== 'Available'" class="py-2.5 px-4 rounded-xl text-sm font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 transition-colors text-center shadow-sm">
-              <lucide-icon name="users" class="w-4 h-4 inline mr-1"></lucide-icon> Join Waitlist
+            <button *ngIf="asset.status !== 'Available'" (click)="bookNow(asset._id)" class="py-2.5 px-4 rounded-xl text-sm font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 transition-colors text-center shadow-sm">
+              <lucide-icon name="users" class="w-4 h-4 inline mr-1"></lucide-icon> 
+              <span *ngIf="asset.waitlistCount > 0">{{ asset.waitlistCount }} waiting</span>
+              <span *ngIf="!asset.waitlistCount">Join Waitlist</span>
             </button>
           </div>
         </div>
