@@ -6,7 +6,7 @@ const joinWaitingList = async (req, res) => {
 
     return res.status(201).send(waiting);
   } catch (err) {
-    return res.status(500).send(err.message);
+    return res.status(err.statusCode || 500).send(err.message);
   }
 };
 
