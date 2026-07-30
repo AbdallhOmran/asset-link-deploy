@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angu
 import { BookingService } from '../../../../services/booking.service';
 import { AssetService } from '../../../../services/asset.service';
 import { AuthService } from '../../../../services/auth.service';
+import { WaitingListService, WaitingListDTO } from '../../../../services/waiting-list.service';
 
 type PriceType = 'Daily' | 'Weekly' | 'Monthly';
 
@@ -21,6 +22,8 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
 
   // Asset info
   selectedAsset: any = null;
+  waitlistCount = 0;
+  notifyVia: 'email' | 'sms' | 'both' = 'email';
 
   // Step 0: Dates + price type
   startDate = '';
@@ -34,7 +37,8 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
   constructor(
     private bookingService: BookingService,
     private assetService: AssetService,
-    private authService: AuthService
+    private authService: AuthService,
+    private waitingListService: WaitingListService
   ) {}
 
   ngOnInit(): void {
@@ -60,6 +64,14 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
         this.selectedAsset = res?.data ?? res;
         // default to the first pricing plan actually available on this asset
         this.priceType = this.availablePriceTypes[0]?.value || 'Daily';
+
+        if (this.isWaitlistMode) {
+          this.waitingListService.getWaitingListByAsset(this.selectedAsset._id).subscribe({
+            next: (wl) => {
+              this.waitlistCount = wl.length;
+            }
+          });
+        }
       },
       error: () => {
         this.errorMessage = 'Failed to load asset details.';
@@ -110,6 +122,31 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
 
   get estimatedTotal(): number {
     return this.billingUnits * this.selectedRate;
+  }
+
+  get isWaitlistMode(): boolean {
+    return this.selectedAsset?.status === 'Booked' || this.selectedAsset?.status === 'Rented';
+  }
+
+  get queueItems(): any[] {
+    const total = this.waitlistCount + 1;
+    const items = [];
+    const maxVisible = 8;
+    
+    for (let i = 1; i <= maxVisible; i++) {
+      if (i === total) {
+        items.push({ label: 'You', isYou: true, isActive: true });
+      } else if (i < total) {
+        items.push({ label: i.toString(), isYou: false, isActive: true });
+      } else {
+        items.push({ label: i.toString(), isYou: false, isActive: false });
+      }
+    }
+    return items;
+  }
+
+  setNotifyVia(method: 'email' | 'sms' | 'both') {
+    this.notifyVia = method;
   }
 
   nextStep() {
@@ -164,6 +201,33 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
     const loggedInCompany = this.authService.getCompany();
     if (!loggedInCompany?.id) {
       this.errorMessage = 'Session expired. Please log in again.';
+      return;
+    }
+
+    if (this.selectedAsset.status === 'Booked' || this.selectedAsset.status === 'Rented') {
+      const waitlistData: WaitingListDTO = {
+        assetId: this.selectedAsset._id,
+        companyId: loggedInCompany.id,
+        requestedStartDate: this.startDate,
+        requestedEndDate: this.endDate
+      };
+
+      this.isSubmitting = true;
+      this.waitingListService.joinWaitingList(waitlistData).subscribe({
+        next: (res: any) => {
+          this.isSubmitting = false;
+          // Optionally emit an event to refresh waitlist count
+          this.bookingCreated.emit(res);
+          this.resetForm();
+          this.closed.emit();
+        },
+        error: (err) => {
+          this.isSubmitting = false;
+          console.error("Waitlist Error:", err);
+          const backendErr = err.error;
+          this.errorMessage = typeof backendErr === 'string' ? backendErr : (backendErr?.error || backendErr?.message || 'Failed to join waitlist. Please try again.');
+        }
+      });
       return;
     }
 

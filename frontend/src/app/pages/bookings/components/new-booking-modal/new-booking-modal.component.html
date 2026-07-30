@@ -1,20 +1,115 @@
 <div *ngIf="isOpen" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-  <div class="bg-white rounded-card w-full max-w-lg max-h-[90vh] overflow-y-auto">
+  <div class="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
     <!-- Header -->
-    <div class="flex items-center justify-between p-5 border-b border-border">
-      <div>
-        <h3 class="text-lg font-bold text-text">New Booking</h3>
-        <p class="text-xs text-text-muted mt-0.5">
-          Step {{ currentStep + 1 }} of 2 &mdash;
-          {{ currentStep === 0 ? 'Date Range' : 'Renter Details' }}
-        </p>
+    <div class="flex items-center justify-between p-5 pb-3">
+      <div class="flex items-center gap-3">
+        <div *ngIf="isWaitlistMode" class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shrink-0">
+           <lucide-icon name="list-ordered" class="w-5 h-5"></lucide-icon>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-slate-900">{{ isWaitlistMode ? 'Join Waiting List' : 'New Booking' }}</h3>
+          <p class="text-[11px] text-slate-500 mt-0.5 font-medium">
+            {{ isWaitlistMode ? 'Get notified the moment this asset is free for your dates' : ('Step ' + (currentStep + 1) + ' of 2') }}
+          </p>
+        </div>
       </div>
-      <button (click)="onCancel()" class="text-text-muted hover:text-text text-lg">&times;</button>
+      <button (click)="onCancel()" class="text-slate-400 hover:text-slate-600 transition-colors p-1">&times;</button>
     </div>
 
-    <div class="p-5">
-      <!-- Stepper header with running total -->
-      <div class="flex items-center justify-between mb-5">
+    <!-- Waitlist Content -->
+    <div class="p-5 pt-2" *ngIf="isWaitlistMode">
+      
+      <!-- Asset Summary Card -->
+      <div class="bg-white rounded-xl border border-slate-200 p-3 flex items-center gap-3 mb-6 shadow-sm">
+        <div class="w-12 h-12 bg-slate-100 rounded-lg overflow-hidden shrink-0 border border-slate-100 flex items-center justify-center">
+          <img *ngIf="selectedAsset?.images?.length" [src]="selectedAsset.images[0]" class="w-full h-full object-cover">
+          <lucide-icon *ngIf="!selectedAsset?.images?.length" name="image" class="w-6 h-6 text-slate-300"></lucide-icon>
+        </div>
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-1">
+            <h4 class="font-bold text-sm text-slate-900">{{ selectedAsset?.assetName }}</h4>
+            <span class="bg-emerald-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-1">
+              <lucide-icon name="sparkles" class="w-3 h-3"></lucide-icon> Top Match
+            </span>
+          </div>
+          <p class="text-[10px] text-slate-500 font-medium">{{ selectedAsset?.companyId?.companyName || 'Owner Company' }} &middot; {{ selectedAsset?.location || 'Portland, OR' }}</p>
+        </div>
+        <div class="text-right">
+          <div class="text-base font-black text-slate-900">${{ selectedRate || selectedAsset?.price?.daily || selectedAsset?.price | number }}</div>
+          <div class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">/day</div>
+        </div>
+      </div>
+
+      <!-- Queue Position -->
+      <div class="bg-emerald-50/50 rounded-2xl border border-emerald-100 p-4 mb-6">
+        <div class="flex justify-between items-center mb-4">
+           <div class="flex items-center gap-2 text-emerald-700 font-bold text-sm">
+             <lucide-icon name="users" class="w-4 h-4"></lucide-icon>
+             Current Queue Position
+           </div>
+           <div class="text-emerald-700 font-medium text-xs">
+             <span class="font-black text-base">#{{ waitlistCount + 1 }}</span> of {{ waitlistCount + 1 }}
+           </div>
+        </div>
+        
+        <div class="flex items-center gap-1.5 mb-4">
+           <div *ngFor="let item of queueItems" 
+                class="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold transition-all"
+                [ngClass]="item.isYou ? 'bg-emerald-500 text-white shadow-md shadow-emerald-200 scale-110 z-10' : (item.isActive ? 'bg-emerald-100 text-emerald-600' : 'bg-white text-slate-300 border border-slate-100')">
+             {{ item.label }}
+           </div>
+        </div>
+
+        <div class="flex justify-between items-center text-xs font-medium">
+           <span class="text-emerald-600">{{ waitlistCount }} requests ahead of you</span>
+           <span class="text-slate-500 flex items-center gap-1">
+             <lucide-icon name="clock" class="w-3.5 h-3.5"></lucide-icon> Est. free: {{ minDate | date:'mediumDate' }}
+           </span>
+        </div>
+      </div>
+
+      <!-- Dates -->
+      <label class="text-[10px] font-black text-slate-500 tracking-wider uppercase mb-2 block">Your Requested Rental Period</label>
+      <div class="grid grid-cols-[1fr_auto_1fr] gap-3 items-center mb-6">
+        <div>
+          <label class="text-[9px] font-bold text-slate-400 tracking-wide uppercase mb-1 block">Start Date</label>
+          <div class="relative">
+             <lucide-icon name="calendar" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></lucide-icon>
+             <input type="date" [(ngModel)]="startDate" [min]="minDate" class="w-full pl-9 pr-3 py-2 text-xs font-semibold border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white text-slate-700">
+          </div>
+        </div>
+        <lucide-icon name="arrow-right" class="w-3.5 h-3.5 text-slate-300 mt-4"></lucide-icon>
+        <div>
+          <label class="text-[9px] font-bold text-slate-400 tracking-wide uppercase mb-1 block">End Date</label>
+          <div class="relative">
+             <lucide-icon name="calendar" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></lucide-icon>
+             <input type="date" [(ngModel)]="endDate" [min]="startDate || minDate" class="w-full pl-9 pr-3 py-2 text-xs font-semibold border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white text-slate-700">
+          </div>
+        </div>
+      </div>
+
+      <!-- Notify Via -->
+      <label class="text-[10px] font-black text-slate-500 tracking-wider uppercase mb-2 block">Notify Me Via</label>
+      <div class="flex gap-2 mb-6">
+        <button (click)="setNotifyVia('email')" class="flex-1 py-2 rounded-xl text-xs font-bold transition-all border" [ngClass]="notifyVia === 'email' ? 'bg-primary text-white border-primary shadow-sm' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'">EMAIL</button>
+        <button (click)="setNotifyVia('sms')" class="flex-1 py-2 rounded-xl text-xs font-bold transition-all border" [ngClass]="notifyVia === 'sms' ? 'bg-primary text-white border-primary shadow-sm' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'">SMS</button>
+        <button (click)="setNotifyVia('both')" class="flex-1 py-2 rounded-xl text-xs font-bold transition-all border" [ngClass]="notifyVia === 'both' ? 'bg-primary text-white border-primary shadow-sm' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'">Email & SMS</button>
+      </div>
+
+      <!-- Notes -->
+      <label class="text-[10px] font-black text-slate-500 tracking-wider uppercase mb-2 block">Notes <span class="font-medium text-slate-400 capitalize normal-case ml-1">(optional)</span></label>
+      <textarea [(ngModel)]="notes" rows="2" placeholder="Flexible on start date? Special requirements or alternative assets you'd accept..." class="w-full px-3 py-2 text-xs font-medium border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white resize-none text-slate-700 placeholder-slate-400"></textarea>
+      
+      <p *ngIf="errorMessage" class="text-sm text-danger bg-danger-bg p-3 rounded-lg mt-4 font-medium flex items-center gap-2">
+        <lucide-icon name="alert-circle" class="w-4 h-4"></lucide-icon>
+        {{ errorMessage }}
+      </p>
+
+    </div>
+
+    <!-- Booking Content (Original) -->
+    <div class="p-6 pt-0" *ngIf="!isWaitlistMode">
+      <div class="flex items-center justify-between mb-6">
         <div class="flex-1">
           <app-stepper
             [steps]="[{ label: 'Dates' }, { label: 'Renter' }]"
@@ -22,121 +117,109 @@
           ></app-stepper>
         </div>
         <div *ngIf="estimatedTotal > 0" class="text-right ml-4">
-          <div class="text-xs text-text-muted">Est.</div>
-          <div class="text-primary font-bold">${{ estimatedTotal | number }}</div>
+          <div class="text-xs text-slate-500 font-bold uppercase tracking-wide">Est.</div>
+          <div class="text-primary font-black text-lg">${{ estimatedTotal | number }}</div>
         </div>
       </div>
 
-      <p *ngIf="errorMessage" class="text-sm text-danger bg-danger-bg p-2 rounded-md mb-4">
+      <p *ngIf="errorMessage" class="text-sm text-danger bg-danger-bg p-3 rounded-lg mb-6 font-medium flex items-center gap-2">
+        <lucide-icon name="alert-circle" class="w-4 h-4"></lucide-icon>
         {{ errorMessage }}
       </p>
 
-      <!-- Step 0: Dates + Pricing Plan -->
       <div *ngIf="currentStep === 0">
-        <div class="bg-page rounded-lg p-3 mb-4">
-          <div class="font-semibold text-sm text-text">{{ selectedAsset?.assetName }}</div>
+        <div class="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-100 flex items-center gap-3">
+           <div class="w-10 h-10 bg-white rounded-lg border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center">
+             <img *ngIf="selectedAsset?.images?.length" [src]="selectedAsset.images[0]" class="w-full h-full object-cover">
+             <lucide-icon *ngIf="!selectedAsset?.images?.length" name="image" class="w-5 h-5 text-slate-300"></lucide-icon>
+           </div>
+           <div class="font-bold text-sm text-slate-900">{{ selectedAsset?.assetName }}</div>
         </div>
 
-        <!-- Pricing plan selector (Daily / Weekly / Monthly) -->
-        <label class="text-xs font-semibold text-text-muted tracking-wide">PRICING PLAN *</label>
-        <div class="flex gap-2 mt-1 mb-4">
+        <label class="text-[10px] font-bold text-slate-400 tracking-wider uppercase mb-2 block">Pricing Plan *</label>
+        <div class="flex gap-3 mt-1 mb-6">
           <button
             *ngFor="let option of availablePriceTypes"
             type="button"
             (click)="priceType = option.value"
-            class="flex-1 border rounded-lg py-2 text-sm font-medium transition-colors"
-            [ngClass]="priceType === option.value ? 'border-primary bg-primary/5 text-primary' : 'border-border text-text-muted hover:bg-page'"
+            class="flex-1 border rounded-xl py-3 text-sm font-bold transition-all"
+            [ngClass]="priceType === option.value ? 'border-primary bg-primary/5 text-primary shadow-sm' : 'border-slate-200 text-slate-500 hover:bg-slate-50 hover:border-slate-300'"
           >
             {{ option.label }}
-            <div class="text-xs font-normal">${{ option.rate }}</div>
+            <div class="text-xs font-semibold mt-0.5 opacity-80">${{ option.rate | number }}</div>
           </button>
         </div>
 
-        <div class="grid grid-cols-2 gap-3 mb-4">
+        <div class="grid grid-cols-2 gap-4 mb-6">
           <div>
-            <label class="text-xs font-semibold text-text-muted tracking-wide">START DATE *</label>
-            <!-- [min]="minDate" blocks picking any date before today -->
-            <input
-              type="date"
-              [(ngModel)]="startDate"
-              [min]="minDate"
-              class="w-full mt-1 px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30"
-            />
+            <label class="text-[10px] font-bold text-slate-400 tracking-wider uppercase mb-2 block">Start Date *</label>
+            <input type="date" [(ngModel)]="startDate" [min]="minDate" class="w-full px-4 py-2.5 text-sm font-semibold border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-slate-700" />
           </div>
           <div>
-            <label class="text-xs font-semibold text-text-muted tracking-wide">END DATE *</label>
-            <!-- [min]="startDate || minDate" blocks an end date before the start date (or today) -->
-            <input
-              type="date"
-              [(ngModel)]="endDate"
-              [min]="startDate || minDate"
-              class="w-full mt-1 px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30"
-            />
+            <label class="text-[10px] font-bold text-slate-400 tracking-wider uppercase mb-2 block">End Date *</label>
+            <input type="date" [(ngModel)]="endDate" [min]="startDate || minDate" class="w-full px-4 py-2.5 text-sm font-semibold border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-slate-700" />
           </div>
         </div>
 
-        <div *ngIf="rentalDays > 0" class="bg-page rounded-lg p-3 text-sm space-y-1.5">
-          <div class="flex justify-between text-text-muted">
-            <span>Rental Duration</span><span class="text-text font-medium">{{ rentalDays }} days</span>
+        <div *ngIf="rentalDays > 0" class="bg-slate-50 rounded-xl p-4 text-sm space-y-2 border border-slate-100">
+          <div class="flex justify-between text-slate-500">
+            <span class="font-medium">Rental Duration</span><span class="text-slate-900 font-bold">{{ rentalDays }} days</span>
           </div>
-          <div class="flex justify-between text-text-muted">
-            <span>{{ priceType }} Rate</span><span class="text-text font-medium">${{ selectedRate }}</span>
+          <div class="flex justify-between text-slate-500">
+            <span class="font-medium">{{ priceType }} Rate</span><span class="text-slate-900 font-bold">${{ selectedRate | number }}</span>
           </div>
-          <div class="flex justify-between text-text-muted">
-            <span>Billing Units</span><span class="text-text font-medium">{{ billingUnits }} {{ priceType | lowercase }} period(s)</span>
+          <div class="flex justify-between text-slate-500">
+            <span class="font-medium">Billing Units</span><span class="text-slate-900 font-bold">{{ billingUnits }} {{ priceType | lowercase }} period(s)</span>
           </div>
-          <div class="flex justify-between text-text-muted border-t border-border pt-1.5 mt-1.5">
-            <span>Estimated Total</span><span class="text-primary font-bold">${{ estimatedTotal | number }}</span>
+          <div class="flex justify-between text-slate-900 border-t border-slate-200 pt-2 mt-2">
+            <span class="font-bold">Estimated Total</span><span class="text-primary font-black">${{ estimatedTotal | number }}</span>
           </div>
         </div>
       </div>
 
-      <!-- Step 1: Renter/Notes -->
       <div *ngIf="currentStep === 1">
-        <label class="text-xs font-semibold text-text-muted tracking-wide">NOTES</label>
-        <textarea
-          [(ngModel)]="notes"
-          rows="4"
-          placeholder="Special requirements, delivery instructions, or site conditions..."
-          class="w-full mt-1 mb-4 px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30"
-        ></textarea>
+        <label class="text-[10px] font-bold text-slate-400 tracking-wider uppercase mb-2 block">Notes</label>
+        <textarea [(ngModel)]="notes" rows="4" placeholder="Special requirements, delivery instructions, or site conditions..." class="w-full mb-6 px-4 py-3 text-sm font-medium border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none text-slate-700"></textarea>
 
-        <div class="bg-primary/5 rounded-lg p-3 text-sm space-y-1.5">
-          <div class="font-semibold text-text mb-1">Booking Summary</div>
-          <div class="flex justify-between text-text-muted">
-            <span>Asset</span><span class="text-text font-medium">{{ selectedAsset?.assetName }}</span>
+        <div class="bg-primary/5 rounded-xl p-4 text-sm space-y-2 border border-primary/10">
+          <div class="font-black text-slate-900 mb-3 pb-2 border-b border-primary/10">Booking Summary</div>
+          <div class="flex justify-between text-slate-600">
+            <span class="font-medium">Asset</span><span class="text-slate-900 font-bold">{{ selectedAsset?.assetName }}</span>
           </div>
-          <div class="flex justify-between text-text-muted">
-            <span>Plan</span><span class="text-text font-medium">{{ priceType }}</span>
+          <div class="flex justify-between text-slate-600">
+            <span class="font-medium">Plan</span><span class="text-slate-900 font-bold">{{ priceType }}</span>
           </div>
-          <div class="flex justify-between text-text-muted">
-            <span>Duration</span><span class="text-text font-medium">{{ rentalDays }} days ({{ startDate }} &rarr; {{ endDate }})</span>
+          <div class="flex justify-between text-slate-600">
+            <span class="font-medium">Duration</span><span class="text-slate-900 font-bold">{{ rentalDays }} days ({{ startDate }} &rarr; {{ endDate }})</span>
           </div>
-          <div class="flex justify-between text-text-muted">
-            <span>Est. Value</span><span class="text-primary font-bold">${{ estimatedTotal | number }}</span>
+          <div class="flex justify-between text-slate-900 border-t border-primary/10 pt-2 mt-2">
+            <span class="font-bold">Est. Value</span><span class="text-primary font-black">${{ estimatedTotal | number }}</span>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Footer -->
-    <div class="flex justify-between items-center p-5 border-t border-border">
-      <app-button variant="secondary" *ngIf="currentStep > 0" (clicked)="prevStep()">Back</app-button>
-      <div *ngIf="currentStep === 0"></div>
+    <div class="flex justify-between items-center p-5 border-t border-slate-100 bg-slate-50 rounded-b-2xl">
+      <app-button *ngIf="currentStep > 0 && !isWaitlistMode" variant="secondary" (clicked)="prevStep()">Back</app-button>
+      <div *ngIf="currentStep === 0 || isWaitlistMode"></div>
 
       <div class="flex gap-2 ml-auto">
-        <app-button variant="secondary" (clicked)="onCancel()">Cancel</app-button>
-        <app-button *ngIf="currentStep < 1" variant="primary" (clicked)="nextStep()">
+        <button (click)="onCancel()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm">
+           Cancel
+        </button>
+        
+        <button *ngIf="isWaitlistMode" [disabled]="isSubmitting || !startDate || !endDate" (click)="onCreate()" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-primary hover:bg-primary-hover transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5">
+           <lucide-icon name="list-ordered" class="w-3.5 h-3.5"></lucide-icon>
+           {{ isSubmitting ? 'Joining...' : 'Join Waiting List' }}
+        </button>
+
+        <button *ngIf="!isWaitlistMode && currentStep < 1" (click)="nextStep()" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-primary hover:bg-primary-hover transition-all shadow-sm">
           Continue
-        </app-button>
-        <app-button
-          *ngIf="currentStep === 1"
-          variant="primary"
-          [disabled]="isSubmitting"
-          (clicked)="onCreate()"
-        >
-          {{ isSubmitting ? 'Creating...' : 'Create Booking' }}
-        </app-button>
+        </button>
+        <button *ngIf="!isWaitlistMode && currentStep === 1" [disabled]="isSubmitting" (click)="onCreate()" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-primary hover:bg-primary-hover transition-all shadow-sm disabled:opacity-50">
+          {{ isSubmitting ? 'Processing...' : 'Confirm Booking' }}
+        </button>
       </div>
     </div>
   </div>
