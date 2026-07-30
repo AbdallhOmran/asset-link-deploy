@@ -24,7 +24,8 @@ import {
   Image,
   BriefcaseBusiness,
   Users,
-  Calendar
+  Calendar,
+  Inbox
 } from 'lucide-angular';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -61,6 +62,8 @@ import { DeliveryProgressComponent } from './pages/delivery-tracking/components/
 import { ShipmentDetailsComponent } from './pages/delivery-tracking/components/shipment-details/shipment-details.component';
 import { DeliveryEventLogComponent } from './pages/delivery-tracking/components/delivery-event-log/delivery-event-log.component';
 import { SmartMatchesComponent } from './pages/smart-matches/smart-matches.component';
+import { OrdersComponent } from './pages/orders/orders.component';
+import { AcceptOfferModalComponent } from './pages/orders/components/accept-offer-modal/accept-offer-modal.component';
 
 @NgModule({
   declarations: [
@@ -92,7 +95,9 @@ import { SmartMatchesComponent } from './pages/smart-matches/smart-matches.compo
     NewBookingModalComponent,
     DashboardLayoutComponent,
     EditCompanyProfileComponent,
-    SmartMatchesComponent
+    SmartMatchesComponent,
+    OrdersComponent,
+    AcceptOfferModalComponent
   ],
   imports: [
     BrowserModule,
@@ -122,7 +127,8 @@ import { SmartMatchesComponent } from './pages/smart-matches/smart-matches.compo
       Image,
       BriefcaseBusiness,
       Users,
-      Calendar
+      Calendar,
+      Inbox
     })
   ],
   providers: [

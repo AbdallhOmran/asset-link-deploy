@@ -2,6 +2,15 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+// Shape of the first offer sent when starting a new negotiation
+export interface VersionData {
+  rentPrice: number;
+  securityDeposit: number;
+  rentalDuration: number;
+  durationUnit: 'Daily' | 'Weekly' | 'Monthly'; // TODO: confirm exact enum values against version.model.js
+  notes?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -28,5 +37,10 @@ export class NegotiationService {
 
   rejectOffer(data: any): Observable<any> {
     return this.http.patch(`${this.api}/${data.negotiationId}/reject`, data);
+  }
+
+  // New method — needed for the Orders page (starting a negotiation from a Pending booking)
+  createNegotiation(negotiationData: any, versionData: VersionData): Observable<any> {
+    return this.http.post(this.api, { negotiationData, versionData });
   }
 }
