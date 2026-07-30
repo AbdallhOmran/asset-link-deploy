@@ -13,7 +13,9 @@ import { CompanyProfileComponent } from './pages/company-profile/company-profile
 import { PaymentsEscrowComponent } from './pages/payments-escrow/payments-escrow.component';
 import { EditCompanyProfileComponent } from './pages/edit-company-profile/edit-company-profile.component';
 import { DashboardLayoutComponent } from './shared/layout/dashboard-layout/dashboard-layout.component';
-
+import { AssetDetailsComponent } from './pages/asset-details/asset-details.component';
+import { SmartMatchesComponent } from './pages/smart-matches/smart-matches.component';
+import { AddAssetComponent } from './pages/add-asset/add-asset.component';
 const routes: Routes = [
 
   {
@@ -45,6 +47,10 @@ const routes: Routes = [
         path: 'dashboard',
         component: AssetDashboardComponent
       },
+      { path: 'assets/add', component: AddAssetComponent },
+      { path: 'assets/edit/:id', component: AddAssetComponent },
+      { path: 'assets/details/:id', component: AssetDetailsComponent },
+      { path: 'smart-matches', component: SmartMatchesComponent },
       {
         path: 'company-profile',
         component: CompanyProfileComponent
@@ -93,10 +99,23 @@ const routes: Routes = [
             .then(m => m.AddAssetModule)
       },
       {
+        path: 'assets/edit/:id',
+        loadChildren: () =>
+          import('./pages/add-asset/add-asset.module')
+            .then(m => m.AddAssetModule)
+      },
+      {
         path: 'assets/category/add',
         loadChildren: () =>
           import('./pages/add-category/add-category.module')
             .then(m => m.AddCategoryModule)
+      },
+
+      {
+        path: 'assets/details/:id',
+        loadChildren: () =>
+          import('./pages/asset-details/asset-details.module')
+            .then(m => m.AssetDetailsModule)
       },
 
       { 
@@ -116,10 +135,10 @@ const routes: Routes = [
     ]
   },
 
-  {
-    path: '**',
-    redirectTo: 'login'
-  }
+  // {
+  //   path: '**',
+  //   redirectTo: 'login'
+  // }
 ];
 
 @NgModule({
