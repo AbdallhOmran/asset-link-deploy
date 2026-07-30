@@ -23,9 +23,6 @@ import { RegisterStateService } from './register-state.service';
     ReactiveFormsModule,
     SharedModule,
     RegisterRoutingModule
-  ],
-  providers: [
-    RegisterStateService
   ]
 })
 export class RegisterModule {}

@@ -25,7 +25,7 @@ export class StepContactComponent implements OnInit {
       lastName: [saved.lastName || '', [Validators.required]],
       jobTitle: [saved.jobTitle || '', [Validators.required]],
       email: [saved.email || '', [Validators.required, Validators.email]],
-      phone: [saved.phone || '']
+      phone: [saved.phone || '', [Validators.required, Validators.pattern(/^[0-9]{10,15}$/)]]
     });
   }
 
