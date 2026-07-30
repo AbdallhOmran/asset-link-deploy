@@ -1,7 +1,4 @@
-<div
-  *ngIf="isOpen"
-  class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
->
+<div *ngIf="isOpen" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
   <div class="bg-white rounded-card w-full max-w-lg max-h-[90vh] overflow-y-auto">
     <!-- Header -->
     <div class="flex items-center justify-between p-5 border-b border-border">
@@ -34,27 +31,45 @@
         {{ errorMessage }}
       </p>
 
-      <!-- Step 0: Dates -->
+      <!-- Step 0: Dates + Pricing Plan -->
       <div *ngIf="currentStep === 0">
         <div class="bg-page rounded-lg p-3 mb-4">
           <div class="font-semibold text-sm text-text">{{ selectedAsset?.assetName }}</div>
-          <div class="text-xs text-primary font-medium">${{ dailyRate }}/day</div>
+        </div>
+
+        <!-- Pricing plan selector (Daily / Weekly / Monthly) -->
+        <label class="text-xs font-semibold text-text-muted tracking-wide">PRICING PLAN *</label>
+        <div class="flex gap-2 mt-1 mb-4">
+          <button
+            *ngFor="let option of availablePriceTypes"
+            type="button"
+            (click)="priceType = option.value"
+            class="flex-1 border rounded-lg py-2 text-sm font-medium transition-colors"
+            [ngClass]="priceType === option.value ? 'border-primary bg-primary/5 text-primary' : 'border-border text-text-muted hover:bg-page'"
+          >
+            {{ option.label }}
+            <div class="text-xs font-normal">${{ option.rate }}</div>
+          </button>
         </div>
 
         <div class="grid grid-cols-2 gap-3 mb-4">
           <div>
             <label class="text-xs font-semibold text-text-muted tracking-wide">START DATE *</label>
+            <!-- [min]="minDate" blocks picking any date before today -->
             <input
               type="date"
               [(ngModel)]="startDate"
+              [min]="minDate"
               class="w-full mt-1 px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
           </div>
           <div>
             <label class="text-xs font-semibold text-text-muted tracking-wide">END DATE *</label>
+            <!-- [min]="startDate || minDate" blocks an end date before the start date (or today) -->
             <input
               type="date"
               [(ngModel)]="endDate"
+              [min]="startDate || minDate"
               class="w-full mt-1 px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
           </div>
@@ -65,7 +80,10 @@
             <span>Rental Duration</span><span class="text-text font-medium">{{ rentalDays }} days</span>
           </div>
           <div class="flex justify-between text-text-muted">
-            <span>Daily Rate</span><span class="text-text font-medium">${{ dailyRate }}</span>
+            <span>{{ priceType }} Rate</span><span class="text-text font-medium">${{ selectedRate }}</span>
+          </div>
+          <div class="flex justify-between text-text-muted">
+            <span>Billing Units</span><span class="text-text font-medium">{{ billingUnits }} {{ priceType | lowercase }} period(s)</span>
           </div>
           <div class="flex justify-between text-text-muted border-t border-border pt-1.5 mt-1.5">
             <span>Estimated Total</span><span class="text-primary font-bold">${{ estimatedTotal | number }}</span>
@@ -89,6 +107,9 @@
             <span>Asset</span><span class="text-text font-medium">{{ selectedAsset?.assetName }}</span>
           </div>
           <div class="flex justify-between text-text-muted">
+            <span>Plan</span><span class="text-text font-medium">{{ priceType }}</span>
+          </div>
+          <div class="flex justify-between text-text-muted">
             <span>Duration</span><span class="text-text font-medium">{{ rentalDays }} days ({{ startDate }} &rarr; {{ endDate }})</span>
           </div>
           <div class="flex justify-between text-text-muted">
@@ -105,11 +126,7 @@
 
       <div class="flex gap-2 ml-auto">
         <app-button variant="secondary" (clicked)="onCancel()">Cancel</app-button>
-        <app-button
-          *ngIf="currentStep < 1"
-          variant="primary"
-          (clicked)="nextStep()"
-        >
+        <app-button *ngIf="currentStep < 1" variant="primary" (clicked)="nextStep()">
           Continue
         </app-button>
         <app-button

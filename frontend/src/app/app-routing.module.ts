@@ -16,6 +16,7 @@ import { DashboardLayoutComponent } from './shared/layout/dashboard-layout/dashb
 import { AssetDetailsComponent } from './pages/asset-details/asset-details.component';
 import { SmartMatchesComponent } from './pages/smart-matches/smart-matches.component';
 import { AddAssetComponent } from './pages/add-asset/add-asset.component';
+import { OrdersComponent } from './pages/orders/orders.component';
 const routes: Routes = [
 
   {
@@ -67,6 +68,10 @@ const routes: Routes = [
         path: 'bookings',
         component: BookingsComponent
       },
+{
+  path: 'orders',
+  component: OrdersComponent
+},
       {
         path: 'contracts',
         component: ContractsComponent

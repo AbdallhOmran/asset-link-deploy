@@ -1,13 +1,15 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { BookingService } from '../../../../services/booking.service';
 import { AssetService } from '../../../../services/asset.service';
 import { AuthService } from '../../../../services/auth.service';
+
+type PriceType = 'Daily' | 'Weekly' | 'Monthly';
 
 @Component({
   selector: 'app-new-booking-modal',
   templateUrl: './new-booking-modal.component.html',
 })
-export class NewBookingModalComponent implements OnInit {
+export class NewBookingModalComponent implements OnInit, OnChanges {
   @Input() isOpen = false;
   @Input() preselectedAssetId?: string;
   @Output() closed = new EventEmitter<void>();
@@ -17,15 +19,16 @@ export class NewBookingModalComponent implements OnInit {
   isSubmitting = false;
   errorMessage = '';
 
-  // Asset Info
-  assets: any[] = [];
+  // Asset info
   selectedAsset: any = null;
 
-  // Step 0: Dates
+  // Step 0: Dates + price type
   startDate = '';
   endDate = '';
+  priceType: PriceType = 'Daily'; // matches booking.model.js priceType enum
+  minDate = ''; // used as [min] on the date inputs to block past dates
 
-  // Step 1: Renter
+  // Step 1: Renter/notes
   notes = '';
 
   constructor(
@@ -34,7 +37,10 @@ export class NewBookingModalComponent implements OnInit {
     private authService: AuthService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // today's date in yyyy-MM-dd, used as the min attribute on date inputs
+    this.minDate = new Date().toISOString().split('T')[0];
+  }
 
   ngOnChanges(changes: any): void {
     if (changes.isOpen || changes.preselectedAssetId) {
@@ -48,17 +54,39 @@ export class NewBookingModalComponent implements OnInit {
 
   fetchAssetDetails() {
     if (!this.preselectedAssetId) return;
-    
+
     this.assetService.getAssetDetails(this.preselectedAssetId).subscribe({
       next: (res: any) => {
-        // Handle both possible wrapper structures based on API response
         this.selectedAsset = res?.data ?? res;
+        // default to the first pricing plan actually available on this asset
+        this.priceType = this.availablePriceTypes[0]?.value || 'Daily';
       },
       error: () => {
         this.errorMessage = 'Failed to load asset details.';
         this.selectedAsset = null;
-      }
+      },
     });
+  }
+
+  // which price options actually exist on this asset (matches asset.model.js: price = { daily, weekly, monthly })
+  get availablePriceTypes(): { value: PriceType; label: string; rate: number }[] {
+    if (!this.selectedAsset?.price) return [];
+    const options: { value: PriceType; label: string; rate: number }[] = [];
+    if (this.selectedAsset.price.daily) {
+      options.push({ value: 'Daily', label: 'Daily', rate: this.selectedAsset.price.daily });
+    }
+    if (this.selectedAsset.price.weekly) {
+      options.push({ value: 'Weekly', label: 'Weekly', rate: this.selectedAsset.price.weekly });
+    }
+    if (this.selectedAsset.price.monthly) {
+      options.push({ value: 'Monthly', label: 'Monthly', rate: this.selectedAsset.price.monthly });
+    }
+    return options;
+  }
+
+  get selectedRate(): number {
+    const option = this.availablePriceTypes.find((o) => o.value === this.priceType);
+    return option?.rate || 0;
   }
 
   get rentalDays(): number {
@@ -71,13 +99,17 @@ export class NewBookingModalComponent implements OnInit {
     return days > 0 ? days : 0;
   }
 
-  get dailyRate(): number {
-    if (!this.selectedAsset || !this.selectedAsset.price) return 0;
-    return this.selectedAsset.price.daily || 0;
+  // number of billing units (days/weeks/months) based on priceType,
+  // so the total is computed correctly regardless of which plan is chosen
+  get billingUnits(): number {
+    if (this.rentalDays === 0) return 0;
+    if (this.priceType === 'Daily') return this.rentalDays;
+    if (this.priceType === 'Weekly') return Math.ceil(this.rentalDays / 7);
+    return Math.ceil(this.rentalDays / 30); // Monthly
   }
 
   get estimatedTotal(): number {
-    return this.rentalDays * this.dailyRate;
+    return this.billingUnits * this.selectedRate;
   }
 
   nextStep() {
@@ -86,6 +118,11 @@ export class NewBookingModalComponent implements OnInit {
     if (this.currentStep === 0) {
       if (!this.startDate || !this.endDate) {
         this.errorMessage = 'Please select both start and end dates.';
+        return;
+      }
+      // extra safety check even though the inputs already have [min]
+      if (this.startDate < this.minDate) {
+        this.errorMessage = 'Start date cannot be in the past.';
         return;
       }
       if (this.rentalDays <= 0) {
@@ -136,7 +173,7 @@ export class NewBookingModalComponent implements OnInit {
       ownerCompanyId: this.selectedAsset.companyId?._id || this.selectedAsset.companyId,
       startDate: this.startDate,
       endDate: this.endDate,
-      priceType: 'Daily',
+      priceType: this.priceType, // now uses the actually selected plan
       totalPrice: this.estimatedTotal,
       notes: this.notes,
     };
@@ -145,7 +182,6 @@ export class NewBookingModalComponent implements OnInit {
     this.bookingService.createBooking(bookingData).subscribe({
       next: (res: any) => {
         this.isSubmitting = false;
-        // Optionally show success toast here
         this.bookingCreated.emit(res.booking);
         this.resetForm();
         this.closed.emit();
@@ -162,6 +198,7 @@ export class NewBookingModalComponent implements OnInit {
     this.selectedAsset = null;
     this.startDate = '';
     this.endDate = '';
+    this.priceType = 'Daily';
     this.notes = '';
     this.errorMessage = '';
   }

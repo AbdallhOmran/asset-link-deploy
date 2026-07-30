@@ -133,7 +133,12 @@ export class SidebarComponent implements OnInit {
       title: 'Company',
       icon: 'building-2',
       route: '/app/company-profile'
-    }
+    },
+  {
+    title: 'Orders',
+    icon: 'inbox',
+    route: '/app/orders'
+  }
   ];
 
   logout(): void {
