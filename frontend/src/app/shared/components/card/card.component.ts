@@ -65,12 +65,6 @@ export class CardComponent {
     }
   }
 
-  get bookButtonClass(): string {
-    return this.isAvailable
-      ? 'bg-blue-600 hover:bg-blue-700 text-white'
-      : 'bg-slate-300 text-slate-600 cursor-not-allowed';
-  }
-
   get buttonText(): string {
     return this.isAvailable ? 'Book Now' : 'Unavailable';
   }

@@ -106,13 +106,14 @@
 
     <!-- Actions -->
     <div class="flex items-center gap-2">
-      <app-button variant="secondary" class="flex-1 !py-1.5 !text-[10px] !font-semibold">
+      <app-button variant="secondary" class="flex-1" [fullWidth]="true" (clicked)="bookClick.emit()">
         Details
       </app-button>
       <app-button
         [variant]="isAvailable ? 'primary' : 'secondary'"
-        class="flex-1 !py-1.5 !text-[10px] !font-semibold"
-        [ngClass]="bookButtonClass"
+        class="flex-1"
+        [fullWidth]="true"
+        [disabled]="!isAvailable"
         (clicked)="onBookClick($event)"
       >
         {{ buttonText }}
