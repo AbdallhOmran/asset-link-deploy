@@ -72,57 +72,62 @@ export class SidebarComponent implements OnInit {
   }
 
   platformItems: SidebarItem[] = [
-    {
-      title: 'Dashboard',
-      icon: 'layout-dashboard',
-      route: '/app/dashboard'
-    },
-    {
-      title: 'Assets',
-      icon: 'boxes',
-      route: '/app/assets/add',
-      badge: 8
-    },
-    {
-      title: 'Bookings',
-      icon: 'calendar-days',
-      route: '/app/bookings',
-      badge: 3
-    },
-    {
-      title: 'Contracts',
-      icon: 'file-text',
-      route: '/app/contracts'
-    },
-    {
-      title: 'Negotiations',
-      icon: 'messages-square',
-      route: '/app/negotiation-room',
-      badge: 2
-    },
-    {
-      title: 'Delivery',
-      icon: 'truck',
-      route: '/app/delivery-tracking',
-      badge: 1
-    },
-    {
-      title: 'Payments',
-      icon: 'wallet',
-      route: '/app/payments-escrow'
-    },
-    {
-      title: 'Inspections',
-      icon: 'clipboard-check',
-      route: '/app/inspections'
-    },
-    {
-      title: 'Maintenance',
-      icon: 'wrench',
-      route: '/app/maintenance-schedule'
-    }
-  ];
-
+  {
+    title: 'Dashboard',
+    icon: 'layout-dashboard',
+    route: '/app/dashboard'
+  },
+  {
+    title: 'Assets',
+    icon: 'boxes',
+    route: '/app/assets/add',
+    badge: 8
+  },
+  {
+    title: 'Smart Matches',
+    icon: 'sparkles',
+    route: '/app/smart-matches',
+    badge: 6
+  },
+  {
+    title: 'Bookings',
+    icon: 'calendar-days',
+    route: '/app/bookings',
+    badge: 3
+  },
+  {
+    title: 'Contracts',
+    icon: 'file-text',
+    route: '/app/contracts'
+  },
+  {
+    title: 'Negotiations',
+    icon: 'messages-square',
+    route: '/app/negotiation-room',
+    badge: 2
+  },
+  {
+    title: 'Delivery',
+    icon: 'truck',
+    route: '/app/delivery-tracking',
+    badge: 1
+  },
+  {
+    title: 'Payments',
+    icon: 'wallet',
+    route: '/app/payments-escrow'
+  },
+  {
+    title: 'Inspections',
+    icon: 'clipboard-check',
+    route: '/app/inspections'
+  },
+  {
+    title: 'Maintenance',
+    icon: 'wrench',
+    route: '/app/maintenance-schedule'
+  }
+];
   accountItems: SidebarItem[] = [
     {
       title: 'Company',

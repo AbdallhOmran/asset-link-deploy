@@ -18,7 +18,6 @@ export class CompanyService {
     return this.http.put(`${this.baseUrl}/profile`, data);
   }
   getMyAssets() {
-  return this.http.get('http://localhost:3000/api/assets/my-assets');
-}
-
+    return this.http.get(`${this.baseUrl.replace('company', 'asset')}/my-assets`);
+  }
 }

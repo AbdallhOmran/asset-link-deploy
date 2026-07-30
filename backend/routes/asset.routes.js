@@ -15,12 +15,12 @@ const {
 } = require("../controllers/asset.controller");
 
 router.post("/", authMiddleware, addAsset);
-router.get("/", getAssets);
-router.get("/search", searchAssets);
+router.get("/",authMiddleware, getAssets);
+router.get("/search", authMiddleware, searchAssets);
 router.get("/my-assets", authMiddleware, getMyAssets);
-router.get("/recommended", getRecommendedAssets);
-router.get("/:id/availability", getAssetAvailability);
-router.get("/:id", getAssetDetails);
+router.get("/recommended",authMiddleware, getRecommendedAssets);
+router.get("/:id/availability",authMiddleware, getAssetAvailability);
+router.get("/:id",authMiddleware, getAssetDetails);
 router.put("/:id", authMiddleware, updateAsset);
 
 module.exports = router;

@@ -419,7 +419,7 @@
         Listed Assets
       </h2>
 
-      <app-button>
+      <app-button (clicked)="goToAddAsset()">
         + Add Asset
       </app-button>
 
@@ -439,7 +439,7 @@
             <th class="px-6 py-4 text-left">Daily Rate</th>
             <th class="px-6 py-4 text-left">Location</th>
             <th class="px-6 py-4 text-left">Status</th>
-            <th class="px-6 py-4 text-left">Rating</th>
+            <th class="px-6 py-4 text-left">Actions</th>
           </tr>
 
         </thead>
@@ -482,9 +482,19 @@
 
             </td>
 
-            <!-- <td class="px-6 py-5 text-yellow-500">
-              ★ {{asset.rating}}
-            </td> -->
+            <td class="px-6 py-5">
+              <div class="flex items-center gap-2">
+                <!-- Details -->
+                <button (click)="goToAssetDetails(asset._id)" class="w-8 h-8 flex items-center justify-center rounded-full bg-teal-400 text-white hover:bg-teal-500 transition-colors shadow-sm" title="View Details">
+                  <lucide-icon name="eye" class="w-4 h-4"></lucide-icon>
+                </button>
+                
+                <!-- Edit -->
+                <button (click)="goToEditAsset(asset._id)" class="w-8 h-8 flex items-center justify-center rounded-full bg-amber-400 text-white hover:bg-amber-500 transition-colors shadow-sm" title="Edit Asset">
+                  <lucide-icon name="edit" class="w-4 h-4"></lucide-icon>
+                </button>
+              </div>
+            </td>
 
           </tr>
 

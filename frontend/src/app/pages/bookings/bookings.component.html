@@ -42,10 +42,6 @@
     <app-button variant="secondary" (clicked)="toggleFilterPanel()">
       <span>☰</span> Filter
     </app-button>
-
-    <app-button variant="primary" (clicked)="openNewBookingModal()">
-      <span>+</span> New Booking
-    </app-button>
   </div>
 
   <p *ngIf="isLoading" class="text-sm text-text-muted mb-4">Loading...</p>
@@ -60,9 +56,3 @@
     No bookings found.
   </p>
 </div>
-
-<app-new-booking-modal
-  [isOpen]="isModalOpen"
-  (closed)="closeNewBookingModal()"
-  (bookingCreated)="onBookingCreated($event)"
-></app-new-booking-modal>

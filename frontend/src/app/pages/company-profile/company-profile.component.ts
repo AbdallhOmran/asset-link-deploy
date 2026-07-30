@@ -85,7 +85,19 @@ assets: any[] = [];
     }
   });
 }
-goToEditProfile(): void {
-  this.router.navigate(['/app/edit-company-profile']);
-}
+  goToEditProfile(): void {
+    this.router.navigate(['/app/edit-company-profile']);
+  }
+
+  goToAddAsset(): void {
+    this.router.navigate(['/app/assets/add']);
+  }
+  
+  goToEditAsset(id: string): void {
+    this.router.navigate(['/app/assets/edit', id]);
+  }
+  
+  goToAssetDetails(id: string): void {
+    this.router.navigate(['/app/assets/details', id]);
+  }
 }

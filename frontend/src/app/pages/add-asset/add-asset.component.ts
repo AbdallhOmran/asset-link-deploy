@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AssetService } from '../../services/asset.service';
 import { AuthService } from '../../services/auth.service';
 import { StepperStep } from '../../shared/components/stepper/stepper.component';
@@ -26,6 +26,9 @@ export class AddAssetComponent implements OnInit {
 
   uploadedImages: string[] = [];
 
+  isEditMode = false;
+  editAssetId: string | null = null;
+
   /** 4 sections — maps exactly to the asset model fields */
   navSections: NavSection[] = [
     { id: 'basic-info', label: 'Basic Information', icon: 'clipboard-list' },
@@ -43,25 +46,60 @@ export class AddAssetComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
+    private route: ActivatedRoute,
     private assetService: AssetService,
     private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      // ── Basic Info (model: assetCode, assetCategoryId, assetName, description)
+      // 📦 Basic Info (model: assetCode, assetCategoryId, assetName, description)
       assetName:       ['', [Validators.required, Validators.minLength(2)]],
       assetCategoryId: ['', Validators.required],
       assetCode:       ['', Validators.required],
       description:     ['', [Validators.required, Validators.minLength(2)]],
 
-      // ── Pricing (model: price.daily, price.weekly, price.monthly)
+      // 💰 Pricing (model: price.daily, price.weekly, price.monthly)
       priceDaily:   [null, [Validators.required, Validators.min(0)]],
       priceWeekly:  [null, Validators.min(0)],
       priceMonthly: [null, Validators.min(0)],
 
-      // ── Location (model: location)
+      // 📍 Location (model: location)
       location: [''],
+    });
+
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.isEditMode = true;
+        this.editAssetId = id;
+        this.loadAssetData(id);
+      }
+    });
+  }
+
+  loadAssetData(id: string): void {
+    this.assetService.getAssetDetails(id).subscribe({
+      next: (res: any) => {
+        const asset = res.data || res;
+        if (!asset) return;
+
+        this.form.patchValue({
+          assetName: asset.assetName || asset.name,
+          assetCategoryId: asset.assetCategoryId?._id || asset.assetCategoryId,
+          assetCode: asset.assetCode || asset.code,
+          description: asset.description,
+          priceDaily: asset.price?.daily || asset.price,
+          priceWeekly: asset.price?.weekly,
+          priceMonthly: asset.price?.monthly,
+          location: asset.location
+        });
+
+        if (asset.assetImages && asset.assetImages.length > 0) {
+          this.uploadedImages = [...asset.assetImages];
+        }
+      },
+      error: (err) => console.error('Failed to load asset', err)
     });
   }
 
@@ -94,7 +132,7 @@ export class AddAssetComponent implements OnInit {
 
   confirmDiscard(): void {
     this.showDiscardModal = false;
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/app/dashboard']);
   }
 
   register(): void {
@@ -127,16 +165,30 @@ export class AddAssetComponent implements OnInit {
     this.isSubmitting = true;
     this.submitError = null;
 
-    this.assetService.addAsset(payload).subscribe({
-      next: () => {
-        this.isSubmitting = false;
-        this.submitSuccess = true;
-        setTimeout(() => this.router.navigate(['/dashboard']), 1500);
-      },
-      error: (err) => {
-        this.isSubmitting = false;
-        this.submitError = err?.error?.message ?? 'Failed to register asset. Please try again.';
-      },
-    });
+    if (this.isEditMode && this.editAssetId) {
+      this.assetService.updateAsset(this.editAssetId, payload).subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.submitSuccess = true;
+          setTimeout(() => this.router.navigate(['/app/company-profile']), 1500);
+        },
+        error: (err) => {
+          this.isSubmitting = false;
+          this.submitError = err?.error?.message ?? 'Failed to update asset. Please try again.';
+        },
+      });
+    } else {
+      this.assetService.addAsset(payload).subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.submitSuccess = true;
+          setTimeout(() => this.router.navigate(['/app/dashboard']), 1500);
+        },
+        error: (err) => {
+          this.isSubmitting = false;
+          this.submitError = err?.error?.message ?? 'Failed to register asset. Please try again.';
+        },
+      });
+    }
   }
 }
