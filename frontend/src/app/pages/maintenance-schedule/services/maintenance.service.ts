@@ -14,8 +14,8 @@ import {
   providedIn: 'root',
 })
 export class MaintenanceService {
-  private readonly baseUrl = 'http://localhost:3000/api/maintenances';
-  private readonly assetUrl = 'http://localhost:3000/api/asset';
+  private readonly baseUrl = 'https://asset-link-api.vercel.app/api/maintenances';
+  private readonly assetUrl = 'https://asset-link-api.vercel.app/api/asset';
 
   private recordsSubject = new BehaviorSubject<MaintenanceRecord[]>([]);
   private assetsSubject = new BehaviorSubject<AssetMaintenanceSummary[]>([]);

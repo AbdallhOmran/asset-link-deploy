@@ -13,9 +13,9 @@ import {
   providedIn: 'root',
 })
 export class InspectionService {
-  private readonly baseUrl = 'http://localhost:3000/api/inspection';
-  private readonly bookingUrl = 'http://localhost:3000/api/bookings';
-  private readonly assetUrl = 'http://localhost:3000/api/asset';
+  private readonly baseUrl = 'https://asset-link-api.vercel.app/api/inspection';
+  private readonly bookingUrl = 'https://asset-link-api.vercel.app/api/bookings';
+  private readonly assetUrl = 'https://asset-link-api.vercel.app/api/asset';
 
   // Reactive state
   private inspectionsSubject = new BehaviorSubject<InspectionRecord[]>([]);

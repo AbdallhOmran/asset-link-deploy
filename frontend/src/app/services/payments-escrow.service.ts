@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class PaymentsEscrowService {
 
-  private apiUrl = 'http://localhost:3000/api/payment';
+  private apiUrl = 'https://asset-link-api.vercel.app/api/payment';
 
   constructor(private http: HttpClient) {}
 
