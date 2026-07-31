@@ -104,6 +104,37 @@
     </div>
   </div>
 
+  <!-- Grid: Tax ID & CR -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <!-- Tax ID -->
+    <div>
+      <label for="taxRegister" class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">
+        Tax ID
+      </label>
+      <input
+        id="taxRegister"
+        type="text"
+        formControlName="taxRegister"
+        placeholder="e.g., 123-456-789"
+        class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-slate-900 placeholder-slate-400"
+      />
+    </div>
+
+    <!-- Commercial Registration Number -->
+    <div>
+      <label for="commercialRegistrationNumber" class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">
+        Commercial Registration Number
+      </label>
+      <input
+        id="commercialRegistrationNumber"
+        type="text"
+        formControlName="commercialRegistrationNumber"
+        placeholder="e.g., CR-987654321"
+        class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-slate-900 placeholder-slate-400"
+      />
+    </div>
+  </div>
+
   <!-- Company Website (Optional) -->
   <div>
     <label for="website" class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">
