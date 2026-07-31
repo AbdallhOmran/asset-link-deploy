@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ContractService } from '../../services/contract.service';
 import { AuthService } from '../../services/auth.service';
+import { PaymentsEscrowService } from '../../services/payments-escrow.service';
+import { DeliveryService } from '../../services/delivery.service';
 
 @Component({
   selector: 'app-contracts',
@@ -19,6 +21,16 @@ export class ContractsComponent implements OnInit {
   companyId = '';
   actionLoading = false;
 
+  // Delivery Modal State
+  showDeliveryModal = false;
+  deliveryData = {
+    pickupLocation: '',
+    deliveryLocation: '',
+    driverName: '',
+    driverPhone: '',
+    estimatedArrival: ''
+  };
+
   statusOptions = ['All', 'Draft', 'Active', 'Approved', 'Rejected', 'Completed'];
 
   columns = [
@@ -32,7 +44,9 @@ export class ContractsComponent implements OnInit {
 
   constructor(
     private contractService: ContractService,
-    private authService: AuthService
+    private authService: AuthService,
+    private paymentService: PaymentsEscrowService,
+    private deliveryService: DeliveryService
   ) {}
 
   ngOnInit(): void {
@@ -140,6 +154,83 @@ export class ContractsComponent implements OnInit {
         this.actionLoading = false;
         this.errorMessage = err.error?.error || err.error?.message || 'Failed to reject contract';
       },
+    });
+  }
+
+  isRenter(contract: any): boolean {
+    if (!contract) return false;
+    const renterId = contract.companyId?._id || contract.companyId;
+    return this.companyId === renterId;
+  }
+
+  payContract() {
+    if (!this.selectedContract) return;
+    this.actionLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+    const bookingId = this.selectedContract.bookingId?._id || this.selectedContract.bookingId;
+
+    this.paymentService.createPayment(bookingId).subscribe({
+      next: () => {
+        this.paymentService.completePayment(bookingId).subscribe({
+          next: () => {
+            this.actionLoading = false;
+            this.successMessage = 'Payment successful! Escrow created.';
+            this.selectedContract.status = 'Approved';
+            this.loadContracts();
+          },
+          error: (err) => {
+            this.actionLoading = false;
+            this.errorMessage = err.error?.error || err.error?.message || 'Failed to complete payment';
+          }
+        });
+      },
+      error: (err) => {
+        this.actionLoading = false;
+        this.errorMessage = err.error?.error || err.error?.message || 'Failed to initiate payment';
+      }
+    });
+  }
+
+  openDeliveryModal() {
+    this.showDeliveryModal = true;
+    this.deliveryData = {
+      pickupLocation: '',
+      deliveryLocation: '',
+      driverName: '',
+      driverPhone: '',
+      estimatedArrival: ''
+    };
+  }
+
+  closeDeliveryModal() {
+    this.showDeliveryModal = false;
+  }
+
+  submitDelivery() {
+    if (!this.selectedContract) return;
+    this.actionLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+    const bookingId = this.selectedContract.bookingId?._id || this.selectedContract.bookingId;
+
+    const payload = {
+      ...this.deliveryData,
+      bookingId,
+      contractId: this.selectedContract._id
+    };
+
+    this.deliveryService.createDelivery(payload).subscribe({
+      next: () => {
+        this.actionLoading = false;
+        this.successMessage = 'Delivery initiated successfully!';
+        this.showDeliveryModal = false;
+        // Optionally reload contracts or update UI
+      },
+      error: (err) => {
+        this.actionLoading = false;
+        this.errorMessage = err.error?.error || err.error?.message || 'Failed to create delivery';
+      }
     });
   }
 
