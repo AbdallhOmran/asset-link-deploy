@@ -19,7 +19,7 @@ export class AcceptOfferModalComponent implements OnChanges {
   @Input() isOpen = false;
   @Input() order: any = null;
   @Output() closed = new EventEmitter<void>();
-  @Output() negotiationStarted = new EventEmitter<void>();
+  @Output() negotiationStarted = new EventEmitter<any>();
 
   isSubmitting = false;
   errorMessage = '';
@@ -75,58 +75,57 @@ export class AcceptOfferModalComponent implements OnChanges {
   }
 
   onSubmit(): void {
-  this.errorMessage = '';
+    this.errorMessage = '';
 
-  if (this.rentPrice == null || this.rentPrice <= 0) {
-    this.errorMessage = 'Rent price is required';
-    return;
+    if (this.rentPrice == null || this.rentPrice <= 0) {
+      this.errorMessage = 'Rent price is required';
+      return;
+    }
+    if (this.securityDeposit == null || this.securityDeposit < 0) {
+      this.errorMessage = 'Security deposit is required';
+      return;
+    }
+    if (!this.rentalDuration || this.rentalDuration <= 0) {
+      this.errorMessage = 'Rental duration is required';
+      return;
+    }
+
+    const loggedInCompany = this.authService.getCompany();
+    const companyId = loggedInCompany?._id || loggedInCompany?.id;
+
+    if (!companyId) {
+      this.errorMessage = 'Session expired. Please log in again.';
+      return;
+    }
+
+    const negotiationData = {
+      ownerCompany: companyId,
+      renterCompany: this.order.companyId?._id || this.order.companyId,
+      bookingId: this.order._id,
+    };
+
+    const versionData: VersionData = {
+      rentPrice: this.rentPrice,
+      securityDeposit: this.securityDeposit,
+      rentalDuration: this.rentalDuration,
+      durationUnit: this.durationUnit,
+      notes: this.notes,
+    };
+
+    this.isSubmitting = true;
+    this.negotiationService
+      .createNegotiation(negotiationData, versionData)
+      .subscribe({
+        next: (res: any) => {
+          this.isSubmitting = false;
+
+          this.negotiationStarted.emit(res.data);
+        },
+        error: (err) => {
+          this.isSubmitting = false;
+          this.errorMessage =
+            err.error?.message || 'Failed to start negotiation';
+        },
+      });
   }
-  if (this.securityDeposit == null || this.securityDeposit < 0) {
-    this.errorMessage = 'Security deposit is required';
-    return;
-  }
-  if (!this.rentalDuration || this.rentalDuration <= 0) {
-    this.errorMessage = 'Rental duration is required';
-    return;
-  }
-
-  
-  const loggedInCompany = this.authService.getCompany();
-  const companyId = loggedInCompany?._id || loggedInCompany?.id;
-
-  
-  if (!companyId) {
-    this.errorMessage = 'Session expired. Please log in again.';
-    return;
-  }
-
-  const negotiationData = {
-    ownerCompany: companyId,
-    renterCompany: this.order.companyId?._id || this.order.companyId,
-    bookingId: this.order._id,
-  };
-
-  const versionData: VersionData = {
-    rentPrice: this.rentPrice,
-    securityDeposit: this.securityDeposit,
-    rentalDuration: this.rentalDuration,
-    durationUnit: this.durationUnit,
-    notes: this.notes,
-  };
-
-  this.isSubmitting = true;
-  this.negotiationService
-    .createNegotiation(negotiationData, versionData)
-    .subscribe({
-      next: () => {
-        this.isSubmitting = false;
-        this.negotiationStarted.emit();
-      },
-      error: (err) => {
-        this.isSubmitting = false;
-        this.errorMessage =
-          err.error?.message || 'Failed to start negotiation';
-      },
-    });
-}
 }
