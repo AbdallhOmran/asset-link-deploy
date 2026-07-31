@@ -203,14 +203,21 @@ const getAssetAvailability = async (assetId, startDate, endDate) => {
 };
 
 const getRecommendedAssets = async (query) => {
-  const { location, maxPrice, limit = 10 } = query;
+  // Added 'filter' to extract from query parameters sent by frontend tabs
+  const { location, maxPrice, limit = 10, filter } = query;
   // Fallback to "daily" if not provided, ensure lowercase for DB matching
   const priceType = (query.priceType || "daily").toLowerCase();
 
+  // Base Match Stage
   const matchStage = {
     status: { $in: ["Available", "Booked"] },
     isActive: true
   };
+
+  // If UI clicks "Available Now", force status to only 'Available'
+  if (filter === 'available') {
+    matchStage.status = "Available";
+  }
 
   if (maxPrice) {
     matchStage[`price.${priceType}`] = { $lte: Number(maxPrice) };
@@ -235,20 +242,29 @@ const getRecommendedAssets = async (query) => {
     });
   }
 
+  // Determine sorting based on UI filter tab
+  let sortStage = { recommendationScore: -1, [`price.${priceType}`]: 1 };
+  
+  if (filter === 'maintenance') {
+    sortStage = { healthScore: -1, recommendationScore: -1 };
+  } else if (filter === 'value') {
+    sortStage = { [`price.${priceType}`]: 1, recommendationScore: -1 };
+  } else if (filter === 'closest') {
+    sortStage = { recommendationScore: -1 }; // Location score naturally boosts this
+  }
+
   const pipeline = [
     { $match: matchStage }, 
     
     {
       $addFields: {
-        recommendationScore: { $add: scoreCalculation } 
+        recommendationScore: { $add: scoreCalculation },
+        matchScore: { $add: scoreCalculation } // Added for frontend compatibility
       }
     },
     
     {
-      $sort: {
-        recommendationScore: -1,
-        [`price.${priceType}`]: 1 
-      }
+      $sort: sortStage // Applied dynamic sorting
     },
     
     { $limit: Number(limit) },

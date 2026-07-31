@@ -15,7 +15,18 @@ export class SmartMatchesComponent implements OnInit {
   error: string | null = null;
   activeTab = 'All Matches';
 
+  topMatchScore: number = 0;
+  totalMatches: number = 0;
+
   tabs = ['All Matches', 'Available Now', 'Closest', 'Best Maintenance', 'Best Value'];
+
+  tabToFilterMap: { [key: string]: string } = {
+    'All Matches': 'all',
+    'Available Now': 'available',
+    'Closest': 'closest',
+    'Best Maintenance': 'maintenance',
+    'Best Value': 'value'
+  };
 
   constructor(
     private assetService: AssetService, 
@@ -32,28 +43,19 @@ export class SmartMatchesComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
     
-    let query: any = {};
-    if (this.activeTab === 'Available Now') {
-      // Backend does not natively have an 'onlyAvailable' flag, but if we don't pass anything it still returns both available and rented.
-      // Wait, we can pass something to force it or we can just filter it on the frontend.
-      // We will filter it after fetching.
-    } else if (this.activeTab === 'Best Value') {
-      query.priceType = 'daily';
-      // Ideally backend would have a sort override, but since it sorts by score then price, it's generally best value.
-    }
+    const filterValue = this.tabToFilterMap[this.activeTab] || 'all';
+    const query = { filter: filterValue };
 
     this.assetService.getRecommendedAssets(query).subscribe({
       next: (res: any) => {
-        let matchedAssets = res.data || [];
+        this.assets = res.data || [];
         
-        // Client-side filtering for tabs
-        if (this.activeTab === 'Available Now') {
-          matchedAssets = matchedAssets.filter((a: any) => a.status === 'Available');
-        } else if (this.activeTab === 'Best Maintenance') {
-          matchedAssets.sort((a: any, b: any) => (b.healthScore || 0) - (a.healthScore || 0));
+        this.totalMatches = this.assets.length;
+        if (this.assets.length > 0) {
+          this.topMatchScore = Math.max(...this.assets.map(a => a.matchScore || a.recommendationScore || 0));
+        } else {
+          this.topMatchScore = 0;
         }
-
-        this.assets = matchedAssets;
         
         // Fetch waitlist counts
         this.assets.forEach(asset => {
