@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 })
 export class BookingService {
   private baseUrl = 'https://asset-link-api.vercel.app/api/bookings';
+  // private baseUrl = 'http://localhost:3000/api/bookings';
 
   constructor(private http: HttpClient) {}
 

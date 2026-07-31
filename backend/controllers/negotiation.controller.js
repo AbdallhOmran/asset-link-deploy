@@ -6,10 +6,17 @@ const createNegotiation = async (req, res) => {
       req.body.negotiationData,
       req.body.versionData,
     );
+
+    // استخراج الـ ID بأمان سواء كان Mongoose Document أو Object عادي
+    const negotiationId = negotiation?._id || negotiation?.id || negotiation;
+
     return res.status(201).json({
       success: true,
       message: "Negotiation is created successfully",
       data: negotiation,
+      _id: negotiationId,
+      negotiationId: negotiationId,
+      negotiation: negotiation,
     });
   } catch (err) {
     return res.status(400).json({ success: false, message: err.message });

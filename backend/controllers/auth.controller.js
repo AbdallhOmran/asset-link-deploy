@@ -9,7 +9,7 @@ const inspectorModel = require('../models/inspector.model')
  */
 const registerCompany = async (req, res) => {
   try {
-    const { companyName, companyEmail, phoneNumber, password, confirmPassword, commercialRegistrationNumber, companyAddress, companyType } = req.body;
+    const { companyName, companyEmail, phoneNumber, password, confirmPassword, commercialRegistrationNumber, taxRegister, companyAddress, companyType } = req.body;
 
     // --- Input Validation ---
 
@@ -63,6 +63,7 @@ const registerCompany = async (req, res) => {
       phoneNumber,
       password,
       commercialRegistrationNumber,
+      taxRegister,
       companyAddress,
       companyType,
     });

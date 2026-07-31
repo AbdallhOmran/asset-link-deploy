@@ -98,9 +98,14 @@ export class AcceptOfferModalComponent implements OnChanges {
       return;
     }
 
+    const renterCompId =
+      typeof this.order.companyId === 'object'
+        ? this.order.companyId?._id || this.order.companyId?.id
+        : this.order.companyId;
+
     const negotiationData = {
       ownerCompany: companyId,
-      renterCompany: this.order.companyId?._id || this.order.companyId,
+      renterCompany: renterCompId,
       bookingId: this.order._id,
     };
 
@@ -118,8 +123,7 @@ export class AcceptOfferModalComponent implements OnChanges {
       .subscribe({
         next: (res: any) => {
           this.isSubmitting = false;
-
-          this.negotiationStarted.emit(res.data);
+          this.negotiationStarted.emit(res);
         },
         error: (err) => {
           this.isSubmitting = false;
