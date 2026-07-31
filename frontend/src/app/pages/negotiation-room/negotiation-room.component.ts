@@ -101,10 +101,10 @@ export class NegotiationRoomComponent implements OnInit {
   }
 
   loadHistory(): void {
-    const targetId = this.negotiationId || this.bookingId;
-    if (!targetId) return;
+    // History must be fetched using negotiationId
+    if (!this.negotiationId) return;
 
-    this.negotiationService.getHistory(targetId).subscribe({
+    this.negotiationService.getHistory(this.negotiationId).subscribe({
       next: (res: any) => {
         if (res.success || res.data) {
           this.history = res.data || res;
