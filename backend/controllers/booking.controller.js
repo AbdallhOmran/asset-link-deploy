@@ -18,7 +18,7 @@ const createBooking = async (req, res) => {
 
 const getBooking = async (req, res) => {
   try {
-    const booking = await bookingService.getBookingById(req.params.id);
+    const booking = await bookingService.getBookingById(req.params.id, req.user);
     return res.status(200).send(booking);
   } catch (err) {
     if (err.message.includes("not found")) {

@@ -106,7 +106,7 @@ const securityDeposit = contract.securityDeposit;
 };
 
 // GET escrow by id - by Eman
-const getEscrowById = async (id) => {
+const getEscrowById = async (id, user) => {
   if (!mongoose.isValidObjectId(id)) throw makeError("Invalid escrow id", 400);
   const escrow = await escrowModel
     .findById(id)
@@ -115,11 +115,18 @@ const getEscrowById = async (id) => {
     .populate("companyId", "companyName companyEmail")
     .populate("ownerCompanyId", "companyName companyEmail");
   if (!escrow) throw makeError("Escrow not found", 404);
+
+  if (user && user.role !== "Admin") {
+    if (escrow.companyId._id.toString() !== user.id && escrow.ownerCompanyId._id.toString() !== user.id) {
+      throw makeError("Forbidden: You don't have permission to view this escrow", 403);
+    }
+  }
+
   return escrow;
 };
 
 // GET escrow by contract id - by Eman
-const getEscrowByContract = async (contractId) => {
+const getEscrowByContract = async (contractId, user) => {
   if (!mongoose.isValidObjectId(contractId))
     throw makeError("Invalid contractId", 400);
   const escrow = await escrowModel
@@ -129,11 +136,18 @@ const getEscrowByContract = async (contractId) => {
     .populate("companyId", "companyName companyEmail")
     .populate("ownerCompanyId", "companyName companyEmail");
   if (!escrow) throw makeError("No escrow found for this contract", 404);
+
+  if (user && user.role !== "Admin") {
+    if (escrow.companyId._id.toString() !== user.id && escrow.ownerCompanyId._id.toString() !== user.id) {
+      throw makeError("Forbidden: You don't have permission to view this escrow", 403);
+    }
+  }
+
   return escrow;
 };
 
 // GET escrow by booking id - by Eman
-const getEscrowByBooking = async (bookingId) => {
+const getEscrowByBooking = async (bookingId, user) => {
   if (!mongoose.isValidObjectId(bookingId))
     throw makeError("Invalid bookingId", 400);
   const escrow = await escrowModel
@@ -143,6 +157,13 @@ const getEscrowByBooking = async (bookingId) => {
     .populate("companyId", "companyName companyEmail")
     .populate("ownerCompanyId", "companyName companyEmail");
   if (!escrow) throw makeError("No escrow found for this booking", 404);
+
+  if (user && user.role !== "Admin") {
+    if (escrow.companyId._id.toString() !== user.id && escrow.ownerCompanyId._id.toString() !== user.id) {
+      throw makeError("Forbidden: You don't have permission to view this escrow", 403);
+    }
+  }
+
   return escrow;
 };
 
@@ -244,6 +265,11 @@ const deductPenaltyFromDeposit = async (bookingId, penaltyAmount) => {
 
   const escrow = await escrowModel.findOne({ bookingId });
   if (!escrow) throw makeError("Escrow not found for this booking", 404);
+
+  // Business Rule: Cannot deduct penalty from a frozen escrow
+  if (escrow.status === "Frozen") {
+    throw makeError("Cannot deduct penalty from a frozen escrow (e.g. pending dispute)", 400);
+  }
 
   // Business Rule: Penalty cannot exceed the available security deposit
   if (penaltyAmount > escrow.securityDeposit) {

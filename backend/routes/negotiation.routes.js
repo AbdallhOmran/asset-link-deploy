@@ -12,11 +12,13 @@ const {
     rejectOffer
 } = require('../controllers/negotiation.controller')
 
-router.post('/', createNegotiation)
-router.post('/:negotiationId/offers', createOffer);
-router.get('/company/:id', getNegotiation);
-router.get('/:id/history', getVersionHistory);
-router.get('/company/:id/current', getCurrentNegotiation);
-router.patch('/:id/accept', requireIdempotency, acceptOffer);
-router.patch('/:id/reject', rejectOffer);
+const authMiddleware = require('../middleware/auth.middleware');
+
+router.post('/', authMiddleware, createNegotiation)
+router.post('/:negotiationId/offers', authMiddleware, createOffer);
+router.get('/company/:id', authMiddleware, getNegotiation);
+router.get('/:id/history', authMiddleware, getVersionHistory);
+router.get('/company/:id/current', authMiddleware, getCurrentNegotiation);
+router.patch('/:id/accept', authMiddleware, requireIdempotency, acceptOffer);
+router.patch('/:id/reject', authMiddleware, rejectOffer);
 module.exports = router;

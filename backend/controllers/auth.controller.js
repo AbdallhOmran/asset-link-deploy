@@ -185,9 +185,7 @@ const login = async (req, res) => {
         return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    if (company.status === 'Disabled') {
-        return res.status(403).json({ message: 'Your account is disabled. Please contact support.' });
-    }
+    // allow disabled users to login to view their dashboard, but restrict their actions via authMiddleware
     //check if the password matches
     const isMatch = await bcrypt.compare(password, company.password);
     if (!isMatch) {

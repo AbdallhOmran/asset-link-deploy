@@ -5,6 +5,6 @@ const { addCategory, viewCategories } = require('../controllers/assetCategory.co
 const authMiddleware = require('../middleware/auth.middleware');
 
 router.post('/addCategory', authMiddleware, addCategory);
-router.get('/viewCategories', authMiddleware, viewCategories);
+router.get('/viewCategories', viewCategories);
 
 module.exports = router;

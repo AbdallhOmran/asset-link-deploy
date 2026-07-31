@@ -48,7 +48,7 @@ import {LucideAngularModule,
         DollarSign,
         Plus,Filter,Search,
         X,ClipboardList,BadgeCheck,
-        Hammer,Calendar,ChevronLeft,ChevronUp, Mail, Hash, Tag} from 'lucide-angular';
+        Hammer,Calendar,ChevronLeft,ChevronUp, Mail, Hash, Tag, Trophy, ArrowLeft} from 'lucide-angular';
 import { StatusBadgeComponent } from './components/status-badge/status-badge.component';
 import { ButtonComponent } from './components/button/button.component';
 import { StepperComponent } from './components/stepper/stepper.component';
@@ -158,7 +158,9 @@ import { DisableOnClickDirective } from './directives/disable-on-click.directive
     Inbox,
     LoaderCircle,
     Hash,
-    Tag
+    Tag,
+    Trophy,
+    ArrowLeft
   })
   ],
   exports: [

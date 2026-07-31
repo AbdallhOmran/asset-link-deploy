@@ -18,7 +18,7 @@ const createEscrow = async (req, res) => {
 // GET /escrow/:id - by Eman
 const getEscrow = async (req, res) => {
   try {
-    const escrow = await escrowService.getEscrowById(req.params.id);
+    const escrow = await escrowService.getEscrowById(req.params.id, req.user);
     return res.status(200).json({ success: true, data: escrow });
   } catch (err) {
     const status = err.statusCode || 500;
@@ -30,7 +30,7 @@ const getEscrow = async (req, res) => {
 const getEscrowByContract = async (req, res) => {
   try {
     const escrow = await escrowService.getEscrowByContract(
-      req.params.contractId
+      req.params.contractId, req.user
     );
     return res.status(200).json({ success: true, data: escrow });
   } catch (err) {
@@ -42,7 +42,7 @@ const getEscrowByContract = async (req, res) => {
 // GET /escrow/booking/:bookingId - by Eman
 const getEscrowByBooking = async (req, res) => {
   try {
-    const escrow = await escrowService.getEscrowByBooking(req.params.bookingId);
+    const escrow = await escrowService.getEscrowByBooking(req.params.bookingId, req.user);
     return res.status(200).json({ success: true, data: escrow });
   } catch (err) {
     const status = err.statusCode || 500;

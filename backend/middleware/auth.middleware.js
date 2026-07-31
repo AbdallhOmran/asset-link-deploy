@@ -23,6 +23,7 @@ const authMiddleware = async (req, res, next) => {
     }
 
     if (!user) {
+        console.warn("Auth failed: User not found in DB for id", decoded.id);
         return res.status(401).json({ message: 'Not authorized, user no longer exists' });
     }
 
@@ -30,14 +31,15 @@ const authMiddleware = async (req, res, next) => {
         return res.status(401).json({ message: 'Not authorized, account deleted' });
     }
 
-    if (user.status === 'Disabled') {
-        return res.status(403).json({ message: 'Not authorized, account disabled' });
+    if (user.status === 'Disabled' && req.method !== 'GET') {
+        return res.status(403).json({ message: 'Not authorized, account disabled. You cannot perform this action.' });
     }
 
     req.user = decoded;
 
     next();
     } catch (error) {
+    console.error("Auth middleware error:", error.message);
     return res.status(401).json({ message: 'Not authorized, token failed' });
     }
 };

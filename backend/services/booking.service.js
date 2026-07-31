@@ -62,70 +62,72 @@ const createBooking = async (bookingData) => {
   // Generate booking code outside transaction
   const bookingCode = await generateBookingCode();
 
-  const session = await mongoose.startSession();
   try {
-    let newBooking;
-    await session.withTransaction(async () => {
-      // Check for overlapping bookings inside transaction to prevent race conditions
-      const existingBooking = await bookingModel.findOne({
-        assetId: assetId,
-        status: {
-          $in: ["Pending", "Confirmed", "InNegotiation"]
-        },
-        startDate: {
-          $lt: end
-        },
-        endDate: {
-          $gt: start
-        }
-      }).session(session);
-
-      if (existingBooking) {
-        throw new Error("Asset is already booked for the selected dates");
-      }
-
-      // Create and save booking
-      newBooking = new bookingModel({
-        bookingCode,
-        assetId,
-        companyId,
-        ownerCompanyId,
-        startDate,
-        endDate,
-        priceType,
-        totalPrice,
-        notes
-      });
-
-      await newBooking.save({ session });
-
-      // Update asset status to Booked
-      const updatedAsset = await assetModel.findByIdAndUpdate(
-        assetId,
-        { status: "Booked" },
-        { new: true, runValidators: true, session }
-      );
-
-      if (!updatedAsset) {
-        throw new Error("Failed to update asset status");
+    // Check for overlapping bookings inside transaction to prevent race conditions
+    const existingBooking = await bookingModel.findOne({
+      assetId: assetId,
+      status: {
+        $in: ["Pending", "Confirmed", "InNegotiation"]
+      },
+      startDate: {
+        $lt: end
+      },
+      endDate: {
+        $gt: start
       }
     });
+
+    if (existingBooking) {
+      throw new Error("Asset is already booked for the selected dates");
+    }
+
+    // Create and save booking
+    let newBooking = new bookingModel({
+      bookingCode,
+      assetId,
+      companyId,
+      ownerCompanyId,
+      startDate,
+      endDate,
+      priceType,
+      totalPrice,
+      notes
+    });
+
+    await newBooking.save();
+
+    // Update asset status to Booked
+    const updatedAsset = await assetModel.findByIdAndUpdate(
+      assetId,
+      { status: "Booked" },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedAsset) {
+      throw new Error("Failed to update asset status");
+    }
     
     return newBooking;
   } catch (err) {
     throw err;
-  } finally {
-    await session.endSession();
   }
 };
 
-const getBookingById = async (id) => {
+const getBookingById = async (id, user) => {
   const booking = await bookingModel.findById(id)
     .populate("assetId")
     .populate("companyId")
     .populate("ownerCompanyId");
 
   if (!booking) throw new Error("Booking not found");
+
+  if (user && user.role !== "Admin") {
+    if (booking.companyId._id.toString() !== user.id && booking.ownerCompanyId._id.toString() !== user.id) {
+      const err = new Error("Forbidden: You don't have permission to view this booking");
+      err.statusCode = 403;
+      throw err;
+    }
+  }
 
   return booking;
 };

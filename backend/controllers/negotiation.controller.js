@@ -39,8 +39,9 @@ const createOffer = async (req, res) => {
 
 const getNegotiation = async (req, res) => {
   try {
+    const targetCompanyId = req.user.role === "Admin" ? req.params.id : req.user.id;
     const Negotiation = await negotiationService.getNegotiation({
-      companyId: req.params.id,
+      companyId: targetCompanyId,
     });
     return res.status(200).json({
       success: true,
@@ -65,8 +66,9 @@ const getVersionHistory = async (req, res) => {
 
 const getCurrentNegotiation = async (req, res) => {
   try {
+    const targetCompanyId = req.user.role === "Admin" ? req.params.id : req.user.id;
     const currentNegotiation = await negotiationService.getCurrentNegotiation(
-      req.params.id,
+      targetCompanyId,
     );
     return res.status(200).json({
       success: true,

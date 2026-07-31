@@ -70,7 +70,7 @@ const addAsset = async (assetData) => {
 };
 
 const getAssets = async () => {
-  const assets = await assetModel.find()
+  const assets = await assetModel.find({ isActive: true })
     .populate("companyId")
     .populate("assetCategoryId");
 
@@ -78,7 +78,7 @@ const getAssets = async () => {
 };
 
 const searchAssets = async (query) => {
-  let filter = {};
+  let filter = { isActive: true };
 
   if (query.name) {
     filter.assetName = {
@@ -208,7 +208,8 @@ const getRecommendedAssets = async (query) => {
   const priceType = (query.priceType || "daily").toLowerCase();
 
   const matchStage = {
-    status: { $in: ["Available", "Booked"] }
+    status: { $in: ["Available", "Booked"] },
+    isActive: true
   };
 
   if (maxPrice) {
