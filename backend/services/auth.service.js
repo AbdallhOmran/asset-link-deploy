@@ -42,9 +42,9 @@ const registerCompany = async (data) => {
     companyEmail,
     phoneNumber,
     password: hashedPassword,
-    commercialRegistrationNumber: commercialRegistrationNumber || null,
-    taxRegister: taxRegister || null,
-    companyAddress: companyAddress || null,
+    commercialRegistrationNumber: commercialRegistrationNumber || undefined,
+    taxRegister: taxRegister || undefined,
+    companyAddress: companyAddress || undefined,
     companyType: companyType || "Both",
   };
 
@@ -70,9 +70,9 @@ const verifyOtp = async (email, otp) => {
     companyEmail: cachedData.companyEmail,
     phoneNumber: cachedData.phoneNumber,
     password: cachedData.password,
-    commercialRegistrationNumber: cachedData.commercialRegistrationNumber,
-    taxRegister: cachedData.taxRegister,
-    companyAddress: cachedData.companyAddress,
+    commercialRegistrationNumber: cachedData.commercialRegistrationNumber || undefined,
+    taxRegister: cachedData.taxRegister || undefined,
+    companyAddress: cachedData.companyAddress || undefined,
     companyType: cachedData.companyType,
     isVerified: true,
   });
