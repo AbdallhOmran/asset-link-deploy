@@ -1,0 +1,18 @@
+<div class="toast-container">
+  <div
+    *ngFor="let toast of toasts"
+    class="toast-message"
+    [ngClass]="toast.type"
+    [@flyInOut]="'in'"
+    (click)="remove(toast)"
+  >
+    <div class="toast-content">
+      <i *ngIf="toast.type === 'success'" class="icon-success" lucide="check-circle-2"></i>
+      <i *ngIf="toast.type === 'error'" class="icon-error" lucide="alert-circle"></i>
+      <i *ngIf="toast.type === 'warning'" class="icon-warning" lucide="alert-circle"></i>
+      <i *ngIf="toast.type === 'info'" class="icon-info" lucide="info"></i>
+      <span>{{ toast.message }}</span>
+    </div>
+    <button class="close-btn" (click)="remove(toast); $event.stopPropagation()">&times;</button>
+  </div>
+</div>

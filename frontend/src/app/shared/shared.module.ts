@@ -69,6 +69,8 @@ import { AuthLayoutComponent } from './components/auth-layout/auth-layout.compon
 import { FileDropzoneComponent } from './components/file-dropzone/file-dropzone.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { TopNavbarComponent } from './top-navbar/top-navbar.component';
+import { ToastComponent } from './components/toast/toast.component';
+import { DisableOnClickDirective } from './directives/disable-on-click.directive';
 
 @NgModule({
   declarations: [
@@ -93,6 +95,8 @@ import { TopNavbarComponent } from './top-navbar/top-navbar.component';
     FileDropzoneComponent,
     SidebarComponent,
     TopNavbarComponent,
+    ToastComponent,
+    DisableOnClickDirective
   ],
   imports: [
     CommonModule,
@@ -180,9 +184,11 @@ import { TopNavbarComponent } from './top-navbar/top-navbar.component';
     AuthLayoutComponent,
     StatusBadgeComponent,
     FileDropzoneComponent,
-     LucideAngularModule,
-     SidebarComponent,
-     TopNavbarComponent
+    LucideAngularModule,
+    SidebarComponent,
+    TopNavbarComponent,
+    ToastComponent,
+    DisableOnClickDirective
   ],
 })
 export class SharedModule {}
