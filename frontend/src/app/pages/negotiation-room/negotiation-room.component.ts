@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router'; // 👈 أضفنا المكتبة دي
 import { NegotiationService } from 'src/app/services/negotiation.service';
 import { BookingService } from 'src/app/services/booking.service';
 
@@ -12,16 +13,27 @@ export class NegotiationRoomComponent implements OnInit {
   currentOffer: any;
   currentBooking: any;
 
-  negotiationId = '6a62c0649fbef2a58ffaca95';
-  companyId = '6a5c47c5de4fc73f925b90e3';
+  negotiationId: string = '';
+  companyId: string = '';
 
   constructor(
     private negotiationService: NegotiationService,
-    private bookingService: BookingService
+    private bookingService: BookingService,
+    private route: ActivatedRoute, // 👈 حاقن الـ Route هنا
   ) {}
 
   ngOnInit(): void {
-    this.loadNegotiationDetails();
+    // 🎯 لقط الـ Query Params الحقيقية من الـ URL دايناميك
+    this.route.queryParams.subscribe((params) => {
+      this.negotiationId =
+        params['id'] || params['negotiationId'] || params['bookingId'] || '';
+      this.companyId = params['companyId'] || '';
+
+      // لو لقانا بعتين negotiationId نلغّم داتا الشاشة فوراً
+      if (this.negotiationId || this.companyId) {
+        this.loadNegotiationDetails();
+      }
+    });
   }
 
   get currentVersionDetails(): any {
@@ -29,7 +41,8 @@ export class NegotiationRoomComponent implements OnInit {
       return null;
     }
 
-    const currentVersionId = this.currentOffer.currentVersion?._id || this.currentOffer.currentVersion;
+    const currentVersionId =
+      this.currentOffer.currentVersion?._id || this.currentOffer.currentVersion;
     const match = this.history.find((v: any) => v._id === currentVersionId);
     const version = match || this.history[this.history.length - 1];
 
@@ -40,17 +53,18 @@ export class NegotiationRoomComponent implements OnInit {
   }
 
   loadNegotiationDetails(): void {
-    if (!this.companyId) return;
-
-    this.negotiationService.getCurrent(this.companyId).subscribe({
-      next: (res: any) => {
-        if (res.success || res.data) {
-          this.currentOffer = res.data || res;
-          this.loadBookingDetails();
-        }
-      },
-      error: (err: any) => console.error('Error fetching current offer:', err),
-    });
+    if (this.companyId) {
+      this.negotiationService.getCurrent(this.companyId).subscribe({
+        next: (res: any) => {
+          if (res.success || res.data) {
+            this.currentOffer = res.data || res;
+            this.loadBookingDetails();
+          }
+        },
+        error: (err: any) =>
+          console.error('Error fetching current offer:', err),
+      });
+    }
 
     if (this.negotiationId) {
       this.negotiationService.getHistory(this.negotiationId).subscribe({
@@ -65,7 +79,8 @@ export class NegotiationRoomComponent implements OnInit {
   }
 
   loadBookingDetails(): void {
-    const bookingId = this.currentOffer?.bookingId?._id || this.currentOffer?.bookingId;
+    const bookingId =
+      this.currentOffer?.bookingId?._id || this.currentOffer?.bookingId;
     if (!bookingId) {
       this.currentBooking = null;
       return;
