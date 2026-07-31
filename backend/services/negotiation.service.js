@@ -3,6 +3,7 @@ const versionModel = require("../models/version.model");
 const bookingModel = require("../models/booking.model");
 const companyModel = require("../models/company.model");
 const contractService = require("./contract.service");
+const mongoose = require("mongoose");
 
 const generateNegotiationCode = async () => {
   const lastNegotiation = await negotiationModel
@@ -272,18 +273,28 @@ const acceptOffer = async (offerData) => {
   if (acceptVersion.counterBy === "renterCompany" && negotiation.ownerCompany.toString() !== userId) {
     throw new Error("Only the receiver (Owner) can accept this offer");
   }
-  await negotiationModel.findByIdAndUpdate(negotiationId, {
-    status: "Approved",
-    isActive: false,
-  });
-  await bookingModel.findByIdAndUpdate(bookingId, {
-    status: "Confirmed",
-  });
+  const session = await mongoose.startSession();
+  try {
+    await session.withTransaction(async () => {
+      await negotiationModel.findByIdAndUpdate(negotiationId, {
+        status: "Approved",
+        isActive: false,
+      }, { session });
 
-  await contractService.createContract({
-    bookingId,
-    securityDeposit: acceptVersion.securityDeposit,
-  });
+      await bookingModel.findByIdAndUpdate(bookingId, {
+        status: "Confirmed",
+      }, { session });
+
+      await contractService.createContract({
+        bookingId,
+        securityDeposit: acceptVersion.securityDeposit,
+      }, { session });
+    });
+  } catch (error) {
+    throw error;
+  } finally {
+    await session.endSession();
+  }
 };
 
 const rejectOffer = async (offerData) => {
@@ -312,21 +323,31 @@ const rejectOffer = async (offerData) => {
   if (rejectVersion.counterBy === "renterCompany" && negotiation.ownerCompany.toString() !== userId) {
     throw new Error("Only the receiver (Owner) can reject this offer");
   }
-  await negotiationModel.findByIdAndUpdate(negotiationId, {
-    status: "Rejected",
-    isActive: false,
-  });
-  await bookingModel.findByIdAndUpdate(bookingId, {
-    status: "Rejected",
-  });
+  const session = await mongoose.startSession();
+  try {
+    await session.withTransaction(async () => {
+      await negotiationModel.findByIdAndUpdate(negotiationId, {
+        status: "Rejected",
+        isActive: false,
+      }, { session });
 
-  // Revert the asset status back to Available
-  const booking = await bookingModel.findById(bookingId);
-  if (booking && booking.assetId) {
-    const assetModel = require("../models/asset.model");
-    await assetModel.findByIdAndUpdate(booking.assetId, {
-      status: "Available"
+      await bookingModel.findByIdAndUpdate(bookingId, {
+        status: "Rejected",
+      }, { session });
+
+      // Revert the asset status back to Available
+      const booking = await bookingModel.findById(bookingId).session(session);
+      if (booking && booking.assetId) {
+        const assetModel = require("../models/asset.model");
+        await assetModel.findByIdAndUpdate(booking.assetId, {
+          status: "Available"
+        }, { session });
+      }
     });
+  } catch (error) {
+    throw error;
+  } finally {
+    await session.endSession();
   }
 
   return;

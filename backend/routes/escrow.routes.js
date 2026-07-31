@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/auth.middleware"); // by Eman
+const requireIdempotency = require("../middlewares/idempotency.middleware");
 
 const {
   createEscrow,
@@ -17,6 +18,6 @@ router.get("/contract/:contractId", authMiddleware, getEscrowByContract);
 router.get("/booking/:bookingId", authMiddleware, getEscrowByBooking);
 router.get("/:id", authMiddleware, getEscrow);
 router.patch("/:id/status", authMiddleware, updateEscrowStatus);
-router.patch("/booking/:bookingId/release", authMiddleware, releaseMoney);
+router.patch("/booking/:bookingId/release", authMiddleware, requireIdempotency, releaseMoney);
 
 module.exports = router;

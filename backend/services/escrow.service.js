@@ -211,8 +211,26 @@ const releaseMoney = async (bookingId) => {
   const escrow = await escrowModel.findOne({ bookingId });
   if (!escrow) throw makeError("Escrow not found for this booking", 404);
 
-  // Transition to Released using Eman's method to obey all FINAL_STATUSES checks
-  return await updateEscrowStatus(escrow._id, "Released");
+  const session = await mongoose.startSession();
+  try {
+    let releasedEscrow;
+    await session.withTransaction(async () => {
+      // Transition to Released using atomic update to avoid race conditions
+      if (FINAL_STATUSES.includes(escrow.status)) {
+        throw makeError("Escrow is already finalized, status cannot be changed", 400);
+      }
+      releasedEscrow = await escrowModel.findByIdAndUpdate(
+        escrow._id,
+        { status: "Released" },
+        { new: true, session }
+      );
+    });
+    return releasedEscrow;
+  } catch (err) {
+    throw err;
+  } finally {
+    await session.endSession();
+  }
 };
 
 
@@ -232,12 +250,28 @@ const deductPenaltyFromDeposit = async (bookingId, penaltyAmount) => {
     throw makeError("Penalty cannot exceed the available security deposit", 400);
   }
 
-  // Deduct from deposit and totalHeld (keep rentalAmount untouched)
-  escrow.securityDeposit -= penaltyAmount;
-  escrow.totalHeld -= penaltyAmount;
-  
-  await escrow.save();
-  return escrow;
+  const session = await mongoose.startSession();
+  try {
+    let updatedEscrow;
+    await session.withTransaction(async () => {
+      // Deduct from deposit and totalHeld using Atomic $inc to prevent lost updates
+      updatedEscrow = await escrowModel.findByIdAndUpdate(
+        escrow._id,
+        { 
+          $inc: { 
+            securityDeposit: -penaltyAmount,
+            totalHeld: -penaltyAmount 
+          } 
+        },
+        { new: true, session }
+      );
+    });
+    return updatedEscrow;
+  } catch (err) {
+    throw err;
+  } finally {
+    await session.endSession();
+  }
 };
 
 module.exports = {

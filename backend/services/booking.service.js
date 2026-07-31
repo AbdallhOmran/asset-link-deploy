@@ -59,60 +59,63 @@ const createBooking = async (bookingData) => {
     throw new Error("Start date must be before end date");
   }
 
-  const existingBooking = await bookingModel.findOne({
-    assetId: assetId,
-    status: {
-      $in: ["Pending", "Confirmed"]
-    },
-    startDate: {
-      $lt: end
-    },
-    endDate: {
-      $gt: start
-    }
-  });
-
-  if (existingBooking) {
-    throw new Error("Asset is already booked for the selected dates");
-  }
-
-  // ===========================
-  // End of Person 2 Logic
-  // ===========================
-
-  // Generate booking code
+  // Generate booking code outside transaction
   const bookingCode = await generateBookingCode();
 
+  const session = await mongoose.startSession();
   try {
-    // Create and save booking
-    const newBooking = new bookingModel({
-      bookingCode,
-      assetId,
-      companyId,
-      ownerCompanyId,
-      startDate,
-      endDate,
-      priceType,
-      totalPrice,
-      notes
+    let newBooking;
+    await session.withTransaction(async () => {
+      // Check for overlapping bookings inside transaction to prevent race conditions
+      const existingBooking = await bookingModel.findOne({
+        assetId: assetId,
+        status: {
+          $in: ["Pending", "Confirmed", "InNegotiation"]
+        },
+        startDate: {
+          $lt: end
+        },
+        endDate: {
+          $gt: start
+        }
+      }).session(session);
+
+      if (existingBooking) {
+        throw new Error("Asset is already booked for the selected dates");
+      }
+
+      // Create and save booking
+      newBooking = new bookingModel({
+        bookingCode,
+        assetId,
+        companyId,
+        ownerCompanyId,
+        startDate,
+        endDate,
+        priceType,
+        totalPrice,
+        notes
+      });
+
+      await newBooking.save({ session });
+
+      // Update asset status to Booked
+      const updatedAsset = await assetModel.findByIdAndUpdate(
+        assetId,
+        { status: "Booked" },
+        { new: true, runValidators: true, session }
+      );
+
+      if (!updatedAsset) {
+        throw new Error("Failed to update asset status");
+      }
     });
-
-    await newBooking.save();
-
-    // Update asset status to Booked
-    const updatedAsset = await assetModel.findByIdAndUpdate(
-      assetId,
-      { status: "Booked" },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedAsset) {
-      throw new Error("Failed to update asset status");
-    }
-
+    
     return newBooking;
   } catch (err) {
     throw err;
+  } finally {
+    await session.endSession();
   }
 };
 
@@ -239,21 +242,27 @@ const cancelBooking = async (id, cancelReason, userId) => {
   }
 
   // Remove transaction for local environments without replica sets
+  // NOW RE-ADDED: We are using transactions as requested for data integrity
+  const session = await mongoose.startSession();
   try {
-    booking.status = "Cancelled";
-    booking.cancelReason = cancelReason.trim();
-    await booking.save();
+    await session.withTransaction(async () => {
+      booking.status = "Cancelled";
+      booking.cancelReason = cancelReason.trim();
+      await booking.save({ session });
 
-    // return the asset to Available after cancellation - by Eman
-    await assetModel.findByIdAndUpdate(
-      booking.assetId,
-      { status: "Available" },
-      { new: true }
-    );
+      // return the asset to Available after cancellation - by Eman
+      await assetModel.findByIdAndUpdate(
+        booking.assetId,
+        { status: "Available" },
+        { new: true, session }
+      );
+    });
 
     return booking;
   } catch (err) {
     throw err;
+  } finally {
+    await session.endSession();
   }
 };
 
