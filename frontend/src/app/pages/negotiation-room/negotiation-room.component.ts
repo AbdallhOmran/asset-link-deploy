@@ -52,8 +52,11 @@ export class NegotiationRoomComponent implements OnInit {
       version = match || this.history[this.history.length - 1];
     }
 
+    // Fallback to the populated currentVersion if history hasn't loaded yet
+    const fallbackVersion = version || this.currentOffer?.currentVersion || this.currentOffer || {};
+
     return {
-      ...(version || this.currentOffer || {}),
+      ...fallbackVersion,
       assetName:
         this.currentBooking?.assetId?.assetName ||
         this.currentOffer?.assetId?.assetName ||
