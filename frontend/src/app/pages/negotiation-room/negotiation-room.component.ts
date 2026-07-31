@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { NegotiationService } from 'src/app/services/negotiation.service';
 import { BookingService } from 'src/app/services/booking.service';
-import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -26,17 +26,17 @@ export class NegotiationRoomComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    
     const company = this.authService.getCompany();
-    this.companyId = company?._id || company?.id;
+    this.companyId = company?._id || company?.id || '';
 
     this.route.queryParams.subscribe((params) => {
       this.bookingId = params['bookingId'] || '';
-      this.negotiationId =
-        params['negotiationId'] ||
-        params['id'] ||
-        '';
+      this.negotiationId = params['negotiationId'] || params['id'] || '';
 
-      this.loadNegotiationDetails();
+      if (this.negotiationId || this.companyId) {
+        this.loadNegotiationDetails();
+      }
     });
   }
 
@@ -64,17 +64,18 @@ export class NegotiationRoomComponent implements OnInit {
   }
 
   loadNegotiationDetails(): void {
-    if (!this.companyId) return;
-
-    this.negotiationService.getCurrent(this.companyId).subscribe({
-      next: (res: any) => {
-        if (res.success || res.data) {
-          this.currentOffer = res.data || res;
-          this.loadBookingDetails();
-        }
-      },
-      error: (err: any) => console.error('Error fetching current offer:', err),
-    });
+    if (this.companyId) {
+      this.negotiationService.getCurrent(this.companyId).subscribe({
+        next: (res: any) => {
+          if (res.success || res.data) {
+            this.currentOffer = res.data || res;
+            this.loadBookingDetails();
+          }
+        },
+        error: (err: any) =>
+          console.error('Error fetching current offer:', err),
+      });
+    }
 
     const targetId = this.negotiationId || this.bookingId;
     if (targetId) {
@@ -157,7 +158,6 @@ export class NegotiationRoomComponent implements OnInit {
       companyId: this.companyId,
     };
 
-    // إرسال payload واحد فقط كما تريده الـ Service
     this.negotiationService.rejectOffer(payload).subscribe({
       next: (res: any) => {
         alert('Offer rejected.');
