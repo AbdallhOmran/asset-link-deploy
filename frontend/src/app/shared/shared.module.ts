@@ -48,7 +48,7 @@ import {LucideAngularModule,
         DollarSign,
         Plus,Filter,Search,
         X,ClipboardList,BadgeCheck,
-        Hammer,Calendar,ChevronLeft,ChevronUp} from 'lucide-angular';
+        Hammer,Calendar,ChevronLeft,ChevronUp, Mail, Hash, Tag} from 'lucide-angular';
 import { StatusBadgeComponent } from './components/status-badge/status-badge.component';
 import { ButtonComponent } from './components/button/button.component';
 import { StepperComponent } from './components/stepper/stepper.component';
@@ -124,6 +124,7 @@ import { TopNavbarComponent } from './top-navbar/top-navbar.component';
     Navigation2,
     Download,
     Phone,
+    Mail,
     ChevronRight,
     MapPin,
     ArrowRight,
@@ -151,7 +152,9 @@ import { TopNavbarComponent } from './top-navbar/top-navbar.component';
     LayoutGrid,
     List,
     Inbox,
-    LoaderCircle
+    LoaderCircle,
+    Hash,
+    Tag
   })
   ],
   exports: [

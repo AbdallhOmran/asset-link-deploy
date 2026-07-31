@@ -27,6 +27,7 @@ export class CardComponent {
 
   @Output() bookClick = new EventEmitter<void>();
   @Output() waitlistClick = new EventEmitter<void>();
+  @Output() detailsClick = new EventEmitter<void>();
 
   onBookClick(event: any) {
     if (event && event.stopPropagation) {
@@ -38,6 +39,13 @@ export class CardComponent {
     } else {
       this.bookClick.emit();
     }
+  }
+
+  onDetailsClick(event: any) {
+    if (event && event.stopPropagation) {
+      event.stopPropagation();
+    }
+    this.detailsClick.emit();
   }
 
   get isAvailable(): boolean {

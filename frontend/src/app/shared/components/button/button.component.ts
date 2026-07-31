@@ -11,11 +11,11 @@ export class ButtonComponent {
   @Input() disabled = false;
   @Input() type: 'button' | 'submit' = 'button';
   @Input() fullWidth = false;
-  @Output() clicked = new EventEmitter<void>();
+  @Output() clicked = new EventEmitter<Event>();
 
-  onClick() {
+  onClick(event: Event) {
     if (!this.disabled) {
-      this.clicked.emit();
+      this.clicked.emit(event);
     }
   }
 

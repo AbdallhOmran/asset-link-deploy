@@ -195,7 +195,9 @@ const getAssetAvailability = async (assetId, startDate, endDate) => {
 };
 
 const getRecommendedAssets = async (query) => {
-  const { location, maxPrice, priceType = "Daily", limit = 10 } = query;
+  const { location, maxPrice, limit = 10 } = query;
+  // Fallback to "daily" if not provided, ensure lowercase for DB matching
+  const priceType = (query.priceType || "daily").toLowerCase();
 
   const matchStage = {
     status: { $in: ["Available", "Rented"] }
@@ -205,15 +207,20 @@ const getRecommendedAssets = async (query) => {
     matchStage[`price.${priceType}`] = { $lte: Number(maxPrice) };
   }
 
+  // Base score out of 100
+  // Available = 40 pts
+  // Location match = 40 pts
+  // Health Score = up to 20 pts (healthScore * 0.2)
   const scoreCalculation = [
-    { $cond: [{ $eq: ["$status", "Available"] }, 50, 0] } 
+    { $cond: [{ $eq: ["$status", "Available"] }, 40, 0] },
+    { $multiply: [{ $ifNull: ["$healthScore", 100] }, 0.2] }
   ];
 
   if (location) {
     scoreCalculation.push({
       $cond: [
         { $regexMatch: { input: "$location", regex: location, options: "i" } },
-        30, 
+        40, 
         0
       ]
     });
@@ -242,26 +249,26 @@ const getRecommendedAssets = async (query) => {
         from: "companies", 
         localField: "companyId",
         foreignField: "_id",
-        as: "company"
+        as: "companyId"
       }
     },
-    { $unwind: { path: "$company", preserveNullAndEmptyArrays: true } }, 
+    { $unwind: { path: "$companyId", preserveNullAndEmptyArrays: true } }, 
     
     {
       $lookup: {
         from: "assetcategories",
         localField: "assetCategoryId",
         foreignField: "_id",
-        as: "category"
+        as: "assetCategoryId"
       }
     },
-    { $unwind: { path: "$category", preserveNullAndEmptyArrays: true } },
+    { $unwind: { path: "$assetCategoryId", preserveNullAndEmptyArrays: true } },
     
     {
       $project: {
-        "company.password": 0, 
-        "company.__v": 0,
-        "category.__v": 0
+        "companyId.password": 0, 
+        "companyId.__v": 0,
+        "assetCategoryId.__v": 0
       }
     }
   ];

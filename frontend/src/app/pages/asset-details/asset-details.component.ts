@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AssetService } from '../../services/asset.service';
+import { BookingModalService } from '../../services/booking-modal.service';
 import { TimelineStage } from '../../shared/components/timeline/timeline.component';
 
 @Component({
@@ -13,6 +14,7 @@ export class AssetDetailsComponent implements OnInit {
   asset: any = null;
   isLoading = true;
   error: string | null = null;
+  showContactModal = false;
 
   /** Active tab index driven by shared app-tabs */
   activeTab = 0;
@@ -21,7 +23,8 @@ export class AssetDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private assetService: AssetService
+    private assetService: AssetService,
+    private bookingModalService: BookingModalService
   ) {}
 
   ngOnInit(): void {
@@ -76,6 +79,31 @@ export class AssetDetailsComponent implements OnInit {
     return this.asset?.status ?? 'Available';
   }
 
+  get isAvailable(): boolean {
+    return this.status === 'Available';
+  }
+
+  get isRentedOrBooked(): boolean {
+    return this.status === 'Booked' || this.status === 'Rented';
+  }
+
+  get buttonText(): string {
+    if (this.isRentedOrBooked) {
+      return 'Join Waitlist';
+    }
+    return this.isAvailable ? 'Book this Asset' : 'Unavailable';
+  }
+
+  bookNow(): void {
+    if (this.assetId) {
+      this.bookingModalService.openModal(this.assetId);
+    }
+  }
+
+  toggleContactModal(): void {
+    this.showContactModal = !this.showContactModal;
+  }
+
   get categoryName(): string {
     return this.asset?.assetCategoryId?.assetCategoryName
       ?? this.asset?.category
@@ -122,19 +150,19 @@ export class AssetDetailsComponent implements OnInit {
   get statCards() {
     return [
       {
-        title: 'Asset Code',
-        value: this.assetCode,
-        icon: 'hash',
+        title: 'Total Rentals',
+        value: this.asset?.rentalHistory?.length || this.activeBookings?.length || 0,
+        subtitle: 'completed'
       },
       {
-        title: 'Category',
-        value: this.categoryName,
-        icon: 'tag',
+        title: 'Hours Operated',
+        value: this.asset?.usageHours || this.asset?.hoursOperated || 0,
+        subtitle: 'lifetime hrs'
       },
       {
-        title: 'Health Score',
-        value: `${this.healthScore}%`,
-        icon: 'activity',
+        title: 'Year of Manufacture',
+        value: this.asset?.yearOfManufacture || this.asset?.specifications?.yearOfManufacture || '—',
+        subtitle: 'Model Year'
       },
     ];
   }
