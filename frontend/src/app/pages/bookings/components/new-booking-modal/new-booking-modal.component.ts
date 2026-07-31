@@ -53,34 +53,27 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
     }
   }
 
-  fetchAssetDetails() {
+fetchAssetDetails() {
     if (!this.preselectedAssetId) return;
 
     this.assetService.getAssetDetails(this.preselectedAssetId).subscribe({
       next: (res: any) => {
         this.selectedAsset = res?.data ?? res;
 
-        // Guard: block booking your own company's assets, before anything else loads
         const loggedInCompany = this.authService.getCompany();
         const assetOwnerId = this.selectedAsset?.companyId?._id || this.selectedAsset?.companyId;
 
+        // Guard: block booking your own company's assets
         if (loggedInCompany?.id && assetOwnerId && loggedInCompany.id === assetOwnerId) {
           this.errorMessage = "You cannot book your own company's equipment.";
           this.selectedAsset = null;
-          return;
-        }
-
-        this.priceType = this.availablePriceTypes[0]?.value || 'Daily';
-
-        const loggedInCompany = this.authService.getCompany();
-        const ownerId = this.selectedAsset?.companyId?._id || this.selectedAsset?.companyId;
-
-        if (loggedInCompany?.id === ownerId) {
-          this.errorMessage = "You cannot book your own company's equipment.";
           this.isOwner = true;
+          return;
         } else {
           this.isOwner = false;
         }
+
+        this.priceType = this.availablePriceTypes[0]?.value || 'Daily';
 
         if (this.isWaitlistMode) {
           this.waitingListService.getWaitingListByAsset(this.selectedAsset._id).subscribe({
@@ -224,14 +217,14 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
     this.closed.emit();
   }
 
-  onCreate() {
+onCreate() {
     this.errorMessage = '';
 
     const loggedInCompany = this.authService.getCompany();
     const ownerId = this.selectedAsset?.companyId?._id || this.selectedAsset?.companyId;
 
-    if (loggedInCompany?.id === ownerId) {
-      this.errorMessage = "You cannot book your own company's equipment.";
+    if (!loggedInCompany?.id) {
+      this.errorMessage = 'Session expired. Please log in again.';
       return;
     }
 
@@ -240,15 +233,7 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
       return;
     }
 
-    const loggedInCompany = this.authService.getCompany();
-    if (!loggedInCompany?.id) {
-      this.errorMessage = 'Session expired. Please log in again.';
-      return;
-    }
-
-    // Guard again right before submit, in case selectedAsset changed some other way
-    const assetOwnerId = this.selectedAsset.companyId?._id || this.selectedAsset.companyId;
-    if (loggedInCompany.id === assetOwnerId) {
+    if (loggedInCompany.id === ownerId) {
       this.errorMessage = "You cannot book your own company's equipment.";
       return;
     }
@@ -258,9 +243,7 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
       return;
     }
 
-    if (!loggedInCompany?.id) {
-      this.errorMessage = 'Session expired. Please log in again.';
-    // Re-check minimum duration before final submit too (not applicable to waitlist requests)
+    // Re-check minimum duration before final submit (not applicable to waitlist)
     if (!this.isWaitlistMode && this.rentalDays < this.minRequiredDays) {
       if (this.priceType === 'Weekly') {
         this.errorMessage = 'Weekly plan requires a rental period of at least 7 days.';
@@ -301,7 +284,7 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
     const bookingData = {
       assetId: this.selectedAsset._id,
       companyId: loggedInCompany.id,
-      ownerCompanyId: assetOwnerId,
+      ownerCompanyId: ownerId,
       startDate: this.startDate,
       endDate: this.endDate,
       priceType: this.priceType,
@@ -323,7 +306,7 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
       },
     });
   }
-
+  
   resetForm() {
     this.currentStep = 0;
     this.selectedAsset = null;
