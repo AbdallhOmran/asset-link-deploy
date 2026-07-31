@@ -56,20 +56,34 @@ export class OrdersComponent implements OnInit {
     this.selectedOrder = null;
   }
 
-  onNegotiationStarted(negotiationData?: any): void {
+  onNegotiationStarted(res?: any): void {
+    const bookingId = this.selectedOrder?._id;
+
     if (this.selectedOrder) {
-      const acceptedId = this.selectedOrder._id;
       this.pendingOrders = this.pendingOrders.filter(
-        (o) => o._id !== acceptedId,
+        (o) => o._id !== bookingId,
       );
     }
 
     this.closeAcceptModal();
 
-    const negotiationId = negotiationData?._id || negotiationData?.id;
-    this.router.navigate(['/app/negotiation-room'], {
-      queryParams: negotiationId ? { id: negotiationId } : {},
-    });
+    const negotiationObj =
+      res?.data?.negotiation || res?.negotiation || res?.data || res;
+    const negotiationId =
+      negotiationObj?._id ||
+      negotiationObj?.id ||
+      (typeof negotiationObj === 'string' ? negotiationObj : null);
+
+    const queryParams: any = {};
+    if (negotiationId) {
+      queryParams.id = negotiationId;
+      queryParams.negotiationId = negotiationId;
+    }
+    if (bookingId) {
+      queryParams.bookingId = bookingId;
+    }
+
+    this.router.navigate(['/app/negotiation-room'], { queryParams });
   }
 
   onOrderRejected(bookingId: string): void {
