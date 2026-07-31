@@ -64,12 +64,16 @@ const removeFromWaitingList = async (id) => {
   return { message: "Removed successfully and positions updated" };
 };
 
+const { sendWaitlistNotificationEmail } = require("../utils/sendEmail.util");
+
 const notifyFirstWaitingCompany = async (assetId) => {
   const waiting = await waitingListModel
     .findOne({
       assetId,
       status: "Waiting",
     })
+    .populate("companyId")
+    .populate("assetId")
     .sort({ position: 1 });
 
   if (!waiting) {
@@ -78,6 +82,21 @@ const notifyFirstWaitingCompany = async (assetId) => {
 
   waiting.status = "Notified";
   await waiting.save();
+
+  // Send an email to the renting company
+  if (waiting.companyId && waiting.assetId) {
+    const toEmail = waiting.companyId.companyEmail;
+    const companyName = waiting.companyId.companyName;
+    const assetName = waiting.assetId.assetName;
+    
+    // We assume we want to send the asset owner's email to them
+    // If the asset has companyId populated we could use it, but here we just get it from the asset 
+    // We need to populate the owner company to get their email
+    await waiting.assetId.populate("companyId");
+    const ownerEmail = waiting.assetId.companyId?.companyEmail || 'support@assetlink.com';
+
+    await sendWaitlistNotificationEmail(toEmail, companyName, assetName, ownerEmail);
+  }
 
   return waiting;
 };

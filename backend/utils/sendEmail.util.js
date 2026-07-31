@@ -216,7 +216,44 @@ const sendResetPasswordEmail = async (toEmail, resetLink) => {
   }
 };
 
+/**
+ * Send Waitlist Notification Email
+ */
+const sendWaitlistNotificationEmail = async (toEmail, companyName, assetName, ownerEmail) => {
+  try {
+    if (isPlaceholder()) {
+      console.log("========================================");
+      console.log(`📧 Waitlist Notification for ${companyName} (${toEmail})`);
+      console.log(`Asset: ${assetName} is now available!`);
+      console.log("========================================");
+      return;
+    }
+
+    const transporter = createTransporter();
+    const fromName = process.env.EMAIL_FROM_NAME || "AssetLink";
+
+    await transporter.sendMail({
+      from: `"${fromName}" <${process.env.EMAIL_USER}>`,
+      to: toEmail,
+      subject: `AssetLink - Waitlist Update: ${assetName} is Available!`,
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px;">
+          <h2>Great news, ${companyName}!</h2>
+          <p>The asset you've been waiting for, <strong>${assetName}</strong>, is now available.</p>
+          <p>Please contact the owner immediately at <a href="mailto:${ownerEmail}">${ownerEmail}</a> to finalize your booking before it goes to the next company in line.</p>
+          <br>
+          <p>Best regards,<br>The AssetLink Team</p>
+        </div>
+      `
+    });
+    console.log(`✅ Waitlist Notification email sent successfully to ${toEmail}`);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 module.exports = {
   sendOTPEmail,
-  sendResetPasswordEmail
+  sendResetPasswordEmail,
+  sendWaitlistNotificationEmail
 };
