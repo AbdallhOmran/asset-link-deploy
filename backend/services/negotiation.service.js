@@ -146,8 +146,13 @@ const createOffer = async (offerData) => {
     );
   if (!lastVersion.negotiationId.isActive)
     throw new Error("Sorry, This negotiation not active");
-  // Only throw if isLatest exists but is false (meaning it's explicitly an old version, not just legacy data)
-  if (lastVersion.isLatest === false) throw new Error("Can't edit this version");
+  
+  // If we fell back to an older version that explicitly has isLatest: false,
+  // it means a previous counter offer failed halfway and corrupted the state.
+  // We will allow editing it (which essentially heals the state by creating a new isLatest: true version).
+  if (lastVersion.isLatest === false) {
+    console.warn(`Healing corrupted negotiation state for ${negotiationId}: treating version ${lastVersion.versionNumber} as latest.`);
+  }
   if (!counterBy) throw new Error("Counter By is required");
   if (lastVersion.negotiationId.status !== "Pending")
     throw new Error("Negotiation already closed");
@@ -168,12 +173,6 @@ const createOffer = async (offerData) => {
   )
     throw new Error("This Version not change any thing in negotiation");
 
-  await versionModel.findByIdAndUpdate(
-    lastVersion._id,
-    { isLatest: false },
-    { new: true },
-  );
-
   const newVersion = await createVersion({
     negotiationId: lastVersion.negotiationId._id,
     versionNumber: lastVersion.versionNumber + 1,
@@ -184,6 +183,13 @@ const createOffer = async (offerData) => {
     counterBy,
     notes,
   });
+
+  // Update old version only after new version is successfully created
+  await versionModel.findByIdAndUpdate(
+    lastVersion._id,
+    { isLatest: false },
+    { new: true },
+  );
 
   await negotiationModel.findByIdAndUpdate(lastVersion.negotiationId._id, {
     currentVersion: newVersion._id,
