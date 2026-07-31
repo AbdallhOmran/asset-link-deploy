@@ -24,6 +24,14 @@ export class NegotiationService {
     return this.http.get(`${this.api}/${id}/history`);
   }
 
+  getNegotiation(companyId: string): Observable<any> {
+    return this.http.get(`${this.api}/company/${companyId}`);
+  }
+
+  getNegotiationById(id: string): Observable<any> {
+    return this.http.get(`${this.api}/${id}`);
+  }
+
   getCurrent(companyId: string): Observable<any> {
     return this.http.get(`${this.api}/company/${companyId}/current`);
   }

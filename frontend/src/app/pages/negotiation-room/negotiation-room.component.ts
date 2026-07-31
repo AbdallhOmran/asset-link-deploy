@@ -88,25 +88,21 @@ export class NegotiationRoomComponent implements OnInit {
   }
 
   loadNegotiationDetails(): void {
-    if (this.companyId) {
-      this.negotiationService.getCurrent(this.companyId).subscribe({
-        next: (res: any) => {
-          if (res.success || res.data) {
-            this.currentOffer = res.data || res;
-            
-            if (!this.negotiationId) {
-              this.negotiationId = this.currentOffer._id;
-            }
-            
-            this.loadBookingDetails();
-            this.loadHistory();
-          }
-        },
-        error: (err: any) => console.error('Error fetching current offer:', err),
-      });
-    } else if (this.negotiationId || this.bookingId) {
-      this.loadHistory();
+    if (!this.negotiationId) {
+      console.warn('No negotiationId provided. Cannot load details.');
+      return;
     }
+
+    this.negotiationService.getNegotiationById(this.negotiationId).subscribe({
+      next: (res: any) => {
+        if (res.success || res.data) {
+          this.currentOffer = res.data || res;
+          this.loadBookingDetails();
+          this.loadHistory();
+        }
+      },
+      error: (err: any) => console.error('Error fetching negotiation:', err),
+    });
   }
 
   loadHistory(): void {

@@ -202,8 +202,16 @@ const getNegotiation = async (id) => {
   const { companyId } = id;
   const negotiations = await negotiationModel.find({
     $or: [{ ownerCompany: companyId }, { renterCompany: companyId }],
-  });
-  if (negotiations.length === 0) throw new Error("this negotiotion not found");
+  })
+  .populate({
+    path: "bookingId",
+    populate: { path: "assetId" }
+  })
+  .populate("ownerCompany", "companyName logo")
+  .populate("renterCompany", "companyName logo")
+  .populate("currentVersion")
+  .sort({ createdAt: -1 });
+  
   return negotiations;
 };
 

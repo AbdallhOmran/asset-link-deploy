@@ -51,6 +51,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { AssetDashboardComponent } from './pages/asset-dashboard/asset-dashboard.component';
 import { PaymentsEscrowComponent } from './pages/payments-escrow/payments-escrow.component';
 import { BookingsComponent } from './pages/bookings/bookings.component';
+import { NegotiationsComponent } from './pages/negotiations/negotiations.component';
 import { NewBookingModalComponent } from './pages/bookings/components/new-booking-modal/new-booking-modal.component';
 import { ContractsComponent } from './pages/contracts/contracts.component';
 import { CompanyProfileComponent } from './pages/company-profile/company-profile.component';
@@ -86,6 +87,7 @@ import { ResetPasswordComponent } from './pages/reset-password/reset-password.co
     AssetDashboardComponent,
     PaymentsEscrowComponent,
     BookingsComponent,
+    NegotiationsComponent,
     ContractsComponent,
     NegotiationRoomComponent,
     NegotiationHeaderComponent,

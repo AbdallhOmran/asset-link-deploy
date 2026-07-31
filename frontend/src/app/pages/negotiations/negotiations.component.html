@@ -1,0 +1,138 @@
+<div class="flex-1 w-full max-w-7xl mx-auto px-4 py-8">
+  <div class="mb-8">
+    <h1 class="text-2xl font-semibold text-slate-900 mb-2">Negotiations</h1>
+    <p class="text-slate-600">Track active, pending, and completed negotiations.</p>
+  </div>
+
+  <p *ngIf="errorMessage" class="text-sm text-red-600 bg-red-50 p-2 rounded-md mb-4">
+    {{ errorMessage }}
+  </p>
+
+  <!-- Controls -->
+  <div class="flex flex-col sm:flex-row gap-4 mb-6 items-center justify-between">
+    <div class="flex bg-white rounded-lg p-1 border border-slate-200">
+      <button
+        class="px-4 py-2 rounded-md text-sm font-medium transition-colors"
+        [class.bg-blue-600]="viewMode === 'list'"
+        [class.text-white]="viewMode === 'list'"
+        [class.text-slate-600]="viewMode !== 'list'"
+        (click)="setViewMode('list')"
+      >
+        List View
+      </button>
+      <button
+        class="px-4 py-2 rounded-md text-sm font-medium transition-colors"
+        [class.bg-blue-600]="viewMode === 'calendar'"
+        [class.text-white]="viewMode === 'calendar'"
+        [class.text-slate-600]="viewMode !== 'calendar'"
+        (click)="setViewMode('calendar')"
+      >
+        Calendar
+      </button>
+    </div>
+
+    <div class="flex-1 max-w-md w-full relative">
+      <lucide-icon name="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></lucide-icon>
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="applyFilter()"
+        placeholder="Search negotiations..."
+        class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+      />
+    </div>
+
+    <button
+      class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors"
+      (click)="toggleFilterPanel()"
+    >
+      <lucide-icon name="sliders-horizontal" class="w-4 h-4"></lucide-icon>
+      Filter
+    </button>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="bg-white rounded-xl border border-slate-200 overflow-hidden min-h-[400px]">
+    
+    <!-- Loader -->
+    <div *ngIf="isLoading" class="flex flex-col items-center justify-center p-12">
+      <div class="w-8 h-8 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
+      <p class="mt-4 text-slate-500">Loading negotiations...</p>
+    </div>
+
+    <!-- ===== LIST VIEW ===== -->
+    <ng-container *ngIf="viewMode === 'list' && !isLoading">
+      <app-data-table
+        [columns]="columns"
+        [data]="filteredNegotiations"
+        (actionClicked)="onNegotiationAction($event)"
+      ></app-data-table>
+
+      <p *ngIf="filteredNegotiations.length === 0" class="text-center text-slate-500 py-8 text-sm">
+        No negotiations found.
+      </p>
+    </ng-container>
+
+    <!-- ===== CALENDAR VIEW ===== -->
+    <div *ngIf="viewMode === 'calendar' && !isLoading" class="bg-white border border-slate-200 rounded-lg p-4">
+      <!-- Calendar Header -->
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-slate-900">{{ calendarMonthLabel }}</h3>
+        <div class="flex items-center gap-2">
+          <button
+            class="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100 text-slate-600 transition-colors"
+            (click)="prevMonth()"
+          >
+            ←
+          </button>
+          <button
+            class="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100 text-slate-600 transition-colors"
+            (click)="nextMonth()"
+          >
+            →
+          </button>
+        </div>
+      </div>
+
+      <!-- Calendar Grid -->
+      <div class="grid grid-cols-7 gap-[1px] bg-slate-200 border border-slate-200 rounded-md overflow-hidden">
+        <!-- Weekdays -->
+        <div class="bg-slate-50 text-center py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Sun</div>
+        <div class="bg-slate-50 text-center py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Mon</div>
+        <div class="bg-slate-50 text-center py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Tue</div>
+        <div class="bg-slate-50 text-center py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Wed</div>
+        <div class="bg-slate-50 text-center py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Thu</div>
+        <div class="bg-slate-50 text-center py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Fri</div>
+        <div class="bg-slate-50 text-center py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Sat</div>
+
+        <!-- Days -->
+        <div
+          *ngFor="let day of calendarDays"
+          class="bg-white min-h-[100px] p-2 flex flex-col gap-1 transition-colors hover:bg-slate-50 relative group"
+          [ngClass]="{
+            'opacity-50 bg-slate-50/50': !day.isCurrentMonth
+          }"
+        >
+          <span
+            class="text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full mb-1"
+            [ngClass]="{
+              'bg-blue-600 text-white': isToday(day.date),
+              'text-slate-700': !isToday(day.date)
+            }"
+          >
+            {{ day.date | date : 'd' }}
+          </span>
+
+          <div
+            *ngFor="let n of day.negotiations"
+            class="text-[10px] leading-tight px-1.5 py-1 rounded cursor-pointer truncate transition-colors text-blue-700 bg-blue-100 hover:bg-blue-200"
+            [title]="n.assetName + ' - ' + n.status"
+            (click)="onNegotiationAction(n)"
+          >
+            {{ n.assetName }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
