@@ -2,6 +2,7 @@ const bookingService = require("../services/booking.service");
 
 const createBooking = async (req, res) => {
   try {
+    req.body.companyId = req.user.id;
     const newBooking = await bookingService.createBooking(req.body);
     return res.status(201).send(newBooking);
   } catch (err) {
@@ -17,7 +18,7 @@ const createBooking = async (req, res) => {
 
 const getBooking = async (req, res) => {
   try {
-    const booking = await bookingService.getBookingById(req.params.id);
+    const booking = await bookingService.getBookingById(req.params.id, req.user);
     return res.status(200).send(booking);
   } catch (err) {
     if (err.message.includes("not found")) {

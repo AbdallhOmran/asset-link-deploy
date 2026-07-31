@@ -66,7 +66,7 @@ const getAllContracts = async (companyId) => {
   return contracts;
 };
 
-const getContractById = async (id) => {
+const getContractById = async (id, user) => {
   const contract = await contractModel
     .findById(id)
     .populate("bookingId")
@@ -76,6 +76,14 @@ const getContractById = async (id) => {
 
   if (!contract) {
     throw new Error("Contract not found");
+  }
+
+  if (user && user.role !== "Admin") {
+    if (contract.companyId._id.toString() !== user.id && contract.ownerCompanyId._id.toString() !== user.id) {
+      const err = new Error("Forbidden: You don't have permission to view this contract");
+      err.statusCode = 403;
+      throw err;
+    }
   }
 
   return contract;
@@ -144,8 +152,8 @@ const generateContractPDF = async (contractId) => {
     throw new Error("Contract not found");
   }
 
-  if (contract.status !== "Approved" && contract.status !== "Active") {
-    throw new Error("Contract must be approved before generating PDF");
+  if (contract.status !== "Approved" && contract.status !== "Active" && contract.status !== "Draft") {
+    throw new Error("Contract must be Draft, Approved or Active before generating PDF");
   }
 
   const latestContract = await contractModel

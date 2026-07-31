@@ -104,6 +104,11 @@ const companySchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    status: {
+      type: String,
+      enum: ["Active", "Disabled", "Deleted"],
+      default: "Active",
+    },
     resetPasswordToken: {
       type: String,
     },

@@ -1,6 +1,7 @@
+import { environment } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap, catchError, of, map } from 'rxjs';
+import { BehaviorSubject, Observable, tap, catchError, of, map, forkJoin } from 'rxjs';
 import {
   InspectionRecord,
   CreateInspectionPayload,
@@ -13,9 +14,9 @@ import {
   providedIn: 'root',
 })
 export class InspectionService {
-  private readonly baseUrl = 'https://asset-link-api.vercel.app/api/inspection';
-  private readonly bookingUrl = 'https://asset-link-api.vercel.app/api/bookings';
-  private readonly assetUrl = 'https://asset-link-api.vercel.app/api/asset';
+  private readonly baseUrl = environment.apiUrl + '/api/inspection';
+  private readonly bookingUrl = environment.apiUrl + '/api/bookings';
+  private readonly assetUrl = environment.apiUrl + '/api/asset';
 
   // Reactive state
   private inspectionsSubject = new BehaviorSubject<InspectionRecord[]>([]);
@@ -158,9 +159,15 @@ export class InspectionService {
   }
 
   getBookings(): Observable<any[]> {
-    return this.http.get<any>(this.bookingUrl).pipe(
-      map((res) => (Array.isArray(res) ? res : res.data || res.bookings || [])),
-      catchError(() => of([]))
+    return forkJoin([
+      this.http.get<any>(this.bookingUrl + '/company').pipe(catchError(() => of([]))),
+      this.http.get<any>(this.bookingUrl + '/my').pipe(catchError(() => of([])))
+    ]).pipe(
+      map(([res1, res2]) => {
+        const arr1 = Array.isArray(res1) ? res1 : res1.data || res1.bookings || [];
+        const arr2 = Array.isArray(res2) ? res2 : res2.data || res2.bookings || [];
+        return [...arr1, ...arr2];
+      })
     );
   }
 }

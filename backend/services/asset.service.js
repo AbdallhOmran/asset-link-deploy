@@ -33,6 +33,10 @@ const addAsset = async (assetData) => {
   const checkCompany = await companyModel.findById(companyId);
   if (!checkCompany) throw new Error("This Company not found");
 
+  if (checkCompany.role !== 'Admin' && checkCompany.companyType === 'Renter') {
+    throw new Error("Only Owners can add assets");
+  }
+
   const checkCategory = await assetCategoryModel.findById(assetCategoryId);
   if (!checkCategory) throw new Error("This Category not found");
 
@@ -42,6 +46,10 @@ const addAsset = async (assetData) => {
   if (!description) throw new Error("Description is required");
   if (!price || !price.daily)
     throw new Error("please add at least daily price");
+
+  // Check for duplicate asset (same name for the same company)
+  const duplicateAsset = await assetModel.findOne({ companyId, assetName });
+  if (duplicateAsset) throw new Error("Asset with this name already exists for your company");
 
   const assetCode = await generateCode();
 
@@ -62,7 +70,7 @@ const addAsset = async (assetData) => {
 };
 
 const getAssets = async () => {
-  const assets = await assetModel.find()
+  const assets = await assetModel.find({ isActive: true })
     .populate("companyId")
     .populate("assetCategoryId");
 
@@ -70,7 +78,7 @@ const getAssets = async () => {
 };
 
 const searchAssets = async (query) => {
-  let filter = {};
+  let filter = { isActive: true };
 
   if (query.name) {
     filter.assetName = {
@@ -195,13 +203,21 @@ const getAssetAvailability = async (assetId, startDate, endDate) => {
 };
 
 const getRecommendedAssets = async (query) => {
-  const { location, maxPrice, limit = 10 } = query;
+  // Added 'filter' to extract from query parameters sent by frontend tabs
+  const { location, maxPrice, limit = 10, filter } = query;
   // Fallback to "daily" if not provided, ensure lowercase for DB matching
   const priceType = (query.priceType || "daily").toLowerCase();
 
+  // Base Match Stage
   const matchStage = {
-    status: { $in: ["Available", "Booked"] }
+    status: { $in: ["Available", "Booked"] },
+    isActive: true
   };
+
+  // If UI clicks "Available Now", force status to only 'Available'
+  if (filter === 'available') {
+    matchStage.status = "Available";
+  }
 
   if (maxPrice) {
     matchStage[`price.${priceType}`] = { $lte: Number(maxPrice) };
@@ -226,20 +242,29 @@ const getRecommendedAssets = async (query) => {
     });
   }
 
+  // Determine sorting based on UI filter tab
+  let sortStage = { recommendationScore: -1, [`price.${priceType}`]: 1 };
+  
+  if (filter === 'maintenance') {
+    sortStage = { healthScore: -1, recommendationScore: -1 };
+  } else if (filter === 'value') {
+    sortStage = { [`price.${priceType}`]: 1, recommendationScore: -1 };
+  } else if (filter === 'closest') {
+    sortStage = { recommendationScore: -1 }; // Location score naturally boosts this
+  }
+
   const pipeline = [
     { $match: matchStage }, 
     
     {
       $addFields: {
-        recommendationScore: { $add: scoreCalculation } 
+        recommendationScore: { $add: scoreCalculation },
+        matchScore: { $add: scoreCalculation } // Added for frontend compatibility
       }
     },
     
     {
-      $sort: {
-        recommendationScore: -1,
-        [`price.${priceType}`]: 1 
-      }
+      $sort: sortStage // Applied dynamic sorting
     },
     
     { $limit: Number(limit) },

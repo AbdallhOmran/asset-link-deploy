@@ -30,7 +30,7 @@ const getContracts = async (req, res) => {
 
 const getContract = async (req, res) => {
   try {
-    const contract = await contractService.getContractById(req.params.id);
+    const contract = await contractService.getContractById(req.params.id, req.user);
     return res.status(200).send(contract);
   } catch (err) {
     if (err.message.includes("not found")) {

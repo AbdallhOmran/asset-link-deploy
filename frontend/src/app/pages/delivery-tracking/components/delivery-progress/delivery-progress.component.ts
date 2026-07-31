@@ -22,10 +22,10 @@ export class DeliveryProgressComponent implements OnChanges {
     const fixedStatuses = ['Preparing', 'Picked Up', 'In Transit', 'Delivered'];
 
     const icons: any = {
-      Preparing: '📦',
-      'Picked Up': '🚚',
-      'In Transit': '📍',
-      Delivered: '✓',
+      Preparing: 'box',
+      'Picked Up': 'truck',
+      'In Transit': 'map-pin',
+      Delivered: 'check-circle-2',
     };
 
     this.deliverySteps = fixedStatuses.map((statusName) => {
@@ -51,7 +51,7 @@ export class DeliveryProgressComponent implements OnChanges {
       }
 
       return {
-        icon: icons[statusName] || '📦',
+        icon: icons[statusName] || 'box',
         label: statusName,
         subLabel: subText,
       };

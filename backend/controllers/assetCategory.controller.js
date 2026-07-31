@@ -29,6 +29,7 @@ const viewCategories = async (req, res) =>{
     return res.status(200).send(categories);
 
   }catch(err){
+    console.error("viewCategories error:", err);
     return res.status(500).send(err.message);
 
   }

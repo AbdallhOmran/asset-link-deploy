@@ -43,6 +43,12 @@ const createInspection = async (data) => {
   if (data.status === "Passed") {
     booking.status = "Confirmed";
     await booking.save();
+    
+    // Update asset status to In Rental
+    const Asset = require("../models/asset.model");
+    if (data.inspectionType === 'before_use') {
+        await Asset.findByIdAndUpdate(data.assetId, { status: "In Rental" });
+    }
   }
 
   return inspection;
@@ -165,6 +171,11 @@ const updateInspection = async (id, data) => {
       } else if (data.status === "Passed") {
         booking.status = "Confirmed";
         await booking.save();
+
+        const Asset = require("../models/asset.model");
+        if (inspection.inspectionType === 'before_use') {
+            await Asset.findByIdAndUpdate(inspection.assetId, { status: "In Rental" });
+        }
       }
     }
   }

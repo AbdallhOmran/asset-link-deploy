@@ -94,6 +94,8 @@ export class BookingsComponent implements OnInit {
     this.errorMessage = err.error?.message || 'Failed to load bookings';
   }
 
+  selectedBooking: any = null;
+
   onBookingAction(booking: any) {
     const loggedInCompany = this.authService.getCompany();
     const companyId = loggedInCompany?.id || loggedInCompany?._id;
@@ -102,22 +104,20 @@ export class BookingsComponent implements OnInit {
     const bookingOwnerId = booking.ownerCompanyId?._id || booking.ownerCompanyId;
     const isOwner = bookingOwnerId === companyId;
 
-    if (booking.status === 'Pending') {
-      if (isOwner) {
-        this.router.navigate(['/app/orders']);
-      } else {
-        this.errorMessage = 'This booking is pending. The equipment owner must accept it to start the negotiation.';
-        setTimeout(() => this.errorMessage = '', 5000);
-      }
+    if (booking.status === 'Pending' && isOwner) {
+      this.router.navigate(['/app/orders']);
+      return;
     } else if (booking.status === 'InNegotiation') {
       this.router.navigate(['/app/negotiations']);
-    } else if (booking.status === 'Confirmed') {
-      this.errorMessage = 'This booking is already confirmed.';
-      setTimeout(() => this.errorMessage = '', 5000);
-    } else {
-      this.errorMessage = `This booking is ${booking.status}.`;
-      setTimeout(() => this.errorMessage = '', 5000);
+      return;
     }
+
+    // Show modal for other statuses or if pending and not owner
+    this.selectedBooking = booking;
+  }
+
+  closeModal() {
+    this.selectedBooking = null;
   }
 
   // ✅ actually switches the view now (used with *ngIf in the template)

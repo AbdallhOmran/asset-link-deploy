@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -9,7 +10,7 @@ export interface AssetCategory {
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-  private baseUrl = 'https://asset-link-api.vercel.app/api/assetCategory';
+  private baseUrl = environment.apiUrl + '/api/assetCategory';
   // private baseUrl = 'http://localhost:3000/api/assetCategory';
 
   constructor(private http: HttpClient) {}
