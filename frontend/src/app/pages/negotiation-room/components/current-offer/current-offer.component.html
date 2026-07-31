@@ -59,11 +59,18 @@
     </app-button>
   </div>
 
-  <div *ngIf="!canAction" class="bg-amber-50 border border-amber-200 text-amber-700 p-4 rounded-lg flex items-start gap-3">
+  <div *ngIf="!canAction && offer?.negotiationStatus === 'Pending'" class="bg-amber-50 border border-amber-200 text-amber-700 p-4 rounded-lg flex items-start gap-3">
     <lucide-icon name="clock" class="w-5 h-5 mt-0.5 shrink-0"></lucide-icon>
     <div class="text-sm">
       <p class="font-semibold mb-0.5">Waiting for Response</p>
       <p>Since you made the latest offer, you must wait for the other party to Accept, Reject, or send a Counter Offer.</p>
+    </div>
+  </div>
+
+  <div *ngIf="!canAction && offer?.negotiationStatus !== 'Pending'" class="bg-slate-100 border border-slate-200 text-slate-700 p-4 rounded-lg flex items-start gap-3">
+    <div class="text-sm">
+      <p class="font-semibold mb-0.5">Negotiation Closed</p>
+      <p>This negotiation has been {{ offer?.negotiationStatus }}. You can no longer make edits.</p>
     </div>
   </div>
 </div>
