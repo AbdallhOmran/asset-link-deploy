@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { NegotiationService } from 'src/app/services/negotiation.service';
 import { BookingService } from 'src/app/services/booking.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -29,17 +30,25 @@ export class NegotiationRoomComponent implements OnInit {
   }
 
   get currentVersionDetails(): any {
-    if (!this.currentOffer || !this.history || this.history.length === 0) {
+    if (!this.currentOffer && !this.currentBooking) {
       return null;
     }
 
-    const currentVersionId = this.currentOffer.currentVersion?._id || this.currentOffer.currentVersion;
-    const match = this.history.find((v: any) => v._id === currentVersionId);
-    const version = match || this.history[this.history.length - 1];
+    let version = null;
+    if (this.history && this.history.length > 0) {
+      const currentVersionId =
+        this.currentOffer?.currentVersion?._id || this.currentOffer?.currentVersion;
+      const match = this.history.find((v: any) => v._id === currentVersionId);
+      version = match || this.history[this.history.length - 1];
+    }
 
     return {
-      ...version,
-      assetName: this.currentBooking?.assetId?.assetName || null,
+      ...(version || this.currentOffer || {}),
+      assetName:
+        this.currentBooking?.assetId?.assetName ||
+        this.currentOffer?.assetId?.assetName ||
+        null,
+      assetId: this.currentBooking?.assetId || this.currentOffer?.assetId,
     };
   }
 
@@ -91,13 +100,17 @@ export class NegotiationRoomComponent implements OnInit {
   }
 
   loadBookingDetails(): void {
-    const bookingId = this.currentOffer?.bookingId?._id || this.currentOffer?.bookingId;
-    if (!bookingId) {
+    const bId =
+      this.bookingId ||
+      this.currentOffer?.bookingId?._id ||
+      this.currentOffer?.bookingId;
+
+    if (!bId) {
       this.currentBooking = null;
       return;
     }
 
-    this.bookingService.getBookingById(bookingId).subscribe({
+    this.bookingService.getBookingById(bId).subscribe({
       next: (res: any) => {
         this.currentBooking = res.data || res;
       },
@@ -109,13 +122,24 @@ export class NegotiationRoomComponent implements OnInit {
   }
 
   acceptOffer(): void {
-    if (!this.currentOffer) return;
+    const bId =
+      this.bookingId ||
+      this.currentOffer?.bookingId?._id ||
+      this.currentOffer?.bookingId ||
+      this.currentBooking?._id;
+
+    if (!bId) {
+      alert('Booking ID is missing');
+      return;
+    }
 
     const payload = {
-      negotiationId: this.negotiationId,
+      bookingId: bId,
+      negotiationId: this.negotiationId || this.currentOffer?._id,
       companyId: this.companyId,
     };
 
+    // إرسال payload واحد فقط كما تريده الـ Service
     this.negotiationService.acceptOffer(payload).subscribe({
       next: (res: any) => {
         alert('Term agreement accepted!');
@@ -123,13 +147,23 @@ export class NegotiationRoomComponent implements OnInit {
         this.loadBookingDetails();
         this.loadNegotiationDetails();
       },
-      error: (err: any) => alert('Error accepting offer'),
+      error: (err: any) => {
+        console.error('Error accepting offer:', err);
+        alert(err.error?.message || 'Error accepting offer');
+      },
     });
   }
 
   rejectOffer(): void {
+    const bId =
+      this.bookingId ||
+      this.currentOffer?.bookingId?._id ||
+      this.currentOffer?.bookingId ||
+      this.currentBooking?._id;
+
     const payload = {
-      negotiationId: this.negotiationId,
+      bookingId: bId,
+      negotiationId: this.negotiationId || this.currentOffer?._id,
       companyId: this.companyId,
     };
 
@@ -138,24 +172,38 @@ export class NegotiationRoomComponent implements OnInit {
         alert('Offer rejected.');
         this.loadNegotiationDetails();
       },
-      error: (err: any) => alert('Error rejecting offer'),
+      error: (err: any) => {
+        console.error('Error rejecting offer:', err);
+        alert(err.error?.message || 'Error rejecting offer');
+      },
     });
   }
 
   submitCounterOffer(offerData: any): void {
+    const bId =
+      this.bookingId ||
+      this.currentOffer?.bookingId?._id ||
+      this.currentOffer?.bookingId ||
+      this.currentBooking?._id;
+
+    const targetId = this.negotiationId || this.currentOffer?._id || bId;
+
     const payload = {
       counterBy: this.myRole || 'renterCompany',
       ...offerData,
     };
 
     this.negotiationService
-      .counterOffer(this.negotiationId, payload)
+      .counterOffer(targetId, payload)
       .subscribe({
         next: (res: any) => {
           alert('Counter offer sent successfully!');
           this.loadNegotiationDetails();
         },
-        error: (err: any) => alert('Error sending counter offer'),
+        error: (err: any) => {
+          console.error('Error sending counter offer:', err);
+          alert(err.error?.message || 'Error sending counter offer');
+        },
       });
   }
 }

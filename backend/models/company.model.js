@@ -125,4 +125,22 @@ const companySchema = new mongoose.Schema(
   }
 );
 
+/**
+ * Pre-validate hook: sanitize sparse unique fields.
+ * MongoDB sparse indexes only skip documents where the field is MISSING (undefined).
+ * If the field is explicitly set to null or "", the index treats it as a real value
+ * and enforces uniqueness — causing E11000 duplicate key errors.
+ * This hook ensures empty/null values are removed from the document entirely.
+ */
+const sparseUniqueFields = ['taxRegister', 'commercialRegistrationNumber'];
+
+companySchema.pre('validate', function (next) {
+  for (const field of sparseUniqueFields) {
+    if (this[field] === null || this[field] === '' || this[field] === undefined) {
+      this[field] = undefined;
+    }
+  }
+  next();
+});
+
 module.exports = mongoose.model("company", companySchema);

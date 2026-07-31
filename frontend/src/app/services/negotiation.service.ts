@@ -16,6 +16,7 @@ export interface VersionData {
 })
 export class NegotiationService {
   private api = 'https://asset-link-api.vercel.app/api/negotiation';
+  // private api = 'http://localhost:3000/api/negotiation';
 
   constructor(private http: HttpClient) {}
 
