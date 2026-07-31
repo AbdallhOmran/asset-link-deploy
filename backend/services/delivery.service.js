@@ -38,8 +38,8 @@ const createDelivery = async (deliveryData) => {
     throw new Error("Contract not found");
   }
 
-  if (contract.status !== "Active") {
-    throw new Error("Contract must be Active");
+  if (contract.status !== "Active" && contract.status !== "Approved") {
+    throw new Error("Contract must be Active or Approved");
   }
   
   if (booking.status !== "Confirmed") {

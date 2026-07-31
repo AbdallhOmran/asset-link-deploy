@@ -134,8 +134,39 @@
         ⏳ Waiting for owner approval...
       </p>
 
-      <p *ngIf="selectedContract.status === 'Active'" class="text-xs text-green-600 bg-green-50 p-2 rounded mb-3">
-        ✅ Contract is active.
+      <p *ngIf="selectedContract.status === 'Active' && isOwner(selectedContract)" class="text-xs text-amber-600 bg-amber-50 p-2 rounded mb-3">
+        ⏳ Waiting for renter to pay...
+      </p>
+      
+      <!-- Payment Button for Renter -->
+      <div *ngIf="selectedContract.status === 'Active' && isRenter(selectedContract)" class="mb-3">
+        <p class="text-xs text-amber-600 bg-amber-50 p-2 rounded mb-2">
+          ⚠️ Payment is required to activate the contract and escrow.
+        </p>
+        <button
+          (click)="payContract()"
+          [disabled]="actionLoading"
+          class="w-full py-2 px-4 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
+        >
+          {{ actionLoading ? 'Processing Payment...' : '💳 Pay Now (Escrow)' }}
+        </button>
+      </div>
+
+      <!-- Create Delivery Button for Owner -->
+      <div *ngIf="selectedContract.status === 'Approved' && isOwner(selectedContract)" class="mb-3">
+        <p class="text-xs text-green-600 bg-green-50 p-2 rounded mb-2">
+          ✅ Payment verified. Please initiate delivery.
+        </p>
+        <button
+          (click)="openDeliveryModal()"
+          class="w-full py-2 px-4 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 cursor-pointer"
+        >
+          🚚 Create Delivery
+        </button>
+      </div>
+
+      <p *ngIf="selectedContract.status === 'Approved' && isRenter(selectedContract)" class="text-xs text-green-600 bg-green-50 p-2 rounded mb-3">
+        ✅ Payment verified. Waiting for owner to initiate delivery.
       </p>
 
       <p *ngIf="selectedContract.status === 'Rejected'" class="text-xs text-red-600 bg-red-50 p-2 rounded mb-3">
@@ -166,6 +197,45 @@
           class="w-full py-2 text-sm font-semibold text-text border border-border rounded-lg hover:bg-slate-50 cursor-pointer"
         >
           👁 View PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delivery Modal -->
+  <div *ngIf="showDeliveryModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+      <h3 class="text-xl font-bold text-text mb-4">Create Delivery</h3>
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-text-muted mb-1">Pickup Location</label>
+          <input type="text" [(ngModel)]="deliveryData.pickupLocation" class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="e.g. Warehouse A">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-text-muted mb-1">Delivery Location</label>
+          <input type="text" [(ngModel)]="deliveryData.deliveryLocation" class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="e.g. Site B">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-text-muted mb-1">Driver Name</label>
+          <input type="text" [(ngModel)]="deliveryData.driverName" class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="e.g. John Doe">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-text-muted mb-1">Driver Phone</label>
+          <input type="text" [(ngModel)]="deliveryData.driverPhone" class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="e.g. 01012345678">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-text-muted mb-1">Estimated Arrival</label>
+          <input type="datetime-local" [(ngModel)]="deliveryData.estimatedArrival" class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30">
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-6">
+        <button (click)="closeDeliveryModal()" class="px-4 py-2 text-sm font-medium text-text-muted bg-gray-100 rounded-lg hover:bg-gray-200">
+          Cancel
+        </button>
+        <button (click)="submitDelivery()" [disabled]="actionLoading" class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover disabled:opacity-50">
+          {{ actionLoading ? 'Saving...' : 'Create' }}
         </button>
       </div>
     </div>
