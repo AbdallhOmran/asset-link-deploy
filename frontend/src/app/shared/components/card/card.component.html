@@ -112,7 +112,7 @@
 
     <!-- Actions -->
     <div class="flex items-center gap-2">
-      <app-button variant="secondary" class="flex-1" [fullWidth]="true" (clicked)="bookClick.emit()">
+      <app-button variant="secondary" class="flex-1" [fullWidth]="true" (clicked)="onDetailsClick($event)">
         Details
       </app-button>
       <app-button

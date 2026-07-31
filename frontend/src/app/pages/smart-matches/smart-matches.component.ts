@@ -34,12 +34,26 @@ export class SmartMatchesComponent implements OnInit {
     
     let query: any = {};
     if (this.activeTab === 'Available Now') {
-       // Filter logic or pass to backend
+      // Backend does not natively have an 'onlyAvailable' flag, but if we don't pass anything it still returns both available and rented.
+      // Wait, we can pass something to force it or we can just filter it on the frontend.
+      // We will filter it after fetching.
+    } else if (this.activeTab === 'Best Value') {
+      query.priceType = 'daily';
+      // Ideally backend would have a sort override, but since it sorts by score then price, it's generally best value.
     }
 
     this.assetService.getRecommendedAssets(query).subscribe({
       next: (res: any) => {
-        this.assets = res.data || [];
+        let matchedAssets = res.data || [];
+        
+        // Client-side filtering for tabs
+        if (this.activeTab === 'Available Now') {
+          matchedAssets = matchedAssets.filter((a: any) => a.status === 'Available');
+        } else if (this.activeTab === 'Best Maintenance') {
+          matchedAssets.sort((a: any, b: any) => (b.healthScore || 0) - (a.healthScore || 0));
+        }
+
+        this.assets = matchedAssets;
         
         // Fetch waitlist counts
         this.assets.forEach(asset => {

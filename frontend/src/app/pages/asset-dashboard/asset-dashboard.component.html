@@ -145,10 +145,11 @@
               [status]="asset.status"
               [date]="asset.date"
               [score]="asset.score"
-              [image]="asset.images && asset.images.length > 0 ? asset.images[0] : ''"
+              [image]="asset.image || ''"
               [waitlistCount]="asset.waitlistCount || 0"
               (bookClick)="bookNow(asset._id || asset.id)"
               (waitlistClick)="bookNow(asset._id || asset.id)"
+              (detailsClick)="goToAssetDetails(asset._id || asset.id)"
             >
             </app-card>
           </div>
