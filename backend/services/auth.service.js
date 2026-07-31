@@ -65,14 +65,15 @@ const verifyOtp = async (email, otp) => {
   // Verify OTP via generic service
   await otpService.verifyOtp(email, otp, 'registration');
 
+  // Redis serializes undefined → null, so re-sanitize to keep sparse indexes working
   const company = await Company.create({
     companyName: cachedData.companyName,
     companyEmail: cachedData.companyEmail,
     phoneNumber: cachedData.phoneNumber,
     password: cachedData.password,
-    commercialRegistrationNumber: cachedData.commercialRegistrationNumber || undefined,
-    taxRegister: cachedData.taxRegister || undefined,
-    companyAddress: cachedData.companyAddress || undefined,
+    ...(cachedData.commercialRegistrationNumber && { commercialRegistrationNumber: cachedData.commercialRegistrationNumber }),
+    ...(cachedData.taxRegister && { taxRegister: cachedData.taxRegister }),
+    ...(cachedData.companyAddress && { companyAddress: cachedData.companyAddress }),
     companyType: cachedData.companyType,
     isVerified: true,
   });
