@@ -8,6 +8,7 @@ import { AssetDashboardComponent } from './pages/asset-dashboard/asset-dashboard
 import { DeliveryTrackingComponent } from './pages/delivery-tracking/delivery-tracking.component';
 import { NegotiationRoomComponent } from './pages/negotiation-room/negotiation-room.component';
 import { BookingsComponent } from './pages/bookings/bookings.component';
+import { NegotiationsComponent } from './pages/negotiations/negotiations.component';
 import { ContractsComponent } from './pages/contracts/contracts.component';
 import { CompanyProfileComponent } from './pages/company-profile/company-profile.component';
 import { PaymentsEscrowComponent } from './pages/payments-escrow/payments-escrow.component';
@@ -75,6 +76,10 @@ const routes: Routes = [
       {
         path: 'bookings',
         component: BookingsComponent
+      },
+      {
+        path: 'negotiations',
+        component: NegotiationsComponent
       },
 {
   path: 'orders',

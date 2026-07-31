@@ -103,7 +103,7 @@ export class SidebarComponent implements OnInit {
   {
     title: 'Negotiations',
     icon: 'messages-square',
-    route: '/app/negotiation-room',
+    route: '/app/negotiations',
     badge: 2
   },
   {
