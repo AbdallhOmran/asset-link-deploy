@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AssetService } from '../../services/asset.service';
 import { BookingModalService } from '../../services/booking-modal.service';
+import { WaitingListService } from '../../services/waiting-list.service';
+import { AuthService } from '../../services/auth.service';
 import { TimelineStage } from '../../shared/components/timeline/timeline.component';
 
 @Component({
@@ -20,11 +22,18 @@ export class AssetDetailsComponent implements OnInit {
   activeTab = 0;
   tabs = ['Overview', 'Rental History', 'Maintenance', 'Specifications'];
 
+  waitlistCount = 0;
+  waitlistItems: any[] = [];
+  isOwner = false;
+  isWaitlistLoading = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private assetService: AssetService,
-    private bookingModalService: BookingModalService
+    private bookingModalService: BookingModalService,
+    private waitingListService: WaitingListService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -44,12 +53,68 @@ export class AssetDetailsComponent implements OnInit {
       next: (res: any) => {
         this.asset = res?.data ?? res;
         this.isLoading = false;
+        
+        const currentCompany = this.authService.getCompany();
+        const currentCompanyId = currentCompany?.id || currentCompany?._id;
+        const assetCompanyId = this.asset?.companyId?._id || this.asset?.companyId;
+        
+        this.isOwner = !!(currentCompanyId && assetCompanyId && currentCompanyId === assetCompanyId);
+        
+        if (this.isOwner && !this.tabs.includes('Waitlist')) {
+          this.tabs.push('Waitlist');
+        }
+
         this.loadBookings();
+        this.fetchWaitlist();
       },
       error: (err) => {
         this.error = err?.error?.message ?? 'Failed to load asset details.';
         this.isLoading = false;
       },
+    });
+  }
+
+  fetchWaitlist(): void {
+    this.isWaitlistLoading = true;
+    this.waitingListService.getWaitingListByAsset(this.assetId).subscribe({
+      next: (res) => {
+        this.waitlistItems = res || [];
+        this.waitlistCount = this.waitlistItems.length;
+        this.isWaitlistLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load waitlist', err);
+        this.isWaitlistLoading = false;
+      }
+    });
+  }
+
+  removeWaitlistItem(id: string): void {
+    if (!confirm('Are you sure you want to remove this request from the waitlist?')) return;
+    
+    this.waitingListService.removeFromWaitingList(id).subscribe({
+      next: () => {
+        this.fetchWaitlist(); // Refresh list after removal
+      },
+      error: (err) => {
+        console.error('Failed to remove waitlist item', err);
+        alert('Failed to remove from waitlist.');
+      }
+    });
+  }
+
+  notifyFirstWaitlist(): void {
+    if (!confirm('Notify the first company in the queue?')) return;
+    
+    this.waitingListService.notifyFirstWaitingCompany(this.assetId).subscribe({
+      next: () => {
+        alert('First company in the queue has been successfully notified!');
+        this.fetchWaitlist(); // Refresh list to see updated status
+      },
+      error: (err) => {
+        console.error('Failed to notify company', err);
+        alert('Failed to notify company.');
+      }
     });
   }
 
@@ -160,9 +225,9 @@ export class AssetDetailsComponent implements OnInit {
         subtitle: 'lifetime hrs'
       },
       {
-        title: 'Year of Manufacture',
-        value: this.asset?.yearOfManufacture || this.asset?.specifications?.yearOfManufacture || '—',
-        subtitle: 'Model Year'
+        title: 'Waitlist Queue',
+        value: this.waitlistCount,
+        subtitle: 'companies waiting'
       },
     ];
   }
