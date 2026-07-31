@@ -144,8 +144,8 @@ const generateContractPDF = async (contractId) => {
     throw new Error("Contract not found");
   }
 
-  if (contract.status !== "Approved" && contract.status !== "Active") {
-    throw new Error("Contract must be approved before generating PDF");
+  if (contract.status !== "Approved" && contract.status !== "Active" && contract.status !== "Draft") {
+    throw new Error("Contract must be Draft, Approved or Active before generating PDF");
   }
 
   const latestContract = await contractModel

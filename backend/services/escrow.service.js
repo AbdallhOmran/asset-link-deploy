@@ -6,7 +6,7 @@ const disputeModel = require("../models/dispute.model");
 
 const VALID_STATUSES = ["Held", "Frozen", "Released", "Refunded", "Cancelled"];
 const FINAL_STATUSES = ["Released", "Refunded", "Cancelled"];
-const APPROVED_STATUSES = ["Active"]; // contract must be Active - matches contract.model.js enum exactly - by Eman
+const APPROVED_STATUSES = ["Draft", "Approved", "Active"]; // allow escrow to be created for Draft - matches contract.model.js enum exactly - by Eman
 // generate a unique escrow code like ESC-0001 - by Eman
 const generateEscrowCode = async () => {
   const lastEscrow = await escrowModel.findOne().sort({ createdAt: -1 });
@@ -48,10 +48,10 @@ const createEscrow = async (data) => {
   const contract = await contractModel.findById(contractId);
   if (!contract) throw makeError("Contract not found", 404);
 
-  // BUSINESS RULE: cannot create escrow before contract approval - by Eman
+  // BUSINESS RULE: escrow is created when contract is Draft, then contract becomes Approved - by Eman
   if (!APPROVED_STATUSES.includes(contract.status)) {
     throw makeError(
-      "Escrow can only be created after the contract is approved/active",
+      "Escrow can only be created when the contract is Draft, Approved, or Active",
       400
     );
   }

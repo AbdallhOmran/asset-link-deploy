@@ -56,6 +56,10 @@ const completePayment = async (bookingId) => {
         contractId: contract._id
     });
 
+    contract.status = "Approved";
+    contract.approvedAt = new Date();
+    await contract.save();
+
     return {
         payment: completedPayment,
         escrow
