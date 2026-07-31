@@ -21,8 +21,34 @@ export class CurrentOfferComponent {
     this.reject.emit();
   }
 
-  submitCounterOffer(offerData: any) {
-    if (!offerData) return;
-    this.counter.emit(offerData);
+  // Modal State
+  isCounterModalOpen = false;
+  counterOfferData = {
+    rentPrice: 0,
+    securityDeposit: 0,
+    rentalDuration: 1,
+    durationUnit: 'Day',
+    notes: ''
+  };
+
+  openCounterModal() {
+    // Pre-fill with current offer data
+    this.counterOfferData = {
+      rentPrice: this.offer?.rentPrice || this.offer?.assetId?.price?.daily || 0,
+      securityDeposit: this.offer?.securityDeposit || 0,
+      rentalDuration: this.offer?.rentalDuration || 1,
+      durationUnit: this.offer?.durationUnit || 'Day',
+      notes: ''
+    };
+    this.isCounterModalOpen = true;
+  }
+
+  closeCounterModal() {
+    this.isCounterModalOpen = false;
+  }
+
+  submitCounterOfferFromModal() {
+    this.counter.emit({ ...this.counterOfferData });
+    this.closeCounterModal();
   }
 }

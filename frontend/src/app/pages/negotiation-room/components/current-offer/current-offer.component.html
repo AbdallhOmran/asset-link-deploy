@@ -47,20 +47,12 @@
       Accept Offer
     </app-button>
 
-    <app-button
-      variant="primary"
-      (click)="
-        submitCounterOffer({
-          rentPrice: (offer.rentPrice || offer.assetId?.price?.daily || 0) - 100,
-          securityDeposit: offer.securityDeposit || 0,
-          rentalDuration: offer.rentalDuration || 1,
-          durationUnit: offer.durationUnit || 'Day',
-          notes: 'Test counter offer'
-        })
-      "
+    <button
+      class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium text-sm transition-colors"
+      (click)="openCounterModal()"
     >
       Counter Offer
-    </app-button>
+    </button>
 
     <app-button variant="danger" (click)="rejectOffer()">
       Reject Offer
@@ -82,3 +74,40 @@
     <p class="text-sm text-slate-400">No active offer found.</p>
   </div>
 </ng-template>
+
+<app-modal
+  [isOpen]="isCounterModalOpen"
+  title="Submit Counter Offer"
+  (closed)="closeCounterModal()"
+  (cancel)="closeCounterModal()"
+  (confirm)="submitCounterOfferFromModal()"
+>
+  <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium">Rent Price</label>
+      <input type="number" class="border border-slate-300 rounded px-3 py-2" [(ngModel)]="counterOfferData.rentPrice">
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium">Security Deposit</label>
+      <input type="number" class="border border-slate-300 rounded px-3 py-2" [(ngModel)]="counterOfferData.securityDeposit">
+    </div>
+    <div class="flex gap-4">
+      <div class="flex flex-col gap-1 flex-1">
+        <label class="text-sm font-medium">Duration</label>
+        <input type="number" class="border border-slate-300 rounded px-3 py-2" [(ngModel)]="counterOfferData.rentalDuration">
+      </div>
+      <div class="flex flex-col gap-1 flex-1">
+        <label class="text-sm font-medium">Unit</label>
+        <select class="border border-slate-300 rounded px-3 py-2" [(ngModel)]="counterOfferData.durationUnit">
+          <option value="Day">Days</option>
+          <option value="Week">Weeks</option>
+          <option value="Month">Months</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium">Notes</label>
+      <textarea class="border border-slate-300 rounded px-3 py-2" rows="3" [(ngModel)]="counterOfferData.notes"></textarea>
+    </div>
+  </div>
+</app-modal>
