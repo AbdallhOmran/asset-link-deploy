@@ -6,8 +6,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class DeliveryService {
-  // private apiUrl = 'https://asset-link-api.vercel.app/api/deliveries';
-  private apiUrl = 'http://localhost:3000/api/deliveries';
+  private apiUrl = 'https://asset-link-api.vercel.app/api/deliveries';
+  // private apiUrl = 'http://localhost:3000/api/deliveries';
 
   constructor(private http: HttpClient) {}
 
