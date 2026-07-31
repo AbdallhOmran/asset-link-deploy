@@ -1,31 +1,38 @@
 <div
-  *ngIf="offer"
+  *ngIf="offer; else noOffer"
   class="bg-white rounded-xl border border-slate-200 p-6"
 >
   <h2 class="text-xl font-bold text-slate-900 mb-5">Current Offer</h2>
 
-  <div *ngIf="offer; else noOffer" class="space-y-3">
-    <div *ngIf="offer.assetName" class="flex justify-between">
+  <div class="space-y-3">
+    <!-- Asset Name -->
+    <div *ngIf="offer.assetId?.assetName || offer.assetName" class="flex justify-between">
       <span class="text-slate-500">Asset</span>
-      <span class="font-semibold">{{ offer.assetName }}</span>
+      <span class="font-semibold">{{ offer.assetId?.assetName || offer.assetName }}</span>
     </div>
 
+    <!-- Rent Price -->
     <div class="flex justify-between">
       <span class="text-slate-500">Rent Price</span>
-      <span class="font-semibold text-blue-600">${{ offer.rentPrice | number }} / {{ offer.durationUnit }}</span>
+      <span class="font-semibold text-blue-600">
+        ${{ (offer.rentPrice || offer.assetId?.price?.daily) | number }} / {{ offer.durationUnit || 'daily' }}
+      </span>
     </div>
 
-    <div class="flex justify-between">
+    <!-- Security Deposit -->
+    <div *ngIf="offer.securityDeposit !== undefined" class="flex justify-between">
       <span class="text-slate-500">Deposit</span>
       <span class="font-semibold">${{ offer.securityDeposit | number }}</span>
     </div>
 
-    <div class="flex justify-between">
+    <!-- Duration -->
+    <div *ngIf="offer.rentalDuration" class="flex justify-between">
       <span class="text-slate-500">Duration</span>
       <span class="font-semibold">{{ offer.rentalDuration }} {{ offer.durationUnit }}</span>
     </div>
 
-    <div class="flex justify-between">
+    <!-- Last Offer By -->
+    <div *ngIf="offer.counterBy" class="flex justify-between">
       <span class="text-slate-500">Last Offer By</span>
       <span class="font-semibold capitalize">
         {{ offer.counterBy === 'ownerCompany' ? 'Owner Company' : 'Renter Company' }}
@@ -33,31 +40,38 @@
     </div>
   </div>
 
-  <ng-template #noOffer>
-    <p class="text-sm text-slate-400">No active offer found.</p>
-  </ng-template>
-
   <hr class="my-6" />
 
+  <!-- Action Buttons inside the active offer block -->
   <div class="flex flex-wrap gap-2">
-    <app-button variant="success" [disabled]="!offer" (click)="acceptOffer()">
+    <app-button variant="success" (click)="acceptOffer()">
       Accept Offer
     </app-button>
 
-    <app-button variant="primary" [disabled]="!offer" (click)="
+    <app-button
+      variant="primary"
+      (click)="
         submitCounterOffer({
-          rentPrice: offer.rentPrice - 100,
-          securityDeposit: offer.securityDeposit,
-          rentalDuration: offer.rentalDuration,
-          durationUnit: offer.durationUnit,
+          rentPrice: (offer.rentPrice || offer.assetId?.price?.daily || 0) - 100,
+          securityDeposit: offer.securityDeposit || 0,
+          rentalDuration: offer.rentalDuration || 1,
+          durationUnit: offer.durationUnit || 'daily',
           notes: 'Test counter offer'
         })
-      ">
+      "
+    >
       Counter Offer
     </app-button>
 
-    <app-button variant="danger" [disabled]="!offer" (click)="rejectOffer()">
+    <app-button variant="danger" (click)="rejectOffer()">
       Reject Offer
     </app-button>
   </div>
 </div>
+
+<!-- Fallback template when offer is null/undefined -->
+<ng-template #noOffer>
+  <div class="bg-white rounded-xl border border-slate-200 p-6 text-center">
+    <p class="text-sm text-slate-400">No active offer found.</p>
+  </div>
+</ng-template>

@@ -21,6 +21,7 @@ export class CurrentOfferComponent {
   }
 
   submitCounterOffer(offerData: any) {
+    if (!offerData) return;
     this.counter.emit(offerData);
   }
 }

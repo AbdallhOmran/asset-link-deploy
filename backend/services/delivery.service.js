@@ -1,6 +1,7 @@
 const deliveryModel = require("../models/delivery.model");
 const bookingModel = require("../models/booking.model");
 const contractModel = require("../models/contract.model");
+const escrowService = require("./escrow.service");
 
 const generateDeliveryCode = require("../utils/generateDeliveryCode");
 
@@ -40,6 +41,10 @@ const createDelivery = async (deliveryData) => {
   if (contract.status !== "Active") {
     throw new Error("Contract must be Active");
   }
+  
+  if (booking.status !== "Confirmed") {
+    throw new Error("Booking must be confirmed");
+}
 
   if (String(contract.bookingId) !== String(bookingId)) {
     throw new Error("Booking does not belong to this contract");
@@ -53,9 +58,21 @@ const createDelivery = async (deliveryData) => {
     throw new Error("Delivery already exists");
   }
 
-  // TODO:
-  
-  // Check Escrow Payment after Escrow module is merged
+  // ===============================
+// Validate Escrow
+// ===============================
+
+const escrow = await escrowService.getEscrowByBooking(bookingId);
+
+if (!escrow) {
+  throw new Error("Escrow not found");
+}
+
+if (escrow.status !== "Held") {
+  throw new Error(
+    "Delivery cannot be created until payment is completed and escrow is held"
+  );
+}
 
   const deliveryCode = await generateDeliveryCode();
 

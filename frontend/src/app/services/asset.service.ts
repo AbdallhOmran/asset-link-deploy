@@ -41,7 +41,8 @@ export interface AssetPayload {
   providedIn: 'root',
 })
 export class AssetService {
-  private baseUrl = 'https://asset-link-api.vercel.app/api';
+  // private baseUrl = 'https://asset-link-api.vercel.app/api';
+  private baseUrl = 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) {}
 
