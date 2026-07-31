@@ -29,11 +29,11 @@ export class NegotiationsComponent implements OnInit {
   calendarDays: CalendarDay[] = [];
 
   columns = [
-    { field: 'bookingCode', header: 'Negotiation ID' },
+    { field: 'negotiationCode', header: 'Negotiation ID' },
     { field: 'assetName', header: 'Asset' },
     { field: 'renterName', header: 'Renter' },
     { field: 'ownerName', header: 'Owner' },
-    { field: 'totalPrice', header: 'Value' },
+    { field: 'totalValue', header: 'Value' },
     { field: 'status', header: 'Status' },
   ];
 
@@ -67,10 +67,11 @@ export class NegotiationsComponent implements OnInit {
         const rawNegotiations = res.data || res;
         this.negotiations = (Array.isArray(rawNegotiations) ? rawNegotiations : []).map((b: any) => ({
           ...b,
-          assetName: b.assetId?.assetName,
+          assetName: b.bookingId?.assetId?.assetName,
           renterName: b.renterCompany?.companyName,
           ownerName: b.ownerCompany?.companyName,
-          bookingCode: b.bookingId?.bookingCode || b._id
+          negotiationCode: b.negotiationCode || b._id,
+          totalValue: b.currentVersion?.rentPrice ? `$${b.currentVersion.rentPrice}/${b.currentVersion.durationUnit || 'Day'}` : 'N/A'
         }));
 
         this.applyFilter();
@@ -86,7 +87,7 @@ export class NegotiationsComponent implements OnInit {
     this.filteredNegotiations = !term
       ? this.negotiations
       : this.negotiations.filter((b) =>
-          [b.bookingCode, b.assetName, b.renterName, b.ownerName]
+          [b.negotiationCode, b.assetName, b.renterName, b.ownerName]
             .filter(Boolean)
             .some((field) => field.toLowerCase().includes(term))
         );
