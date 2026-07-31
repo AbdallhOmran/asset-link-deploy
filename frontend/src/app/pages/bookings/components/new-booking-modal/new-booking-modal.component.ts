@@ -24,6 +24,7 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
   selectedAsset: any = null;
   waitlistCount = 0;
   notifyVia: 'email' | 'sms' | 'both' = 'email';
+  isOwner = false;
 
   // Step 0: Dates + price type
   startDate = '';
@@ -64,6 +65,16 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
         this.selectedAsset = res?.data ?? res;
         // default to the first pricing plan actually available on this asset
         this.priceType = this.availablePriceTypes[0]?.value || 'Daily';
+
+        const loggedInCompany = this.authService.getCompany();
+        const ownerId = this.selectedAsset?.companyId?._id || this.selectedAsset?.companyId;
+
+        if (loggedInCompany?.id === ownerId) {
+          this.errorMessage = "You cannot book your own company's equipment.";
+          this.isOwner = true;
+        } else {
+          this.isOwner = false;
+        }
 
         if (this.isWaitlistMode) {
           this.waitingListService.getWaitingListByAsset(this.selectedAsset._id).subscribe({
@@ -152,6 +163,14 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
   nextStep() {
     this.errorMessage = '';
 
+    const loggedInCompany = this.authService.getCompany();
+    const ownerId = this.selectedAsset?.companyId?._id || this.selectedAsset?.companyId;
+
+    if (loggedInCompany?.id === ownerId) {
+      this.errorMessage = "You cannot book your own company's equipment.";
+      return;
+    }
+
     if (this.currentStep === 0) {
       if (!this.startDate || !this.endDate) {
         this.errorMessage = 'Please select both start and end dates.';
@@ -188,6 +207,14 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
   onCreate() {
     this.errorMessage = '';
 
+    const loggedInCompany = this.authService.getCompany();
+    const ownerId = this.selectedAsset?.companyId?._id || this.selectedAsset?.companyId;
+
+    if (loggedInCompany?.id === ownerId) {
+      this.errorMessage = "You cannot book your own company's equipment.";
+      return;
+    }
+
     if (!this.selectedAsset) {
       this.errorMessage = 'No asset selected.';
       return;
@@ -198,7 +225,6 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
       return;
     }
 
-    const loggedInCompany = this.authService.getCompany();
     if (!loggedInCompany?.id) {
       this.errorMessage = 'Session expired. Please log in again.';
       return;

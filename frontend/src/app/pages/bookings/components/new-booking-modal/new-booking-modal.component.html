@@ -17,7 +17,7 @@
     </div>
 
     <!-- Waitlist Content -->
-    <div class="p-5 pt-2" *ngIf="isWaitlistMode">
+    <div class="p-5 pt-2" *ngIf="isWaitlistMode && !isOwner">
       
       <!-- Asset Summary Card -->
       <div class="bg-white rounded-xl border border-slate-200 p-3 flex items-center gap-3 mb-6 shadow-sm">
@@ -107,8 +107,15 @@
 
     </div>
 
+    <!-- Owner Error Block -->
+    <div class="p-6 pt-0" *ngIf="isOwner">
+      <div class="bg-danger-bg text-danger p-4 rounded-xl text-center mb-6 text-sm font-medium">
+        You cannot book your own company's equipment.
+      </div>
+    </div>
+
     <!-- Booking Content (Original) -->
-    <div class="p-6 pt-0" *ngIf="!isWaitlistMode">
+    <div class="p-6 pt-0" *ngIf="!isWaitlistMode && !isOwner">
       <div class="flex items-center justify-between mb-6">
         <div class="flex-1">
           <app-stepper
@@ -209,15 +216,15 @@
            Cancel
         </button>
         
-        <button *ngIf="isWaitlistMode" [disabled]="isSubmitting || !startDate || !endDate" (click)="onCreate()" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-primary hover:bg-primary-hover transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5">
+        <button *ngIf="isWaitlistMode && !isOwner" [disabled]="isSubmitting || !startDate || !endDate" (click)="onCreate()" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-primary hover:bg-primary-hover transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5">
            <lucide-icon name="list-ordered" class="w-3.5 h-3.5"></lucide-icon>
            {{ isSubmitting ? 'Joining...' : 'Join Waiting List' }}
         </button>
 
-        <button *ngIf="!isWaitlistMode && currentStep < 1" (click)="nextStep()" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-primary hover:bg-primary-hover transition-all shadow-sm">
+        <button *ngIf="!isWaitlistMode && currentStep < 1 && !isOwner" (click)="nextStep()" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-primary hover:bg-primary-hover transition-all shadow-sm">
           Continue
         </button>
-        <button *ngIf="!isWaitlistMode && currentStep === 1" [disabled]="isSubmitting" (click)="onCreate()" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-primary hover:bg-primary-hover transition-all shadow-sm disabled:opacity-50">
+        <button *ngIf="!isWaitlistMode && currentStep === 1 && !isOwner" [disabled]="isSubmitting" (click)="onCreate()" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-primary hover:bg-primary-hover transition-all shadow-sm disabled:opacity-50">
           {{ isSubmitting ? 'Processing...' : 'Confirm Booking' }}
         </button>
       </div>
