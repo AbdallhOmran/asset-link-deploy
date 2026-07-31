@@ -8,11 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class PaymentsEscrowService {
 
-<<<<<<< Updated upstream
   private apiUrl = environment.apiUrl + '/api/payment';
-=======
-  private apiUrl = 'http://localhost:3000/api/payment';
->>>>>>> Stashed changes
   // private apiUrl = 'http://localhost:3000/api/payment';
 
   constructor(private http: HttpClient) {}

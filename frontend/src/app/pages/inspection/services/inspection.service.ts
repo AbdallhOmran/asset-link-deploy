@@ -14,15 +14,9 @@ import {
   providedIn: 'root',
 })
 export class InspectionService {
-<<<<<<< Updated upstream
   private readonly baseUrl = environment.apiUrl + '/api/inspection';
   private readonly bookingUrl = environment.apiUrl + '/api/bookings';
   private readonly assetUrl = environment.apiUrl + '/api/asset';
-=======
-  private readonly baseUrl = 'http://localhost:3000/api/inspection';
-  private readonly bookingUrl = 'http://localhost:3000/api/bookings';
-  private readonly assetUrl = 'http://localhost:3000/api/asset';
->>>>>>> Stashed changes
 
   // Reactive state
   private inspectionsSubject = new BehaviorSubject<InspectionRecord[]>([]);

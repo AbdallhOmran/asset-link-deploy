@@ -8,11 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class ProfileService {
 
-<<<<<<< Updated upstream
   private apiUrl = environment.apiUrl + '/company/profile'; // غير البورت لو مختلف
-=======
-  private apiUrl = 'http://localhost:3000/company/profile'; // غير البورت لو مختلف
->>>>>>> Stashed changes
   // private apiUrl = 'http://localhost:3000/company/profile';
   constructor(private http: HttpClient) {}
 

@@ -7,11 +7,7 @@ import { Injectable } from '@angular/core';
 })
 export class AuthService {
   // matches: router.post('/login', authController.login) in auth.routes.js
-<<<<<<< Updated upstream
   private baseUrl = environment.apiUrl + '/api/auth';
-=======
-  private baseUrl = 'http://localhost:3000/api/auth';
->>>>>>> Stashed changes
   // private baseUrl = 'http://localhost:3000/api/auth';
 
   constructor(private http: HttpClient) { }

@@ -7,11 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class DeliveryService {
-<<<<<<< Updated upstream
   private apiUrl = environment.apiUrl + '/api/deliveries';
-=======
-  private apiUrl = 'http://localhost:3000/api/deliveries';
->>>>>>> Stashed changes
   // private apiUrl = 'http://localhost:3000/api/deliveries';
 
   constructor(private http: HttpClient) {}

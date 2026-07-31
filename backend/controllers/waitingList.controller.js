@@ -18,7 +18,6 @@ const getWaitingListByAsset = async (req, res) => {
 
     return res.status(200).send(waitingList);
   } catch (err) {
-    console.error("Error in getWaitingListByAsset:", err);
     return res.status(500).send(err.message);
   }
 };
