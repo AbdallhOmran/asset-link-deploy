@@ -78,6 +78,12 @@ export class NegotiationRoomComponent implements OnInit {
   get canAction(): boolean {
     const version = this.currentVersionDetails;
     if (!version || !this.myRole) return false;
+    
+    // If the negotiation itself is closed (Rejected/Approved), disable actions
+    if (this.currentOffer?.status && this.currentOffer.status !== 'Pending') {
+      return false;
+    }
+    
     return version.counterBy !== this.myRole;
   }
 
