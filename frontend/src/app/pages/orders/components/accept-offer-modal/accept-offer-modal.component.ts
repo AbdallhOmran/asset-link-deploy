@@ -1,5 +1,14 @@
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
-import { NegotiationService, VersionData } from '../../../../services/negotiation.service';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+} from '@angular/core';
+import {
+  NegotiationService,
+  VersionData,
+} from '../../../../services/negotiation.service';
 import { AuthService } from '../../../../services/auth.service';
 
 @Component({
@@ -10,21 +19,20 @@ export class AcceptOfferModalComponent implements OnChanges {
   @Input() isOpen = false;
   @Input() order: any = null;
   @Output() closed = new EventEmitter<void>();
-  @Output() negotiationStarted = new EventEmitter<void>();
+  @Output() negotiationStarted = new EventEmitter<any>();
 
   isSubmitting = false;
   errorMessage = '';
 
-  // Initial offer terms — prefilled from the booking, editable by the owner before sending
   rentPrice = 0;
   securityDeposit = 0;
   rentalDuration = 0;
-  durationUnit: 'Day' | 'Week' | 'Month' = 'Day'; // matches version.model.js enum exactly
+  durationUnit: 'Day' | 'Week' | 'Month' = 'Day';
   notes = '';
 
   constructor(
     private negotiationService: NegotiationService,
-    private authService: AuthService
+    private authService: AuthService,
   ) {}
 
   ngOnChanges(): void {
@@ -36,15 +44,18 @@ export class AcceptOfferModalComponent implements OnChanges {
   private prefillFromOrder(): void {
     this.errorMessage = '';
     this.rentPrice = this.order.totalPrice || 0;
-    // securityDeposit isn't stored on the booking itself; the owner sets it here
     this.securityDeposit = 0;
-    this.rentalDuration = this.calculateDays(this.order.startDate, this.order.endDate);
+    this.rentalDuration = this.calculateDays(
+      this.order.startDate,
+      this.order.endDate,
+    );
     this.durationUnit = this.mapPriceTypeToDurationUnit(this.order.priceType);
     this.notes = '';
   }
 
-  // booking.priceType uses Daily/Weekly/Monthly, but version.model.js expects Day/Week/Month
-  private mapPriceTypeToDurationUnit(priceType: string): 'Day' | 'Week' | 'Month' {
+  private mapPriceTypeToDurationUnit(
+    priceType: string,
+  ): 'Day' | 'Week' | 'Month' {
     const map: Record<string, 'Day' | 'Week' | 'Month'> = {
       Daily: 'Day',
       Weekly: 'Week',
@@ -80,13 +91,15 @@ export class AcceptOfferModalComponent implements OnChanges {
     }
 
     const loggedInCompany = this.authService.getCompany();
-    if (!loggedInCompany?.id) {
+    const companyId = loggedInCompany?._id || loggedInCompany?.id;
+
+    if (!companyId) {
       this.errorMessage = 'Session expired. Please log in again.';
       return;
     }
 
     const negotiationData = {
-      ownerCompany: loggedInCompany.id,
+      ownerCompany: companyId,
       renterCompany: this.order.companyId?._id || this.order.companyId,
       bookingId: this.order._id,
     };
@@ -100,15 +113,19 @@ export class AcceptOfferModalComponent implements OnChanges {
     };
 
     this.isSubmitting = true;
-    this.negotiationService.createNegotiation(negotiationData, versionData).subscribe({
-      next: () => {
-        this.isSubmitting = false;
-        this.negotiationStarted.emit();
-      },
-      error: (err) => {
-        this.isSubmitting = false;
-        this.errorMessage = err.error?.message || 'Failed to start negotiation';
-      },
-    });
+    this.negotiationService
+      .createNegotiation(negotiationData, versionData)
+      .subscribe({
+        next: (res: any) => {
+          this.isSubmitting = false;
+
+          this.negotiationStarted.emit(res.data);
+        },
+        error: (err) => {
+          this.isSubmitting = false;
+          this.errorMessage =
+            err.error?.message || 'Failed to start negotiation';
+        },
+      });
   }
 }

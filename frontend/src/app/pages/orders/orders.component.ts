@@ -10,15 +10,14 @@ export class OrdersComponent implements OnInit {
   pendingOrders: any[] = [];
   isLoading = false;
   errorMessage = '';
-
-  // Tracks which row is currently being processed, so only that row shows a disabled/loading state
   processingId: string | null = null;
-
-  // Accept modal state
   isAcceptModalOpen = false;
   selectedOrder: any = null;
 
-  constructor(private bookingService: BookingService, private router: Router) {}
+  constructor(
+    private bookingService: BookingService,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     this.loadOrders();
@@ -28,7 +27,6 @@ export class OrdersComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    // getCompanyBookings returns bookings placed on assets owned by the logged-in company
     this.bookingService.getCompanyBookings().subscribe({
       next: (res: any) => {
         const bookings = res.bookings || [];
@@ -58,12 +56,20 @@ export class OrdersComponent implements OnInit {
     this.selectedOrder = null;
   }
 
-  // Called after the negotiation is created successfully
-  onNegotiationStarted(): void {
+  onNegotiationStarted(negotiationData?: any): void {
+    if (this.selectedOrder) {
+      const acceptedId = this.selectedOrder._id;
+      this.pendingOrders = this.pendingOrders.filter(
+        (o) => o._id !== acceptedId,
+      );
+    }
+
     this.closeAcceptModal();
-    // TODO: confirm this route matches how negotiation-room actually loads its data
-    // (currently assumes it loads the current negotiation for the logged-in company)
-    this.router.navigate(['/app/negotiation-room']);
+
+    const negotiationId = negotiationData?._id || negotiationData?.id;
+    this.router.navigate(['/app/negotiation-room'], {
+      queryParams: negotiationId ? { id: negotiationId } : {},
+    });
   }
 
   onOrderRejected(bookingId: string): void {
@@ -72,15 +78,18 @@ export class OrdersComponent implements OnInit {
 
   rejectOrder(order: any): void {
     this.processingId = order._id;
-    this.bookingService.updateStatus(order._id, { status: 'Rejected' }).subscribe({
-      next: () => {
-        this.processingId = null;
-        this.onOrderRejected(order._id);
-      },
-      error: (err) => {
-        this.processingId = null;
-        this.errorMessage = err.error?.message || err.error?.error || 'Failed to reject order';
-      },
-    });
+    this.bookingService
+      .updateStatus(order._id, { status: 'Rejected' })
+      .subscribe({
+        next: () => {
+          this.processingId = null;
+          this.onOrderRejected(order._id);
+        },
+        error: (err) => {
+          this.processingId = null;
+          this.errorMessage =
+            err.error?.message || err.error?.error || 'Failed to reject order';
+        },
+      });
   }
 }

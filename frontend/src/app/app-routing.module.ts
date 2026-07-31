@@ -17,6 +17,9 @@ import { AssetDetailsComponent } from './pages/asset-details/asset-details.compo
 import { SmartMatchesComponent } from './pages/smart-matches/smart-matches.component';
 import { AddAssetComponent } from './pages/add-asset/add-asset.component';
 import { OrdersComponent } from './pages/orders/orders.component';
+import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
+
 const routes: Routes = [
 
   {
@@ -28,6 +31,14 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent
+  },
+  {
+    path: 'forgot-password',
+    component: ForgotPasswordComponent
+  },
+  {
+    path: 'reset-password/:token',
+    component: ResetPasswordComponent
   },
   {
     path: 'register',

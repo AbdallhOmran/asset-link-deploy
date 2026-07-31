@@ -89,6 +89,12 @@ const companySchema = new mongoose.Schema(
       sparse: true,
       trim: true,
     },
+    taxRegister: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
+    },
     role: {
       type: String,
       enum: ["Company", "Admin"],

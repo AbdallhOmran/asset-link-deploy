@@ -53,14 +53,13 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
     }
   }
 
-  fetchAssetDetails() {
+fetchAssetDetails() {
     if (!this.preselectedAssetId) return;
 
     this.assetService.getAssetDetails(this.preselectedAssetId).subscribe({
       next: (res: any) => {
         this.selectedAsset = res?.data ?? res;
 
-        // تعريف المتغير مرة واحدة بس هنا
         const loggedInCompany = this.authService.getCompany();
         const assetOwnerId = this.selectedAsset?.companyId?._id || this.selectedAsset?.companyId;
 
@@ -217,7 +216,7 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
     this.closed.emit();
   }
 
-  onCreate() {
+onCreate() {
     this.errorMessage = '';
 
     // تعريف المتغيرات مرة واحدة فقط في بداية الدالة
@@ -307,7 +306,7 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
       },
     });
   }
-
+  
   resetForm() {
     this.currentStep = 0;
     this.selectedAsset = null;

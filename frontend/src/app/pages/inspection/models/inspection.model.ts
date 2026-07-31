@@ -13,6 +13,8 @@ export interface InspectionRecord {
   bookingId: any;
   assetId: any;
   inspectorName: string;
+  taxRegister?: string;
+  commercialRegister?: string;
   photos: string[];
   notes: string;
   checklist: InspectionChecklist;
@@ -28,6 +30,8 @@ export interface CreateInspectionPayload {
   bookingId: string;
   assetId: string;
   inspectorName: string;
+  taxRegister?: string;
+  commercialRegister?: string;
   photos: string[];
   notes: string;
   checklist: InspectionChecklist;
