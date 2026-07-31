@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -10,31 +11,42 @@ export class ContractService {
 
   constructor(private http: HttpClient) {}
 
-  // matches GET /contracts (returns all contracts)
-  getContracts() {
+  // GET /contracts — returns all contracts for the logged-in company
+  getContracts(): Observable<any> {
     return this.http.get(this.baseUrl);
   }
 
-  getContractById(id: string) {
+  // GET /contracts/:id — returns a single contract with populated refs
+  getContractById(id: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/${id}`);
   }
 
-  createContract(data: any) {
+  // POST /contracts — create a new contract (usually triggered from negotiation accept)
+  createContract(data: any): Observable<any> {
     return this.http.post(this.baseUrl, data);
   }
 
-  approveContract(id: string) {
+  // PATCH /contracts/:id/approve — only the owner company can approve
+  approveContract(id: string): Observable<any> {
     return this.http.patch(`${this.baseUrl}/${id}/approve`, {});
   }
 
-  rejectContract(id: string) {
+  // PATCH /contracts/:id/reject — only the owner company can reject
+  rejectContract(id: string): Observable<any> {
     return this.http.patch(`${this.baseUrl}/${id}/reject`, {});
   }
 
+  // GET /contracts/:id/pdf — generate the PDF server-side
+  generatePdf(id: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/${id}/pdf`);
+  }
+
+  // Direct URL for downloading (opens in new tab)
   getDownloadUrl(id: string): string {
     return `${this.baseUrl}/${id}/download`;
   }
 
+  // Direct URL for viewing (opens in new tab)
   getViewUrl(id: string): string {
     return `${this.baseUrl}/${id}/view`;
   }

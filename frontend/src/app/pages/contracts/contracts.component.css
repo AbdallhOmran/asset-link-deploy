@@ -1,0 +1,24 @@
+.status-draft {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-active {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-approved {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.status-rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.status-completed {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
