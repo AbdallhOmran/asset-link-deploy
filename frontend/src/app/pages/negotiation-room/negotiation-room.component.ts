@@ -15,7 +15,7 @@ export class NegotiationRoomComponent implements OnInit {
   currentBooking: any;
 
   negotiationId = '';
-  bookingId = '';
+  bookingId = ''; 
   companyId = '';
 
   constructor(
@@ -26,7 +26,6 @@ export class NegotiationRoomComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    
     const company = this.authService.getCompany();
     this.companyId = company?._id || company?.id || '';
 
@@ -63,31 +62,56 @@ export class NegotiationRoomComponent implements OnInit {
     };
   }
 
+  get myRole(): 'ownerCompany' | 'renterCompany' | null {
+    if (!this.currentOffer || !this.companyId) return null;
+    const ownerId = this.currentOffer.ownerCompany?._id || this.currentOffer.ownerCompany;
+    const renterId = this.currentOffer.renterCompany?._id || this.currentOffer.renterCompany;
+    
+    if (this.companyId === ownerId) return 'ownerCompany';
+    if (this.companyId === renterId) return 'renterCompany';
+    return null;
+  }
+
+  get canAction(): boolean {
+    const version = this.currentVersionDetails;
+    if (!version || !this.myRole) return false;
+    return version.counterBy !== this.myRole;
+  }
+
   loadNegotiationDetails(): void {
     if (this.companyId) {
       this.negotiationService.getCurrent(this.companyId).subscribe({
         next: (res: any) => {
           if (res.success || res.data) {
             this.currentOffer = res.data || res;
+            
+            if (!this.negotiationId) {
+              this.negotiationId = this.currentOffer._id;
+            }
+            
             this.loadBookingDetails();
+            this.loadHistory();
           }
         },
-        error: (err: any) =>
-          console.error('Error fetching current offer:', err),
+        error: (err: any) => console.error('Error fetching current offer:', err),
       });
+    } else if (this.negotiationId || this.bookingId) {
+      this.loadHistory();
     }
+  }
 
+  loadHistory(): void {
     const targetId = this.negotiationId || this.bookingId;
-    if (targetId) {
-      this.negotiationService.getHistory(targetId).subscribe({
-        next: (res: any) => {
-          if (res.success || res.data) {
-            this.history = res.data || res;
-          }
-        },
-        error: (err: any) => console.error('Error fetching history:', err),
-      });
-    }
+    if (!targetId) return;
+
+    this.negotiationService.getHistory(targetId).subscribe({
+      next: (res: any) => {
+        if (res.success || res.data) {
+          this.history = res.data || res;
+        }
+      },
+      error: (err: any) => console.error('Error fetching history:', err),
+    });
   }
 
   loadBookingDetails(): void {
@@ -130,7 +154,6 @@ export class NegotiationRoomComponent implements OnInit {
       companyId: this.companyId,
     };
 
-    // إرسال payload واحد فقط كما تريده الـ Service
     this.negotiationService.acceptOffer(payload).subscribe({
       next: (res: any) => {
         alert('Term agreement accepted!');
@@ -181,7 +204,7 @@ export class NegotiationRoomComponent implements OnInit {
 
     const payload = {
       bookingId: bId,
-      counterBy: 'renterCompany',
+      counterBy: this.myRole || 'renterCompany', 
       ...offerData,
     };
 

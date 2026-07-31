@@ -7,6 +7,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class CurrentOfferComponent {
   @Input() offer: any = null;
+  @Input() canAction: boolean = false;
   
   @Output() accept = new EventEmitter<void>();
   @Output() reject = new EventEmitter<void>();
