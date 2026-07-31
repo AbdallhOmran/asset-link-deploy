@@ -2,6 +2,7 @@ const negotiationModel = require("../models/nagotiation.model");
 const versionModel = require("../models/version.model");
 const bookingModel = require("../models/booking.model");
 const companyModel = require("../models/company.model");
+const assetModel = require("../models/asset.model");
 const contractService = require("./contract.service");
 
 const generateNegotiationCode = async () => {
@@ -84,16 +85,22 @@ const createNegotiation = async (negotiationData, versionData) => {
   const { rentPrice, securityDeposit, rentalDuration, durationUnit, notes } =
     versionData;
 
-  const firstVersion = await createVersion({
-    negotiationId: newNegotiation._id,
-    versionNumber: 1,
-    rentPrice,
-    securityDeposit,
-    rentalDuration,
-    durationUnit,
-    counterBy: "ownerCompany",
-    notes,
-  });
+  let firstVersion;
+  try {
+    firstVersion = await createVersion({
+      negotiationId: newNegotiation._id,
+      versionNumber: 1,
+      rentPrice,
+      securityDeposit,
+      rentalDuration,
+      durationUnit,
+      counterBy: "ownerCompany",
+      notes,
+    });
+  } catch (err) {
+    await negotiationModel.findByIdAndDelete(newNegotiation._id);
+    throw err;
+  }
 
   await negotiationModel.findByIdAndUpdate(
     newNegotiation._id,
@@ -215,6 +222,21 @@ const getNegotiation = async (id) => {
   return negotiations;
 };
 
+const getNegotiationById = async (negotiationId) => {
+  const negotiation = await negotiationModel
+    .findById(negotiationId)
+    .populate({
+      path: "bookingId",
+      populate: { path: "assetId" }
+    })
+    .populate("ownerCompany", "companyName logo")
+    .populate("renterCompany", "companyName logo")
+    .populate("currentVersion");
+
+  if (!negotiation) throw new Error("This negotiation not found");
+  return negotiation;
+};
+
 const getVersionHistory = async (negotiationId) => {
   const History = await versionModel
     .find({ negotiationId })
@@ -312,6 +334,7 @@ module.exports = {
   createOffer,
   getCurrentNegotiation,
   getNegotiation,
+  getNegotiationById,
   getVersionHistory,
   acceptOffer,
   rejectOffer,

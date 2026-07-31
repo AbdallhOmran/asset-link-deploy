@@ -51,6 +51,18 @@ const getNegotiation = async (req, res) => {
   }
 };
 
+const getNegotiationById = async (req, res) => {
+  try {
+    const Negotiation = await negotiationService.getNegotiationById(req.params.id);
+    return res.status(200).json({
+      success: true,
+      data: Negotiation,
+    });
+  } catch (err) {
+    return res.status(400).json({ success: false, message: err.message });
+  }
+};
+
 const getVersionHistory = async (req, res) => {
   try {
     const history = await negotiationService.getVersionHistory(req.params.id);
@@ -107,6 +119,7 @@ module.exports = {
   createNegotiation,
   createOffer,
   getNegotiation,
+  getNegotiationById,
   getVersionHistory,
   getCurrentNegotiation,
   acceptOffer,

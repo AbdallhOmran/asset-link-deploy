@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NegotiationService } from '../../services/negotiation.service';
+import { AuthService } from '../../services/auth.service';
 
 interface CalendarDay {
   date: Date;
@@ -38,15 +39,18 @@ export class NegotiationsComponent implements OnInit {
 
   constructor(
     private negotiationService: NegotiationService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
-    const userString = localStorage.getItem('user');
-    if (userString) {
-      const user = JSON.parse(userString);
-      this.companyId = user.companyId;
-      this.myRole = user.role === 'owner' ? 'ownerCompany' : 'renterCompany';
+    const company = this.authService.getCompany();
+    if (company) {
+      this.companyId = company._id || company.id;
+      // You may need to adjust role detection if it's explicitly stored differently,
+      // but typically we can decide myRole on a per-negotiation basis.
+      // For now, default to checking if they have an owner flag if applicable.
+      this.myRole = company.role === 'owner' ? 'ownerCompany' : 'renterCompany';
     }
 
     if (this.companyId) {
