@@ -56,10 +56,20 @@ export class OrdersComponent implements OnInit {
     this.selectedOrder = null;
   }
 
-  // الدالة دي هي اللي بتعمل الـ Redirect بعد نجاح الـ API
-  onNegotiationStarted(): void {
+  onNegotiationStarted(negotiationData?: any): void {
+    if (this.selectedOrder) {
+      const acceptedId = this.selectedOrder._id;
+      this.pendingOrders = this.pendingOrders.filter(
+        (o) => o._id !== acceptedId,
+      );
+    }
+
     this.closeAcceptModal();
-    this.router.navigate(['/app/negotiation-room']);
+
+    const negotiationId = negotiationData?._id || negotiationData?.id;
+    this.router.navigate(['/app/negotiation-room'], {
+      queryParams: negotiationId ? { id: negotiationId } : {},
+    });
   }
 
   onOrderRejected(bookingId: string): void {
