@@ -29,4 +29,8 @@ export class WaitingListService {
   removeFromWaitingList(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  notifyFirstWaitingCompany(assetId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${assetId}/notify`, {});
+  }
 }

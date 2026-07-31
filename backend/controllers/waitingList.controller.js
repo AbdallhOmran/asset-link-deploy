@@ -34,8 +34,25 @@ const removeFromWaitingList = async (req, res) => {
   }
 };
 
+const notifyFirstWaitingCompany = async (req, res) => {
+  try {
+    const result = await waitingListService.notifyFirstWaitingCompany(
+      req.params.assetId
+    );
+
+    if (!result) {
+      return res.status(404).send({ message: "No companies on the waiting list for this asset." });
+    }
+
+    return res.status(200).send(result);
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+};
+
 module.exports = {
   joinWaitingList,
   getWaitingListByAsset,
   removeFromWaitingList,
+  notifyFirstWaitingCompany,
 };

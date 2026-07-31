@@ -135,7 +135,6 @@ fetchAssetDetails() {
     return this.selectedAsset?.status === 'Booked' || this.selectedAsset?.status === 'Rented';
   }
 
-  // Minimum rental days required for the currently selected pricing plan
   get minRequiredDays(): number {
     if (this.priceType === 'Weekly') return 7;
     if (this.priceType === 'Monthly') return 30;
@@ -220,6 +219,7 @@ fetchAssetDetails() {
 onCreate() {
     this.errorMessage = '';
 
+    // تعريف المتغيرات مرة واحدة فقط في بداية الدالة
     const loggedInCompany = this.authService.getCompany();
     const ownerId = this.selectedAsset?.companyId?._id || this.selectedAsset?.companyId;
 
@@ -243,7 +243,7 @@ onCreate() {
       return;
     }
 
-    // Re-check minimum duration before final submit (not applicable to waitlist)
+    // Re-check minimum duration before final submit
     if (!this.isWaitlistMode && this.rentalDays < this.minRequiredDays) {
       if (this.priceType === 'Weekly') {
         this.errorMessage = 'Weekly plan requires a rental period of at least 7 days.';
