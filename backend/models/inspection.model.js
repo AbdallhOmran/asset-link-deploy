@@ -17,6 +17,12 @@
         type: String,
         required: true
     },
+        taxRegister: {
+            type: String
+        },
+        commercialRegister: {
+            type: String
+        },
 
         photos: [{
             type: String

@@ -25,7 +25,13 @@ import {
   BriefcaseBusiness,
   Users,
   Calendar,
-  Inbox
+  Inbox,
+  ArrowRight,
+  ArrowLeft,
+  AlertCircle,
+  Lock,
+  Check,
+  X
 } from 'lucide-angular';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -64,6 +70,8 @@ import { DeliveryEventLogComponent } from './pages/delivery-tracking/components/
 import { SmartMatchesComponent } from './pages/smart-matches/smart-matches.component';
 import { OrdersComponent } from './pages/orders/orders.component';
 import { AcceptOfferModalComponent } from './pages/orders/components/accept-offer-modal/accept-offer-modal.component';
+import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 
 @NgModule({
   declarations: [
@@ -97,7 +105,9 @@ import { AcceptOfferModalComponent } from './pages/orders/components/accept-offe
     EditCompanyProfileComponent,
     SmartMatchesComponent,
     OrdersComponent,
-    AcceptOfferModalComponent
+    AcceptOfferModalComponent,
+    ForgotPasswordComponent,
+    ResetPasswordComponent
   ],
   imports: [
     BrowserModule,
@@ -128,7 +138,13 @@ import { AcceptOfferModalComponent } from './pages/orders/components/accept-offe
       BriefcaseBusiness,
       Users,
       Calendar,
-      Inbox
+      Inbox,
+      ArrowRight,
+      ArrowLeft,
+      AlertCircle,
+      Lock,
+      Check,
+      X
     })
   ],
   providers: [
