@@ -44,6 +44,10 @@ const createBooking = async (bookingData) => {
   const checkCompany = await companyModel.findById(companyId);
   if (!checkCompany) throw new Error("Company not found");
 
+  if (companyId.toString() === ownerCompanyId.toString() || checkAsset.companyId.toString() === companyId.toString()) {
+    throw new Error("Owner cannot book their own asset");
+  }
+
   // ===========================
   // NEW: Booking Dates Validation
   // ===========================

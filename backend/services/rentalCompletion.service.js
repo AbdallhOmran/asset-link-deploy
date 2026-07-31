@@ -3,8 +3,8 @@ const assetModel = require("../models/asset.model");
 const contractModel = require("../models/contract.model");
 const bookingService = require("./booking.service");
 
-// TODO: Import external models when merged by teammates
-// const inspectionModel = require("../models/inspection.model");
+// External models merged
+const inspectionModel = require("../models/inspection.model");
 // const damageModel = require("../models/damage.model");
 // const penaltyModel = require("../models/penalty.model");
 // const maintenanceModel = require("../models/maintenance.model");
@@ -36,15 +36,16 @@ const completeRental = async (bookingId) => {
   if (!booking) throw makeError("Booking not found", 404);
 
   // 1. Verify Final Inspection completion
-  // TODO: Query the Inspection model (After Return type) for this booking.
-  // const finalInspection = await inspectionModel.findOne({ bookingId, inspectionType: "after_return" });
-  // if (!finalInspection || finalInspection.status !== "Passed") {
-  //   throw makeError("Invalid operation. Final inspection must be passed before closing the rental", 400);
-  // }
+  const inspectionModel = require("../models/inspection.model");
+  const finalInspection = await inspectionModel.findOne({ bookingId, inspectionType: "after_return" });
+  if (!finalInspection || (finalInspection.status !== "Passed" && finalInspection.status !== "completed")) {
+    throw makeError("Invalid operation. Final inspection must be completed/passed before closing the rental", 400);
+  }
 
   // 2. Damage decision
-  // TODO: integrate DamageReport, Maintenance, and Penalty services when merged.
-  // Must verify if damage exists and if maintenance/penalty is resolved before proceeding.
+  if (finalInspection.hasDamage) {
+     throw makeError("Cannot complete rental while there is unresolved damage. Please resolve penalties first.", 400);
+  }
 
   // 3. No damage (or damage resolved)
   // Reuse existing booking service for status update

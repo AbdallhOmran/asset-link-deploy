@@ -25,7 +25,7 @@ const createNegotiation = async (req, res) => {
 
 const createOffer = async (req, res) => {
   try {
-    const offerData = { ...req.body, negotiationId: req.params.negotiationId };
+    const offerData = { ...req.body, negotiationId: req.params.negotiationId, userId: req.user.id };
     const newVersion = await negotiationService.createOffer(offerData);
     return res.status(201).json({
       success: true,
@@ -79,7 +79,7 @@ const getCurrentNegotiation = async (req, res) => {
 
 const acceptOffer = async (req, res) => {
   try {
-    const payload = { ...req.body, negotiationId: req.params.id };
+    const payload = { ...req.body, negotiationId: req.params.id, userId: req.user.id };
     const accept = await negotiationService.acceptOffer(payload);
     return res.status(200).json({
       success: true,
@@ -92,7 +92,7 @@ const acceptOffer = async (req, res) => {
 
 const rejectOffer = async (req, res) => {
   try {
-    const payload = { ...req.body, negotiationId: req.params.id };
+    const payload = { ...req.body, negotiationId: req.params.id, userId: req.user.id };
     const reject = await negotiationService.rejectOffer(payload);
     return res.status(200).json({
       success: true,

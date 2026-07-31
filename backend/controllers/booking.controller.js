@@ -2,6 +2,7 @@ const bookingService = require("../services/booking.service");
 
 const createBooking = async (req, res) => {
   try {
+    req.body.companyId = req.user.id;
     const newBooking = await bookingService.createBooking(req.body);
     return res.status(201).send(newBooking);
   } catch (err) {

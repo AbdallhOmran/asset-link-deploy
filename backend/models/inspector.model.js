@@ -30,6 +30,11 @@ const inspectorSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  status: {
+    type: String,
+    enum: ["Active", "Disabled", "Deleted"],
+    default: "Active",
+  },
 },
 {
   timestamps: true
