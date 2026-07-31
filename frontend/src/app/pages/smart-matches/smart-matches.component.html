@@ -87,114 +87,131 @@
   </div>
 
   <!-- Asset Cards Grid -->
-  <div *ngIf="!isLoading && !error" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div *ngFor="let asset of assets; let i = index" class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col">
+  <div *ngIf="!isLoading && !error" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+    <div *ngFor="let asset of assets; let i = index" class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
       
-      <!-- Blueprint Image Header -->
-      <div class="blueprint-bg relative h-48 p-4 flex flex-col justify-between">
-        <!-- Badges Row 1 -->
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span *ngIf="i === 0" class="bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
-              <lucide-icon name="sparkles" class="w-3 h-3"></lucide-icon> Top Match
-            </span>
-            <span *ngIf="i === 1" class="bg-blue-500 text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
-              <lucide-icon name="map-pin" class="w-3 h-3"></lucide-icon> Closest
-            </span>
-            <span *ngIf="i === 2" class="bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
-              <lucide-icon name="dollar-sign" class="w-3 h-3"></lucide-icon> Best Value
-            </span>
-          </div>
-          
-          <div class="bg-[#0f172a] border border-[#1e293b] text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
-            <div class="w-2 h-2 rounded-full" [ngClass]="asset.recommendationScore > 90 ? 'bg-emerald-400' : 'bg-primary'"></div>
-            {{ asset.recommendationScore || (97 - i * 3) }}
+      <!-- Header / Image Area (matching Dashboard Card) -->
+      <div
+        class="relative h-40 overflow-hidden flex items-center justify-center border-b border-slate-100"
+        style="
+          background:
+            linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            #191e32;
+          background-size: 20px 20px;
+        "
+      >
+        <!-- Dynamic Background Orb (using emerald for smart match) -->
+        <div class="absolute w-64 h-64 rounded-full blur-3xl opacity-20 pointer-events-none transition-colors duration-500 bg-emerald-500/20"></div>
+
+        <!-- Real Asset Image -->
+        <img *ngIf="(asset.assetImages && asset.assetImages.length > 0) || (asset.images && asset.images.length > 0)" 
+             [src]="asset.assetImages?.[0] || asset.images?.[0]" 
+             class="absolute inset-0 w-full h-full object-cover z-0" 
+             alt="{{ asset.assetName }}"
+             onerror="this.style.display='none'">
+
+        <!-- Asset Icon (Fallback) -->
+        <div *ngIf="!(asset.assetImages?.length > 0 || asset.images?.length > 0)" class="text-center z-10 flex flex-col items-center">
+          <div class="w-14 h-14 rounded-2xl border border-white/10 flex items-center justify-center bg-white/5 backdrop-blur-sm mb-3">
+            <lucide-icon name="box" class="w-6 h-6 text-indigo-400"></lucide-icon>
           </div>
         </div>
 
-        <!-- Center Image / Blueprint graphic -->
-        <div class="absolute inset-0 flex items-center justify-center pointer-events-none py-8 px-4 z-0">
-           <img *ngIf="asset.images && asset.images.length > 0" 
-                [src]="asset.images[0]" 
-                alt="{{ asset.assetName }}" 
-                class="w-full h-full object-contain drop-shadow-2xl" 
-                onerror="this.style.display='none'">
-           <lucide-icon *ngIf="!asset.images || asset.images.length === 0" name="image" class="w-12 h-12 text-slate-500 opacity-20"></lucide-icon>
-        </div>
-        <!-- Progress Bar at bottom of image -->
-        <div class="absolute bottom-0 left-0 right-0 h-1 bg-slate-800">
-           <div class="h-full bg-emerald-400" [style.width.%]="asset.recommendationScore || (97 - i * 3)"></div>
-        </div>
+        <!-- Status -->
+        <span
+          class="absolute left-3 top-3 px-2.5 py-1 rounded-full text-[10px] font-semibold z-20 flex items-center gap-1.5 shadow-sm"
+          [ngClass]="asset.status === 'Available' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'"
+        >
+          <span class="w-1.5 h-1.5 rounded-full bg-current opacity-75"></span>
+          {{ asset.status || 'Available' }}
+        </span>
 
-        <!-- Badges Row 2 -->
-        <div class="flex items-center justify-between z-10 mb-2">
-          <div class="bg-white text-slate-900 text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
-            <div class="w-2 h-2 rounded-full" [ngClass]="asset.status === 'Available' ? 'bg-success' : 'bg-danger'"></div>
-            {{ asset.status || 'Available' }}
-          </div>
-          <div class="bg-white/10 backdrop-blur-md text-white border border-white/20 text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
-             <lucide-icon name="navigation-2" class="w-3 h-3"></lucide-icon>
-             {{ (4.2 + i * 1.5).toFixed(1) }} mi
-          </div>
-        </div>
-        
-        <div class="absolute bottom-3 left-4 text-[10px] font-bold text-white/50 tracking-widest uppercase">
-          Match Score
-        </div>
-        <div class="absolute bottom-3 right-4 text-sm font-bold text-white">
-          {{ asset.recommendationScore || (97 - i * 3) }}%
-        </div>
+        <!-- Match Score -->
+        <span
+          class="absolute right-3 top-3 px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm z-20 bg-white/10 text-white backdrop-blur-sm flex items-center gap-1.5 border border-white/20"
+        >
+          <lucide-icon name="sparkles" class="w-3 h-3 text-emerald-400"></lucide-icon>
+          {{ asset.recommendationScore ? (asset.recommendationScore | number:'1.0-0') : (97 - i * 3) }}% Match
+        </span>
+
+        <!-- Smart Match Tag -->
+        <div *ngIf="i < 3" class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+        <span *ngIf="i === 0" class="absolute bottom-2 left-3 z-20 text-[10px] font-bold text-emerald-400 tracking-wider uppercase flex items-center gap-1">
+           <lucide-icon name="trophy" class="w-3 h-3"></lucide-icon> Top Match
+        </span>
+        <span *ngIf="i === 1" class="absolute bottom-2 left-3 z-20 text-[10px] font-bold text-blue-400 tracking-wider uppercase flex items-center gap-1">
+           <lucide-icon name="map-pin" class="w-3 h-3"></lucide-icon> Closest
+        </span>
+        <span *ngIf="i === 2" class="absolute bottom-2 left-3 z-20 text-[10px] font-bold text-amber-400 tracking-wider uppercase flex items-center gap-1">
+           <lucide-icon name="dollar-sign" class="w-3 h-3"></lucide-icon> Best Value
+        </span>
       </div>
 
-      <!-- Card Body -->
-      <div class="p-5 flex-1 flex flex-col">
-        <h3 class="text-lg font-bold text-slate-900 mb-1 leading-tight">{{ asset.assetName }}</h3>
-        <p class="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-4">{{ asset.assetCode || 'AC-1204' }} · {{ asset.companyId?.companyName || 'Owner Company' }}</p>
-        
+      <!-- Body -->
+      <div class="p-3.5 flex-1 flex flex-col">
+        <div class="flex justify-between items-start mb-1.5">
+          <h3 class="text-[13px] font-bold text-slate-800 line-clamp-1 leading-tight">
+            {{ asset.assetName }}
+          </h3>
+          <button class="text-slate-400 hover:text-slate-600 transition-colors shrink-0">
+            <lucide-icon name="more-horizontal" class="w-4 h-4"></lucide-icon>
+          </button>
+        </div>
+
+        <!-- Code & Company -->
+        <div class="flex items-center gap-1.5 text-[10px] text-slate-400 mb-3 font-medium">
+          <span class="bg-slate-100 px-1.5 py-0.5 rounded text-slate-500">{{ asset.assetCode || 'AC-1204' }}</span>
+          <span class="truncate">{{ asset.companyId?.companyName || asset.company?.companyName || 'Owner Company' }}</span>
+        </div>
+
         <!-- Feature Pills -->
-        <div class="flex flex-wrap items-center gap-2 mb-6">
-          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded text-center">Best Maintenance Score</span>
-          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded text-center">Closest Distance</span>
-          <span *ngIf="i !== 1" class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded text-center">Highest Rated</span>
+        <div class="flex flex-wrap gap-1 mb-4">
+          <span class="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">High Health Score</span>
+          <span *ngIf="i !== 1" class="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">Closest Distance</span>
         </div>
 
         <div class="mt-auto">
-          <!-- Price and Location -->
-          <div class="flex items-end justify-between mb-5">
-            <div>
-              <div class="flex items-baseline gap-1">
-                <span class="text-xl font-black text-slate-900">{{ (asset.price?.daily || asset.price) | currency:'USD':'symbol':'1.0-0' }}</span>
-                <span class="text-xs text-slate-500 font-medium">/day</span>
-              </div>
-              <div class="text-[10px] text-slate-400 font-medium mt-1">
-                {{ (asset.price?.weekly || ((asset.price?.daily || asset.price) * 6)) | currency:'USD':'symbol':'1.0-0' }}/wk · 
-                {{ (asset.price?.monthly || ((asset.price?.daily || asset.price) * 20)) | currency:'USD':'symbol':'1.0-0' }}/mo
-              </div>
+          <!-- Pricing -->
+          <div class="mb-3">
+            <div class="flex items-baseline gap-1">
+              <span class="text-[15px] font-extrabold text-slate-900 tracking-tight">{{ (asset.price?.daily || asset.price) | currency:'USD':'symbol':'1.0-0' }}</span>
+              <span class="text-[10px] text-slate-400 font-medium">/day</span>
             </div>
-            <div class="text-right flex flex-col items-end">
-              <div class="flex items-center gap-1 text-slate-500 text-xs font-medium mb-1">
-                <lucide-icon name="map-pin" class="w-3 h-3"></lucide-icon> {{ asset.location || 'Portland, OR' }}
-              </div>
-              <div class="text-[10px] font-bold" [ngClass]="asset.status === 'Available' ? 'text-success' : 'text-amber-500'">
-                <lucide-icon *ngIf="asset.status !== 'Available'" name="clock" class="w-3 h-3 inline mr-0.5"></lucide-icon>
-                {{ asset.status === 'Available' ? 'Available now' : 'Waitlist' }}
-              </div>
+            <div class="flex items-center gap-1.5 text-[9px] text-slate-400 font-medium mt-0.5">
+              <span>{{ (asset.price?.weekly || ((asset.price?.daily || asset.price) * 6)) | currency:'USD':'symbol':'1.0-0' }}/wk</span>
+              <span>{{ (asset.price?.monthly || ((asset.price?.daily || asset.price) * 20)) | currency:'USD':'symbol':'1.0-0' }}/mo</span>
             </div>
           </div>
 
+          <!-- Footer info -->
+          <div class="flex items-center justify-between text-[10px] font-medium text-slate-400 mb-4 pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-1">
+              <lucide-icon name="map-pin" class="w-3 h-3 text-rose-500"></lucide-icon>
+              <span class="truncate max-w-[90px]">{{ asset.location || 'Portland, OR' }}</span>
+            </div>
+            
+            <div *ngIf="asset.status !== 'Available' && asset.waitlistCount > 0" class="flex items-center gap-1 text-orange-500 font-semibold">
+              <lucide-icon name="user" class="w-3 h-3"></lucide-icon>
+              <span>{{ asset.waitlistCount }} waiting</span>
+            </div>
+            
+            <span *ngIf="asset.status === 'Available' || !asset.waitlistCount" [ngClass]="asset.status === 'Available' ? 'text-emerald-500 font-semibold' : ''">{{ asset.status === 'Available' ? 'Available now' : 'Waitlist' }}</span>
+          </div>
+
           <!-- Actions -->
-          <div class="grid grid-cols-2 gap-3">
-            <button (click)="goToDetails(asset._id)" class="py-2.5 px-4 rounded-xl text-sm font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition-colors text-center shadow-sm">
+          <div class="flex items-center gap-2">
+            <app-button variant="secondary" class="flex-1" [fullWidth]="true" (clicked)="goToDetails(asset._id || asset.id)">
               Details
-            </button>
-            <button *ngIf="asset.status === 'Available'" (click)="bookNow(asset._id)" class="py-2.5 px-4 rounded-xl text-sm font-bold text-white bg-primary hover:bg-primary-hover transition-colors text-center shadow-sm">
-              Book Now
-            </button>
-            <button *ngIf="asset.status !== 'Available'" (click)="bookNow(asset._id)" class="py-2.5 px-4 rounded-xl text-sm font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 transition-colors text-center shadow-sm">
-              <lucide-icon name="users" class="w-4 h-4 inline mr-1"></lucide-icon> 
-              <span *ngIf="asset.waitlistCount > 0">{{ asset.waitlistCount }} waiting</span>
-              <span *ngIf="!asset.waitlistCount">Join Waitlist</span>
-            </button>
+            </app-button>
+            <app-button
+              [variant]="asset.status === 'Available' ? 'primary' : 'success'"
+              class="flex-1"
+              [fullWidth]="true"
+              (clicked)="bookNow(asset._id || asset.id)"
+            >
+              {{ asset.status === 'Available' ? 'Book Now' : 'Join Waitlist' }}
+            </app-button>
           </div>
         </div>
       </div>
