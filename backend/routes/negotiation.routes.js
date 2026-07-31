@@ -5,6 +5,7 @@ const {
     createNegotiation,
     createOffer,
     getNegotiation,
+    getNegotiationById,
     getVersionHistory,
     getCurrentNegotiation,
     acceptOffer,
@@ -14,6 +15,7 @@ const {
 router.post('/', createNegotiation)
 router.post('/:negotiationId/offers', createOffer);
 router.get('/company/:id', getNegotiation);
+router.get('/:id', getNegotiationById);
 router.get('/:id/history', getVersionHistory);
 router.get('/company/:id/current', getCurrentNegotiation);
 router.patch('/:id/accept', acceptOffer);
