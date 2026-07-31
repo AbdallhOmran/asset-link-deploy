@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -6,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class DeliveryService {
-  private apiUrl = 'https://asset-link-api.vercel.app/api/deliveries';
+  private apiUrl = environment.apiUrl + '/api/deliveries';
   // private apiUrl = 'http://localhost:3000/api/deliveries';
 
   constructor(private http: HttpClient) {}

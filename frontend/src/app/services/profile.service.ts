@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -7,7 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class ProfileService {
 
-  private apiUrl = 'https://asset-link-api.vercel.app/company/profile'; // غير البورت لو مختلف
+  private apiUrl = environment.apiUrl + '/company/profile'; // غير البورت لو مختلف
   // private apiUrl = 'http://localhost:3000/company/profile';
   constructor(private http: HttpClient) {}
 

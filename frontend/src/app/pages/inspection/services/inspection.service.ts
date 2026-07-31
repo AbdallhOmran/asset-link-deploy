@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, catchError, of, map } from 'rxjs';
@@ -13,9 +14,9 @@ import {
   providedIn: 'root',
 })
 export class InspectionService {
-  private readonly baseUrl = 'https://asset-link-api.vercel.app/api/inspection';
-  private readonly bookingUrl = 'https://asset-link-api.vercel.app/api/bookings';
-  private readonly assetUrl = 'https://asset-link-api.vercel.app/api/asset';
+  private readonly baseUrl = environment.apiUrl + '/api/inspection';
+  private readonly bookingUrl = environment.apiUrl + '/api/bookings';
+  private readonly assetUrl = environment.apiUrl + '/api/asset';
 
   // Reactive state
   private inspectionsSubject = new BehaviorSubject<InspectionRecord[]>([]);

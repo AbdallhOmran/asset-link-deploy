@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, map, tap, catchError, of, combineLatest } from 'rxjs';
@@ -14,8 +15,8 @@ import {
   providedIn: 'root',
 })
 export class MaintenanceService {
-  private readonly baseUrl = 'https://asset-link-api.vercel.app/api/maintenances';
-  private readonly assetUrl = 'https://asset-link-api.vercel.app/api/asset';
+  private readonly baseUrl = environment.apiUrl + '/api/maintenances';
+  private readonly assetUrl = environment.apiUrl + '/api/asset';
 
   private recordsSubject = new BehaviorSubject<MaintenanceRecord[]>([]);
   private assetsSubject = new BehaviorSubject<AssetMaintenanceSummary[]>([]);

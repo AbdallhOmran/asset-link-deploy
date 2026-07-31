@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -6,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ContractService {
-  private baseUrl = 'https://asset-link-api.vercel.app/api/contracts';
+  private baseUrl = environment.apiUrl + '/api/contracts';
   // private baseUrl = 'http://localhost:3000/api/contracts';
 
   constructor(private http: HttpClient) {}

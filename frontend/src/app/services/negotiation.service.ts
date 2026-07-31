@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -15,7 +16,7 @@ export interface VersionData {
   providedIn: 'root',
 })
 export class NegotiationService {
-  private api = 'https://asset-link-api.vercel.app/api/negotiation';
+  private api = environment.apiUrl + '/api/negotiation';
   // private api = 'http://localhost:3000/api/negotiation';
 
   constructor(private http: HttpClient) {}
