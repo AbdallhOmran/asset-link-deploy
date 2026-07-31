@@ -128,9 +128,17 @@ const createOffer = async (offerData) => {
     notes,
   } = offerData;
 
-  const lastVersion = await versionModel
+  let lastVersion = await versionModel
     .findOne({ negotiationId, isLatest: true })
     .populate("negotiationId");
+
+  // Fallback for older data that doesn't have isLatest: true
+  if (!lastVersion) {
+    lastVersion = await versionModel
+      .findOne({ negotiationId })
+      .sort({ createdAt: -1 })
+      .populate("negotiationId");
+  }
 
   if (!lastVersion)
     throw new Error(
@@ -138,7 +146,8 @@ const createOffer = async (offerData) => {
     );
   if (!lastVersion.negotiationId.isActive)
     throw new Error("Sorry, This negotiation not active");
-  if (!lastVersion.isLatest) throw new Error("Can't edit this version");
+  // Only throw if isLatest exists but is false (meaning it's explicitly an old version, not just legacy data)
+  if (lastVersion.isLatest === false) throw new Error("Can't edit this version");
   if (!counterBy) throw new Error("Counter By is required");
   if (lastVersion.negotiationId.status !== "Pending")
     throw new Error("Negotiation already closed");
@@ -219,9 +228,16 @@ const acceptOffer = async (offerData) => {
   if (!negotiationId) throw new Error("negotiationId is requied");
   if (!bookingId) throw new Error("Booking ID is required");
 
-  const acceptVersion = await versionModel
+  let acceptVersion = await versionModel
     .findOne({ negotiationId, isLatest: true })
     .populate("negotiationId");
+
+  if (!acceptVersion) {
+    acceptVersion = await versionModel
+      .findOne({ negotiationId })
+      .sort({ createdAt: -1 })
+      .populate("negotiationId");
+  }
   if (!acceptVersion) throw new Error("Negotiation not found");
   if (acceptVersion.negotiationId.status !== "Pending")
     throw new Error("Negotiation already closed");
@@ -244,9 +260,16 @@ const rejectOffer = async (offerData) => {
   if (!negotiationId) throw new Error("negotiationId is requied");
   if (!bookingId) throw new Error("Booking ID is required");
 
-  const rejectVersion = await versionModel
+  let rejectVersion = await versionModel
     .findOne({ negotiationId, isLatest: true })
     .populate("negotiationId");
+
+  if (!rejectVersion) {
+    rejectVersion = await versionModel
+      .findOne({ negotiationId })
+      .sort({ createdAt: -1 })
+      .populate("negotiationId");
+  }
   if (!rejectVersion) throw new Error("Negotiation not found");
   if (rejectVersion.negotiationId.status !== "Pending")
     throw new Error("Negotiation already closed");
