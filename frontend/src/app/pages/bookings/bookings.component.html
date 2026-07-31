@@ -103,4 +103,80 @@
       </div>
     </div>
   </div>
+
+  <!-- Booking Details Modal -->
+  <div *ngIf="selectedBooking" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div class="bg-white rounded-xl shadow-xl border border-border w-full max-w-lg mx-4 flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+      
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-border flex justify-between items-center bg-page">
+        <div>
+          <h3 class="text-lg font-bold text-text">Booking Details</h3>
+          <p class="text-xs text-text-muted mt-1">{{ selectedBooking.bookingCode }}</p>
+        </div>
+        <button (click)="closeModal()" class="text-text-muted hover:text-danger transition-colors p-1 rounded-md hover:bg-danger-bg">
+          <lucide-icon name="x" [size]="20"></lucide-icon>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="p-6 overflow-y-auto max-h-[65vh]">
+        <div class="space-y-4">
+          <!-- Status -->
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-text-muted">Status</span>
+            <app-status-badge [status]="selectedBooking.status"></app-status-badge>
+          </div>
+
+          <!-- Asset -->
+          <div class="bg-page/50 rounded-lg p-3 border border-border">
+            <p class="text-xs text-text-muted mb-1">Equipment</p>
+            <p class="font-semibold text-text">{{ selectedBooking.assetName || selectedBooking.assetId?.assetName }}</p>
+          </div>
+
+          <!-- Parties -->
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-page/50 rounded-lg p-3 border border-border">
+              <p class="text-xs text-text-muted mb-1">Renter</p>
+              <p class="text-sm font-medium text-text truncate" [title]="selectedBooking.renterName || selectedBooking.companyId?.companyName">{{ selectedBooking.renterName || selectedBooking.companyId?.companyName || 'N/A' }}</p>
+            </div>
+            <div class="bg-page/50 rounded-lg p-3 border border-border">
+              <p class="text-xs text-text-muted mb-1">Owner</p>
+              <p class="text-sm font-medium text-text truncate" [title]="selectedBooking.ownerName || selectedBooking.ownerCompanyId?.companyName">{{ selectedBooking.ownerName || selectedBooking.ownerCompanyId?.companyName || 'N/A' }}</p>
+            </div>
+          </div>
+
+          <!-- Dates -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-xs text-text-muted mb-1">Start Date</p>
+              <p class="text-sm font-medium text-text">{{ selectedBooking.startDate | date:'mediumDate' }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-text-muted mb-1">End Date</p>
+              <p class="text-sm font-medium text-text">{{ selectedBooking.endDate | date:'mediumDate' }}</p>
+            </div>
+          </div>
+
+          <!-- Price -->
+          <div class="flex justify-between items-center py-2 border-t border-b border-border border-dashed mt-2">
+            <span class="text-sm font-medium text-text">Total Price ({{ selectedBooking.priceType }})</span>
+            <span class="text-lg font-bold text-primary">${{ selectedBooking.totalPrice }}</span>
+          </div>
+
+          <!-- Notes -->
+          <div *ngIf="selectedBooking.notes">
+            <p class="text-xs text-text-muted mb-1">Notes</p>
+            <p class="text-sm text-text bg-page rounded p-2 border border-border">{{ selectedBooking.notes }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-6 py-4 border-t border-border bg-page flex justify-end">
+        <app-button variant="secondary" (clicked)="closeModal()">Close</app-button>
+      </div>
+
+    </div>
+  </div>
 </div>

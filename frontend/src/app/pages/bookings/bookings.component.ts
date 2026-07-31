@@ -88,8 +88,14 @@ export class BookingsComponent implements OnInit {
     this.errorMessage = err.error?.message || 'Failed to load bookings';
   }
 
+  selectedBooking: any = null;
+
   onBookingAction(booking: any) {
-    console.log('View booking:', booking);
+    this.selectedBooking = booking;
+  }
+
+  closeModal() {
+    this.selectedBooking = null;
   }
 
   // ✅ actually switches the view now (used with *ngIf in the template)

@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
@@ -5,7 +6,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class BookingService {
-  private baseUrl = 'https://asset-link-api.vercel.app/api/bookings';
+  private baseUrl = environment.apiUrl + '/api/bookings';
   // private baseUrl = 'http://localhost:3000/api/bookings';
 
   constructor(private http: HttpClient) {}

@@ -33,6 +33,10 @@ const addAsset = async (assetData) => {
   const checkCompany = await companyModel.findById(companyId);
   if (!checkCompany) throw new Error("This Company not found");
 
+  if (checkCompany.role !== 'Admin' && checkCompany.companyType === 'Renter') {
+    throw new Error("Only Owners can add assets");
+  }
+
   const checkCategory = await assetCategoryModel.findById(assetCategoryId);
   if (!checkCategory) throw new Error("This Category not found");
 
@@ -42,6 +46,10 @@ const addAsset = async (assetData) => {
   if (!description) throw new Error("Description is required");
   if (!price || !price.daily)
     throw new Error("please add at least daily price");
+
+  // Check for duplicate asset (same name for the same company)
+  const duplicateAsset = await assetModel.findOne({ companyId, assetName });
+  if (duplicateAsset) throw new Error("Asset with this name already exists for your company");
 
   const assetCode = await generateCode();
 
@@ -62,7 +70,7 @@ const addAsset = async (assetData) => {
 };
 
 const getAssets = async () => {
-  const assets = await assetModel.find()
+  const assets = await assetModel.find({ isActive: true })
     .populate("companyId")
     .populate("assetCategoryId");
 
@@ -70,7 +78,7 @@ const getAssets = async () => {
 };
 
 const searchAssets = async (query) => {
-  let filter = {};
+  let filter = { isActive: true };
 
   if (query.name) {
     filter.assetName = {
@@ -200,7 +208,8 @@ const getRecommendedAssets = async (query) => {
   const priceType = (query.priceType || "daily").toLowerCase();
 
   const matchStage = {
-    status: { $in: ["Available", "Booked"] }
+    status: { $in: ["Available", "Booked"] },
+    isActive: true
   };
 
   if (maxPrice) {

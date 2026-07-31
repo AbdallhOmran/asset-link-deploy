@@ -2,6 +2,7 @@ const assetService = require("../services/asset.service");
 
 const addAsset = async (req, res) => {
   try {
+    req.body.companyId = req.user.id;
     const newAsset = await assetService.addAsset(req.body);
     return res.status(201).json({
       success: true,
@@ -9,7 +10,7 @@ const addAsset = async (req, res) => {
       data: newAsset
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(400).json({ success: false, message: err.message });
   }
 };
 

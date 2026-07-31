@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
@@ -6,7 +7,7 @@ import { Injectable } from '@angular/core';
 })
 export class AuthService {
   // matches: router.post('/login', authController.login) in auth.routes.js
-  private baseUrl = 'https://asset-link-api.vercel.app/api/auth';
+  private baseUrl = environment.apiUrl + '/api/auth';
   // private baseUrl = 'http://localhost:3000/api/auth';
 
   constructor(private http: HttpClient) { }

@@ -48,7 +48,7 @@ import {LucideAngularModule,
         DollarSign,
         Plus,Filter,Search,
         X,ClipboardList,BadgeCheck,
-        Hammer,Calendar,ChevronLeft,ChevronUp, Mail, Hash, Tag} from 'lucide-angular';
+        Hammer,Calendar,ChevronLeft,ChevronUp, Mail, Hash, Tag, Trophy, ArrowLeft} from 'lucide-angular';
 import { StatusBadgeComponent } from './components/status-badge/status-badge.component';
 import { ButtonComponent } from './components/button/button.component';
 import { StepperComponent } from './components/stepper/stepper.component';
@@ -69,6 +69,8 @@ import { AuthLayoutComponent } from './components/auth-layout/auth-layout.compon
 import { FileDropzoneComponent } from './components/file-dropzone/file-dropzone.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { TopNavbarComponent } from './top-navbar/top-navbar.component';
+import { ToastComponent } from './components/toast/toast.component';
+import { DisableOnClickDirective } from './directives/disable-on-click.directive';
 
 @NgModule({
   declarations: [
@@ -93,6 +95,8 @@ import { TopNavbarComponent } from './top-navbar/top-navbar.component';
     FileDropzoneComponent,
     SidebarComponent,
     TopNavbarComponent,
+    ToastComponent,
+    DisableOnClickDirective
   ],
   imports: [
     CommonModule,
@@ -154,7 +158,9 @@ import { TopNavbarComponent } from './top-navbar/top-navbar.component';
     Inbox,
     LoaderCircle,
     Hash,
-    Tag
+    Tag,
+    Trophy,
+    ArrowLeft
   })
   ],
   exports: [
@@ -180,9 +186,11 @@ import { TopNavbarComponent } from './top-navbar/top-navbar.component';
     AuthLayoutComponent,
     StatusBadgeComponent,
     FileDropzoneComponent,
-     LucideAngularModule,
-     SidebarComponent,
-     TopNavbarComponent
+    LucideAngularModule,
+    SidebarComponent,
+    TopNavbarComponent,
+    ToastComponent,
+    DisableOnClickDirective
   ],
 })
 export class SharedModule {}

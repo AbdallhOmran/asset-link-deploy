@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -41,7 +42,7 @@ export interface AssetPayload {
   providedIn: 'root',
 })
 export class AssetService {
-  private baseUrl = 'https://asset-link-api.vercel.app/api';
+  private baseUrl = environment.apiUrl + '/api';
   // private baseUrl = 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) {}

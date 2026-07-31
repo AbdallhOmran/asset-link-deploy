@@ -25,8 +25,9 @@ const createMaintenance = async (maintenanceData) => {
     throw new Error("Asset not found");
   }
 
-  // TODO:
-  // Auto-create Maintenance after Damage module is merged
+  if (asset.status === "Booked" || asset.status === "In Rental") {
+    throw new Error("Cannot send an asset to maintenance while it is booked or in rental");
+  }
 
   const maintenanceCode = await generateMaintenanceCode();
 
@@ -152,8 +153,8 @@ const updateMaintenanceStatus = async (id, statusData) => {
   if (status === "Completed") {
     maintenance.completedDate = new Date();
 
-    // TODO:
-    // Update Asset status to Available after Asset Lifecycle module is merged
+    const Asset = require("../models/asset.model");
+    await Asset.findByIdAndUpdate(maintenance.assetId, { status: "Available" });
   }
 
   await maintenance.save();

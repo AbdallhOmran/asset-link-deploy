@@ -43,10 +43,13 @@ const assetSchema = new mongoose.Schema({
     enum: [
         "Available",
         "Booked",
-        "Maintenance",
-        "Inactive"
+        "Maintenance"
     ],
     default: "Available"
+  },
+  isActive: {
+    type: Boolean,
+    default: true
   },
   //added by eman - sprint 6
   healthScore: {

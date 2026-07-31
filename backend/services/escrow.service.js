@@ -6,7 +6,7 @@ const disputeModel = require("../models/dispute.model");
 
 const VALID_STATUSES = ["Held", "Frozen", "Released", "Refunded", "Cancelled"];
 const FINAL_STATUSES = ["Released", "Refunded", "Cancelled"];
-const APPROVED_STATUSES = ["Active"]; // contract must be Active - matches contract.model.js enum exactly - by Eman
+const APPROVED_STATUSES = ["Draft", "Approved", "Active"]; // allow escrow to be created for Draft - matches contract.model.js enum exactly - by Eman
 // generate a unique escrow code like ESC-0001 - by Eman
 const generateEscrowCode = async () => {
   const lastEscrow = await escrowModel.findOne().sort({ createdAt: -1 });
@@ -48,10 +48,10 @@ const createEscrow = async (data) => {
   const contract = await contractModel.findById(contractId);
   if (!contract) throw makeError("Contract not found", 404);
 
-  // BUSINESS RULE: cannot create escrow before contract approval - by Eman
+  // BUSINESS RULE: escrow is created when contract is Draft, then contract becomes Approved - by Eman
   if (!APPROVED_STATUSES.includes(contract.status)) {
     throw makeError(
-      "Escrow can only be created after the contract is approved/active",
+      "Escrow can only be created when the contract is Draft, Approved, or Active",
       400
     );
   }
@@ -106,7 +106,7 @@ const securityDeposit = contract.securityDeposit;
 };
 
 // GET escrow by id - by Eman
-const getEscrowById = async (id) => {
+const getEscrowById = async (id, user) => {
   if (!mongoose.isValidObjectId(id)) throw makeError("Invalid escrow id", 400);
   const escrow = await escrowModel
     .findById(id)
@@ -115,11 +115,18 @@ const getEscrowById = async (id) => {
     .populate("companyId", "companyName companyEmail")
     .populate("ownerCompanyId", "companyName companyEmail");
   if (!escrow) throw makeError("Escrow not found", 404);
+
+  if (user && user.role !== "Admin") {
+    if (escrow.companyId._id.toString() !== user.id && escrow.ownerCompanyId._id.toString() !== user.id) {
+      throw makeError("Forbidden: You don't have permission to view this escrow", 403);
+    }
+  }
+
   return escrow;
 };
 
 // GET escrow by contract id - by Eman
-const getEscrowByContract = async (contractId) => {
+const getEscrowByContract = async (contractId, user) => {
   if (!mongoose.isValidObjectId(contractId))
     throw makeError("Invalid contractId", 400);
   const escrow = await escrowModel
@@ -129,11 +136,18 @@ const getEscrowByContract = async (contractId) => {
     .populate("companyId", "companyName companyEmail")
     .populate("ownerCompanyId", "companyName companyEmail");
   if (!escrow) throw makeError("No escrow found for this contract", 404);
+
+  if (user && user.role !== "Admin") {
+    if (escrow.companyId._id.toString() !== user.id && escrow.ownerCompanyId._id.toString() !== user.id) {
+      throw makeError("Forbidden: You don't have permission to view this escrow", 403);
+    }
+  }
+
   return escrow;
 };
 
 // GET escrow by booking id - by Eman
-const getEscrowByBooking = async (bookingId) => {
+const getEscrowByBooking = async (bookingId, user) => {
   if (!mongoose.isValidObjectId(bookingId))
     throw makeError("Invalid bookingId", 400);
   const escrow = await escrowModel
@@ -143,6 +157,13 @@ const getEscrowByBooking = async (bookingId) => {
     .populate("companyId", "companyName companyEmail")
     .populate("ownerCompanyId", "companyName companyEmail");
   if (!escrow) throw makeError("No escrow found for this booking", 404);
+
+  if (user && user.role !== "Admin") {
+    if (escrow.companyId._id.toString() !== user.id && escrow.ownerCompanyId._id.toString() !== user.id) {
+      throw makeError("Forbidden: You don't have permission to view this escrow", 403);
+    }
+  }
+
   return escrow;
 };
 
@@ -211,8 +232,26 @@ const releaseMoney = async (bookingId) => {
   const escrow = await escrowModel.findOne({ bookingId });
   if (!escrow) throw makeError("Escrow not found for this booking", 404);
 
-  // Transition to Released using Eman's method to obey all FINAL_STATUSES checks
-  return await updateEscrowStatus(escrow._id, "Released");
+  const session = await mongoose.startSession();
+  try {
+    let releasedEscrow;
+    await session.withTransaction(async () => {
+      // Transition to Released using atomic update to avoid race conditions
+      if (FINAL_STATUSES.includes(escrow.status)) {
+        throw makeError("Escrow is already finalized, status cannot be changed", 400);
+      }
+      releasedEscrow = await escrowModel.findByIdAndUpdate(
+        escrow._id,
+        { status: "Released" },
+        { new: true, session }
+      );
+    });
+    return releasedEscrow;
+  } catch (err) {
+    throw err;
+  } finally {
+    await session.endSession();
+  }
 };
 
 
@@ -227,17 +266,38 @@ const deductPenaltyFromDeposit = async (bookingId, penaltyAmount) => {
   const escrow = await escrowModel.findOne({ bookingId });
   if (!escrow) throw makeError("Escrow not found for this booking", 404);
 
+  // Business Rule: Cannot deduct penalty from a frozen escrow
+  if (escrow.status === "Frozen") {
+    throw makeError("Cannot deduct penalty from a frozen escrow (e.g. pending dispute)", 400);
+  }
+
   // Business Rule: Penalty cannot exceed the available security deposit
   if (penaltyAmount > escrow.securityDeposit) {
     throw makeError("Penalty cannot exceed the available security deposit", 400);
   }
 
-  // Deduct from deposit and totalHeld (keep rentalAmount untouched)
-  escrow.securityDeposit -= penaltyAmount;
-  escrow.totalHeld -= penaltyAmount;
-  
-  await escrow.save();
-  return escrow;
+  const session = await mongoose.startSession();
+  try {
+    let updatedEscrow;
+    await session.withTransaction(async () => {
+      // Deduct from deposit and totalHeld using Atomic $inc to prevent lost updates
+      updatedEscrow = await escrowModel.findByIdAndUpdate(
+        escrow._id,
+        { 
+          $inc: { 
+            securityDeposit: -penaltyAmount,
+            totalHeld: -penaltyAmount 
+          } 
+        },
+        { new: true, session }
+      );
+    });
+    return updatedEscrow;
+  } catch (err) {
+    throw err;
+  } finally {
+    await session.endSession();
+  }
 };
 
 module.exports = {

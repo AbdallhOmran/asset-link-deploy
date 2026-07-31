@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -7,7 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class PaymentsEscrowService {
 
-  private apiUrl = 'https://asset-link-api.vercel.app/api/payment';
+  private apiUrl = environment.apiUrl + '/api/payment';
   // private apiUrl = 'http://localhost:3000/api/payment';
 
   constructor(private http: HttpClient) {}

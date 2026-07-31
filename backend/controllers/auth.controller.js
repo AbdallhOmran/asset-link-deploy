@@ -180,6 +180,12 @@ const login = async (req, res) => {
     if (!company.isVerified) {
         return res.status(403).json({ message: 'Your account is not verified yet' });
     }
+
+    if (company.status === 'Deleted') {
+        return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // allow disabled users to login to view their dashboard, but restrict their actions via authMiddleware
     //check if the password matches
     const isMatch = await bcrypt.compare(password, company.password);
     if (!isMatch) {
@@ -215,8 +221,12 @@ const inspectorLogin = async (req, res) => {
     }
 
     const inspector = await inspectorModel.findOne({ inspectorEmail });
-    if (!inspector) {
-      return res.status(400).json({ message: "This inspector not found" });
+    if (!inspector || inspector.status === 'Deleted') {
+      return res.status(400).json({ message: "This inspector not found or deleted" });
+    }
+
+    if (inspector.status === 'Disabled') {
+      return res.status(403).json({ message: "Your account is disabled. Please contact support." });
     }
 
     const checkPassword = await bcrypt.compare(password, inspector.password);
@@ -236,6 +246,19 @@ const inspectorLogin = async (req, res) => {
         inspectorEmail: inspector.inspectorEmail,
         role: inspector.role
       }
+    });
+  } catch (error) {
+    return res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+const logout = async (req, res) => {
+  try {
+    // Since we are using stateless JWT, we just instruct the client to discard the token.
+    // A more advanced approach would blacklist the token in Redis.
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully"
     });
   } catch (error) {
     return res.status(500).json({ message: 'Server error', error: error.message });
@@ -304,6 +327,7 @@ module.exports = {
   verifyOtp,
   resendOtp,
   login,
+  logout,
   inspectorLogin,
   forgotPassword,
   resetPassword
