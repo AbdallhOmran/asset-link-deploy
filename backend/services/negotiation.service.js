@@ -286,6 +286,16 @@ const rejectOffer = async (offerData) => {
   await bookingModel.findByIdAndUpdate(bookingId, {
     status: "Rejected",
   });
+
+  // Revert the asset status back to Available
+  const booking = await bookingModel.findById(bookingId);
+  if (booking && booking.assetId) {
+    const assetModel = require("../models/asset.model");
+    await assetModel.findByIdAndUpdate(booking.assetId, {
+      status: "Available"
+    });
+  }
+
   return;
 };
 
