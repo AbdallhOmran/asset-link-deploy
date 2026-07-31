@@ -36,6 +36,8 @@ export class RequestMaintenanceModalComponent implements OnChanges {
       notes: ['', [Validators.required, Validators.minLength(10)]],
       scheduledDate: ['', Validators.required],
       technician: [''],
+      taxRegister: [''],
+      commercialRegister: [''],
       estimatedCost: ['', [Validators.required, Validators.min(1)]],
     });
   }
@@ -81,6 +83,8 @@ export class RequestMaintenanceModalComponent implements OnChanges {
       maintenanceType: this.selectedType,
       scheduledDate: formVal.scheduledDate,
       technician: formVal.technician || 'Unassigned',
+      taxRegister: formVal.taxRegister,
+      commercialRegister: formVal.commercialRegister,
       priority: this.selectedPriority,
       notes: formVal.notes,
       estimatedHours: formVal.estimatedCost ? Math.ceil(formVal.estimatedCost / 120) : undefined,

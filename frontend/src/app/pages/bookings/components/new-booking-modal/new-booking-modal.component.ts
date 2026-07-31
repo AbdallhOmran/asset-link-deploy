@@ -16,23 +16,20 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
   @Output() closed = new EventEmitter<void>();
   @Output() bookingCreated = new EventEmitter<any>();
 
-  currentStep = 0; // 0=Dates, 1=Renter
+  currentStep = 0;
   isSubmitting = false;
   errorMessage = '';
 
-  // Asset info
   selectedAsset: any = null;
   waitlistCount = 0;
   notifyVia: 'email' | 'sms' | 'both' = 'email';
   isOwner = false;
 
-  // Step 0: Dates + price type
   startDate = '';
   endDate = '';
-  priceType: PriceType = 'Daily'; // matches booking.model.js priceType enum
-  minDate = ''; // used as [min] on the date inputs to block past dates
+  priceType: PriceType = 'Daily';
+  minDate = '';
 
-  // Step 1: Renter/notes
   notes = '';
 
   constructor(
@@ -43,7 +40,6 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    // today's date in yyyy-MM-dd, used as the min attribute on date inputs
     this.minDate = new Date().toISOString().split('T')[0];
   }
 
@@ -63,7 +59,17 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
     this.assetService.getAssetDetails(this.preselectedAssetId).subscribe({
       next: (res: any) => {
         this.selectedAsset = res?.data ?? res;
-        // default to the first pricing plan actually available on this asset
+
+        // Guard: block booking your own company's assets, before anything else loads
+        const loggedInCompany = this.authService.getCompany();
+        const assetOwnerId = this.selectedAsset?.companyId?._id || this.selectedAsset?.companyId;
+
+        if (loggedInCompany?.id && assetOwnerId && loggedInCompany.id === assetOwnerId) {
+          this.errorMessage = "You cannot book your own company's equipment.";
+          this.selectedAsset = null;
+          return;
+        }
+
         this.priceType = this.availablePriceTypes[0]?.value || 'Daily';
 
         const loggedInCompany = this.authService.getCompany();
@@ -80,7 +86,7 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
           this.waitingListService.getWaitingListByAsset(this.selectedAsset._id).subscribe({
             next: (wl) => {
               this.waitlistCount = wl.length;
-            }
+            },
           });
         }
       },
@@ -91,7 +97,6 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
     });
   }
 
-  // which price options actually exist on this asset (matches asset.model.js: price = { daily, weekly, monthly })
   get availablePriceTypes(): { value: PriceType; label: string; rate: number }[] {
     if (!this.selectedAsset?.price) return [];
     const options: { value: PriceType; label: string; rate: number }[] = [];
@@ -122,13 +127,11 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
     return days > 0 ? days : 0;
   }
 
-  // number of billing units (days/weeks/months) based on priceType,
-  // so the total is computed correctly regardless of which plan is chosen
   get billingUnits(): number {
     if (this.rentalDays === 0) return 0;
     if (this.priceType === 'Daily') return this.rentalDays;
     if (this.priceType === 'Weekly') return Math.ceil(this.rentalDays / 7);
-    return Math.ceil(this.rentalDays / 30); // Monthly
+    return Math.ceil(this.rentalDays / 30);
   }
 
   get estimatedTotal(): number {
@@ -139,11 +142,18 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
     return this.selectedAsset?.status === 'Booked' || this.selectedAsset?.status === 'Rented';
   }
 
+  // Minimum rental days required for the currently selected pricing plan
+  get minRequiredDays(): number {
+    if (this.priceType === 'Weekly') return 7;
+    if (this.priceType === 'Monthly') return 30;
+    return 1; // Daily has no extra minimum beyond 1 day
+  }
+
   get queueItems(): any[] {
     const total = this.waitlistCount + 1;
     const items = [];
     const maxVisible = 8;
-    
+
     for (let i = 1; i <= maxVisible; i++) {
       if (i === total) {
         items.push({ label: 'You', isYou: true, isActive: true });
@@ -176,7 +186,6 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
         this.errorMessage = 'Please select both start and end dates.';
         return;
       }
-      // extra safety check even though the inputs already have [min]
       if (this.startDate < this.minDate) {
         this.errorMessage = 'Start date cannot be in the past.';
         return;
@@ -185,6 +194,17 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
         this.errorMessage = 'End date must be after start date.';
         return;
       }
+
+      // Enforce minimum duration based on the selected pricing plan
+      if (this.rentalDays < this.minRequiredDays) {
+        if (this.priceType === 'Weekly') {
+          this.errorMessage = 'Weekly plan requires a rental period of at least 7 days.';
+        } else if (this.priceType === 'Monthly') {
+          this.errorMessage = 'Monthly plan requires a rental period of at least 30 days.';
+        }
+        return;
+      }
+
       if (!this.selectedAsset) {
         this.errorMessage = 'Asset information is missing.';
         return;
@@ -220,6 +240,19 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
       return;
     }
 
+    const loggedInCompany = this.authService.getCompany();
+    if (!loggedInCompany?.id) {
+      this.errorMessage = 'Session expired. Please log in again.';
+      return;
+    }
+
+    // Guard again right before submit, in case selectedAsset changed some other way
+    const assetOwnerId = this.selectedAsset.companyId?._id || this.selectedAsset.companyId;
+    if (loggedInCompany.id === assetOwnerId) {
+      this.errorMessage = "You cannot book your own company's equipment.";
+      return;
+    }
+
     if (this.rentalDays <= 0) {
       this.errorMessage = 'Invalid date range.';
       return;
@@ -227,32 +260,40 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
 
     if (!loggedInCompany?.id) {
       this.errorMessage = 'Session expired. Please log in again.';
+    // Re-check minimum duration before final submit too (not applicable to waitlist requests)
+    if (!this.isWaitlistMode && this.rentalDays < this.minRequiredDays) {
+      if (this.priceType === 'Weekly') {
+        this.errorMessage = 'Weekly plan requires a rental period of at least 7 days.';
+      } else if (this.priceType === 'Monthly') {
+        this.errorMessage = 'Monthly plan requires a rental period of at least 30 days.';
+      }
       return;
     }
 
-    if (this.selectedAsset.status === 'Booked' || this.selectedAsset.status === 'Rented') {
+    if (this.isWaitlistMode) {
       const waitlistData: WaitingListDTO = {
         assetId: this.selectedAsset._id,
         companyId: loggedInCompany.id,
         requestedStartDate: this.startDate,
-        requestedEndDate: this.endDate
+        requestedEndDate: this.endDate,
       };
 
       this.isSubmitting = true;
       this.waitingListService.joinWaitingList(waitlistData).subscribe({
         next: (res: any) => {
           this.isSubmitting = false;
-          // Optionally emit an event to refresh waitlist count
           this.bookingCreated.emit(res);
           this.resetForm();
           this.closed.emit();
         },
         error: (err) => {
           this.isSubmitting = false;
-          console.error("Waitlist Error:", err);
           const backendErr = err.error;
-          this.errorMessage = typeof backendErr === 'string' ? backendErr : (backendErr?.error || backendErr?.message || 'Failed to join waitlist. Please try again.');
-        }
+          this.errorMessage =
+            typeof backendErr === 'string'
+              ? backendErr
+              : backendErr?.error || backendErr?.message || 'Failed to join waitlist. Please try again.';
+        },
       });
       return;
     }
@@ -260,10 +301,10 @@ export class NewBookingModalComponent implements OnInit, OnChanges {
     const bookingData = {
       assetId: this.selectedAsset._id,
       companyId: loggedInCompany.id,
-      ownerCompanyId: this.selectedAsset.companyId?._id || this.selectedAsset.companyId,
+      ownerCompanyId: assetOwnerId,
       startDate: this.startDate,
       endDate: this.endDate,
-      priceType: this.priceType, // now uses the actually selected plan
+      priceType: this.priceType,
       totalPrice: this.estimatedTotal,
       notes: this.notes,
     };

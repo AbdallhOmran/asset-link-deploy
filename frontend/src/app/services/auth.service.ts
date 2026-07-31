@@ -24,6 +24,7 @@ export class AuthService {
     password: string;
     confirmPassword: string;
     commercialRegistrationNumber?: string;
+    taxRegister?: string;
     companyAddress?: string;
   }) {
     return this.http.post<{ success: boolean; message: string }>(
@@ -45,6 +46,22 @@ export class AuthService {
     return this.http.post<{ success: boolean; message: string }>(
       `${this.baseUrl}/resend-otp`,
       { email }
+    );
+  }
+
+  // POST /api/auth/forgot-password
+  forgotPassword(email: string) {
+    return this.http.post<{ success: boolean; message: string }>(
+      `${this.baseUrl}/forgot-password`,
+      { email }
+    );
+  }
+
+  // PUT /api/auth/reset-password/:token
+  resetPassword(token: string, password: string) {
+    return this.http.put<{ success: boolean; message: string }>(
+      `${this.baseUrl}/reset-password/${token}`,
+      { password }
     );
   }
 

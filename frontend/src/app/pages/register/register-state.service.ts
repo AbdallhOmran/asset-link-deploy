@@ -8,6 +8,8 @@ export interface CompanyInfo {
   industry: string;
   companySize: string;
   country: string;
+  taxRegister?: string;
+  commercialRegistrationNumber?: string;
   website?: string;
 }
 
@@ -32,7 +34,7 @@ export interface RegisterFormData {
 }
 
 const initialData: RegisterFormData = {
-  company: { companyName: '', companyType: 'Both', industry: '', companySize: '', country: 'United States', website: '' },
+  company: { companyName: '', companyType: 'Both', industry: '', companySize: '', country: 'United States', taxRegister: '', commercialRegistrationNumber: '', website: '' },
   contact: { firstName: '', lastName: '', jobTitle: '', email: '', phone: '' },
   account: { password: '', confirmPassword: '', agreeTerms: false },
 };
@@ -85,7 +87,9 @@ export class RegisterStateService {
       password: payload.account.password,
       confirmPassword: payload.account.confirmPassword,
       companyAddress: payload.company.country,
-      companyType: payload.company.companyType
+      companyType: payload.company.companyType,
+      taxRegister: payload.company.taxRegister,
+      commercialRegistrationNumber: payload.company.commercialRegistrationNumber
     };
 
     this.registeredEmail = payload.contact.email;

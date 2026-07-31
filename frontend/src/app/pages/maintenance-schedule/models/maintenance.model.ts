@@ -12,6 +12,8 @@ export interface MaintenanceRecord {
   category: string;
   type: string;
   tech: string;
+  taxRegister?: string;
+  commercialRegister?: string;
   date: string;
   completedDate?: string;
   hrs: number;
@@ -41,6 +43,8 @@ export interface NewMaintenanceRequest {
   maintenanceType: string;
   scheduledDate: string;
   technician: string;
+  taxRegister?: string;
+  commercialRegister?: string;
   priority: PriorityLevel;
   notes: string;
   estimatedHours?: number;
