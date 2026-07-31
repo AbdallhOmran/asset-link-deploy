@@ -39,7 +39,7 @@
 
   <hr class="my-6" />
 
-  <div class="flex flex-wrap gap-2">
+  <div *ngIf="canAction" class="flex flex-wrap gap-2">
     <app-button variant="success" [disabled]="!offer" (click)="acceptOffer()">
       Accept Offer
     </app-button>
@@ -59,5 +59,13 @@
     <app-button variant="danger" [disabled]="!offer" (click)="rejectOffer()">
       Reject Offer
     </app-button>
+  </div>
+
+  <div *ngIf="!canAction" class="bg-amber-50 border border-amber-200 text-amber-700 p-4 rounded-lg flex items-start gap-3">
+    <lucide-icon name="clock" class="w-5 h-5 mt-0.5 shrink-0"></lucide-icon>
+    <div class="text-sm">
+      <p class="font-semibold mb-0.5">Waiting for Response</p>
+      <p>Since you made the latest offer, you must wait for the other party to Accept, Reject, or send a Counter Offer.</p>
+    </div>
   </div>
 </div>

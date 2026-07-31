@@ -9,8 +9,10 @@
     <div class="col-span-4">
       <app-current-offer
         [offer]="currentVersionDetails"
+        [canAction]="canAction"
         (accept)="acceptOffer()"
         (reject)="rejectOffer()"
+        (counter)="submitCounterOffer($event)"
       ></app-current-offer>
     </div>
   </div>
