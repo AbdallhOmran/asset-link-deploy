@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NegotiationService } from '../../services/negotiation.service';
+import { AuthService } from '../../services/auth.service';
 
 interface CalendarDay {
   date: Date;
@@ -28,25 +29,28 @@ export class NegotiationsComponent implements OnInit {
   calendarDays: CalendarDay[] = [];
 
   columns = [
-    { field: 'bookingCode', header: 'Negotiation ID' },
+    { field: 'negotiationCode', header: 'Negotiation ID' },
     { field: 'assetName', header: 'Asset' },
     { field: 'renterName', header: 'Renter' },
     { field: 'ownerName', header: 'Owner' },
-    { field: 'totalPrice', header: 'Value' },
+    { field: 'totalValue', header: 'Value' },
     { field: 'status', header: 'Status' },
   ];
 
   constructor(
     private negotiationService: NegotiationService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
-    const userString = localStorage.getItem('user');
-    if (userString) {
-      const user = JSON.parse(userString);
-      this.companyId = user.companyId;
-      this.myRole = user.role === 'owner' ? 'ownerCompany' : 'renterCompany';
+    const company = this.authService.getCompany();
+    if (company) {
+      this.companyId = company._id || company.id;
+      // You may need to adjust role detection if it's explicitly stored differently,
+      // but typically we can decide myRole on a per-negotiation basis.
+      // For now, default to checking if they have an owner flag if applicable.
+      this.myRole = company.role === 'owner' ? 'ownerCompany' : 'renterCompany';
     }
 
     if (this.companyId) {
@@ -63,10 +67,11 @@ export class NegotiationsComponent implements OnInit {
         const rawNegotiations = res.data || res;
         this.negotiations = (Array.isArray(rawNegotiations) ? rawNegotiations : []).map((b: any) => ({
           ...b,
-          assetName: b.assetId?.assetName,
+          assetName: b.bookingId?.assetId?.assetName,
           renterName: b.renterCompany?.companyName,
           ownerName: b.ownerCompany?.companyName,
-          bookingCode: b.bookingId?.bookingCode || b._id
+          negotiationCode: b.negotiationCode || b._id,
+          totalValue: b.currentVersion?.rentPrice ? `$${b.currentVersion.rentPrice}/${b.currentVersion.durationUnit || 'Day'}` : 'N/A'
         }));
 
         this.applyFilter();
@@ -82,7 +87,7 @@ export class NegotiationsComponent implements OnInit {
     this.filteredNegotiations = !term
       ? this.negotiations
       : this.negotiations.filter((b) =>
-          [b.bookingCode, b.assetName, b.renterName, b.ownerName]
+          [b.negotiationCode, b.assetName, b.renterName, b.ownerName]
             .filter(Boolean)
             .some((field) => field.toLowerCase().includes(term))
         );

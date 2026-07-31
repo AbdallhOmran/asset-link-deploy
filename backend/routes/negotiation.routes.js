@@ -6,6 +6,7 @@ const {
     createNegotiation,
     createOffer,
     getNegotiation,
+    getNegotiationById,
     getVersionHistory,
     getCurrentNegotiation,
     acceptOffer,
