@@ -92,7 +92,7 @@ export class OtpPageComponent implements OnInit, OnDestroy {
         this.isSuccess = true;
         this.cdr.markForCheck();
         setTimeout(() => {
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/login']);
         }, 1200);
       },
       error: (err) => {
