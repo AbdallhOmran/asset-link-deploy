@@ -15,6 +15,14 @@ const maintenanceSchema = new mongoose.Schema(
       required: true,
     },
 
+    taxRegister: {
+      type: String,
+    },
+
+    commercialRegister: {
+      type: String,
+    },
+
     issueDescription: {
       type: String,
       required: true,

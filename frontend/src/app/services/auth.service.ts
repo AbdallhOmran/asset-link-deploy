@@ -48,6 +48,22 @@ export class AuthService {
     );
   }
 
+  // POST /api/auth/forgot-password
+  forgotPassword(email: string) {
+    return this.http.post<{ success: boolean; message: string }>(
+      `${this.baseUrl}/forgot-password`,
+      { email }
+    );
+  }
+
+  // PUT /api/auth/reset-password/:token
+  resetPassword(token: string, password: string) {
+    return this.http.put<{ success: boolean; message: string }>(
+      `${this.baseUrl}/reset-password/${token}`,
+      { password }
+    );
+  }
+
   // ===== Token & session helpers =====
 
   saveSession(token: string, company: any) {
