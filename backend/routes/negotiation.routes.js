@@ -20,6 +20,7 @@ router.post('/:negotiationId/offers', authMiddleware, createOffer);
 router.get('/company/:id', authMiddleware, getNegotiation);
 router.get('/:id/history', authMiddleware, getVersionHistory);
 router.get('/company/:id/current', authMiddleware, getCurrentNegotiation);
+router.get('/:id', authMiddleware, getNegotiationById);
 router.patch('/:id/accept', authMiddleware, requireIdempotency, acceptOffer);
 router.patch('/:id/reject', authMiddleware, rejectOffer);
 module.exports = router;
