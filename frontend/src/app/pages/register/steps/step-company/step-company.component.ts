@@ -60,6 +60,8 @@ export class StepCompanyComponent implements OnInit {
       industry: [saved.industry || '', [Validators.required]],
       companySize: [saved.companySize || '', [Validators.required]],
       country: [saved.country || 'United States', [Validators.required]],
+      taxRegister: [saved.taxRegister || ''],
+      commercialRegistrationNumber: [saved.commercialRegistrationNumber || ''],
       website: [saved.website || '']
     });
   }

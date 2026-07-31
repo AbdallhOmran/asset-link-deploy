@@ -15,7 +15,7 @@ const otpService = require('./otp.service');
  * - Sends OTP via email (or console in dev)
  */
 const registerCompany = async (data) => {
-  const { companyName, companyEmail, phoneNumber, password, commercialRegistrationNumber, companyAddress, companyType } = data;
+  const { companyName, companyEmail, phoneNumber, password, commercialRegistrationNumber, taxRegister, companyAddress, companyType } = data;
 
   // 1. Check if email already exists in DB
   const existingCompany = await Company.findOne({ companyEmail });
@@ -43,6 +43,7 @@ const registerCompany = async (data) => {
     phoneNumber,
     password: hashedPassword,
     commercialRegistrationNumber: commercialRegistrationNumber || null,
+    taxRegister: taxRegister || null,
     companyAddress: companyAddress || null,
     companyType: companyType || "Both",
   };
@@ -70,6 +71,7 @@ const verifyOtp = async (email, otp) => {
     phoneNumber: cachedData.phoneNumber,
     password: cachedData.password,
     commercialRegistrationNumber: cachedData.commercialRegistrationNumber,
+    taxRegister: cachedData.taxRegister,
     companyAddress: cachedData.companyAddress,
     companyType: cachedData.companyType,
     isVerified: true,

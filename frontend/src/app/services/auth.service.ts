@@ -24,6 +24,7 @@ export class AuthService {
     password: string;
     confirmPassword: string;
     commercialRegistrationNumber?: string;
+    taxRegister?: string;
     companyAddress?: string;
   }) {
     return this.http.post<{ success: boolean; message: string }>(
