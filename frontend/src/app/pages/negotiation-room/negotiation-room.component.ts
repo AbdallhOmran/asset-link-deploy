@@ -62,6 +62,7 @@ export class NegotiationRoomComponent implements OnInit {
         this.currentOffer?.assetId?.assetName ||
         null,
       assetId: this.currentBooking?.assetId || this.currentOffer?.assetId,
+      negotiationStatus: this.currentOffer?.status,
     };
   }
 
