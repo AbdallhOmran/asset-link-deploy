@@ -7,7 +7,11 @@ import { Injectable } from '@angular/core';
 })
 export class CompanyService {
 
+<<<<<<< Updated upstream
   private baseUrl = environment.apiUrl + '/api/company';
+=======
+  private baseUrl = 'http://localhost:3000/api/company';
+>>>>>>> Stashed changes
   // private baseUrl = 'http://localhost:3000/api/company';
 
   constructor(private http: HttpClient) {}

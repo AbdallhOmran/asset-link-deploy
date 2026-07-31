@@ -65,5 +65,5 @@
   [isOpen]="isAcceptModalOpen"
   [order]="selectedOrder"
   (closed)="closeAcceptModal()"
-  (negotiationStarted)="onNegotiationStarted()"
+  (negotiationStarted)="onNegotiationStarted($event)"
 ></app-accept-offer-modal>

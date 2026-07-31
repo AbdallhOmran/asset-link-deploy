@@ -42,7 +42,11 @@ export interface AssetPayload {
   providedIn: 'root',
 })
 export class AssetService {
+<<<<<<< Updated upstream
   private baseUrl = environment.apiUrl + '/api';
+=======
+  private baseUrl = 'http://localhost:3000/api';
+>>>>>>> Stashed changes
   // private baseUrl = 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) {}

@@ -7,7 +7,11 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ContractService {
+<<<<<<< Updated upstream
   private baseUrl = environment.apiUrl + '/api/contracts';
+=======
+  private baseUrl = 'http://localhost:3000/api/contracts';
+>>>>>>> Stashed changes
   // private baseUrl = 'http://localhost:3000/api/contracts';
 
   constructor(private http: HttpClient) {}

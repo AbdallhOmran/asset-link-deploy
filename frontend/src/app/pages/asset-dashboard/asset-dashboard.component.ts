@@ -86,12 +86,15 @@ export class AssetDashboardComponent implements OnInit {
     // Fetch waitlist counts for booked/rented assets
     this.assets.forEach(asset => {
       if (asset.status === 'Booked' || asset.status === 'Rented') {
-        this.waitingListService.getWaitingListByAsset(asset._id).subscribe({
-          next: (waitlist) => {
-            asset.waitlistCount = waitlist.length;
-          },
-          error: (err) => console.error('Failed to fetch waitlist count', err)
-        });
+        const assetId = asset._id || asset.id;
+        if (assetId) {
+          this.waitingListService.getWaitingListByAsset(assetId).subscribe({
+            next: (waitlist) => {
+              asset.waitlistCount = waitlist.length;
+            },
+            error: (err) => console.error('Failed to fetch waitlist count', err)
+          });
+        }
       }
     });
 

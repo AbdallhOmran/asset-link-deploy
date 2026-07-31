@@ -10,7 +10,11 @@ export interface AssetCategory {
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
+<<<<<<< Updated upstream
   private baseUrl = environment.apiUrl + '/api/assetCategory';
+=======
+  private baseUrl = 'http://localhost:3000/api/assetCategory';
+>>>>>>> Stashed changes
   // private baseUrl = 'http://localhost:3000/api/assetCategory';
 
   constructor(private http: HttpClient) {}

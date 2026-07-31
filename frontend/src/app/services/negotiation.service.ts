@@ -16,7 +16,11 @@ export interface VersionData {
   providedIn: 'root',
 })
 export class NegotiationService {
+<<<<<<< Updated upstream
   private api = environment.apiUrl + '/api/negotiation';
+=======
+  private api = 'http://localhost:3000/api/negotiation';
+>>>>>>> Stashed changes
   // private api = 'http://localhost:3000/api/negotiation';
 
   constructor(private http: HttpClient) {}

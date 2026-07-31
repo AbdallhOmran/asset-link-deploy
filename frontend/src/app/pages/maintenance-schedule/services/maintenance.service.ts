@@ -15,8 +15,13 @@ import {
   providedIn: 'root',
 })
 export class MaintenanceService {
+<<<<<<< Updated upstream
   private readonly baseUrl = environment.apiUrl + '/api/maintenances';
   private readonly assetUrl = environment.apiUrl + '/api/asset';
+=======
+  private readonly baseUrl = 'http://localhost:3000/api/maintenances';
+  private readonly assetUrl = 'http://localhost:3000/api/asset';
+>>>>>>> Stashed changes
 
   private recordsSubject = new BehaviorSubject<MaintenanceRecord[]>([]);
   private assetsSubject = new BehaviorSubject<AssetMaintenanceSummary[]>([]);
