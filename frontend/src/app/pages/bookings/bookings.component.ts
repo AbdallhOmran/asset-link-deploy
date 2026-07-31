@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { BookingService } from '../../services/booking.service';
+import { AuthService } from '../../services/auth.service';
 
 interface CalendarDay {
   date: Date;
@@ -32,7 +34,11 @@ export class BookingsComponent implements OnInit {
     { field: 'status', header: 'Status' },
   ];
 
-  constructor(private bookingService: BookingService) {}
+  constructor(
+    private bookingService: BookingService,
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.loadBookings();
@@ -89,7 +95,29 @@ export class BookingsComponent implements OnInit {
   }
 
   onBookingAction(booking: any) {
-    console.log('View booking:', booking);
+    const loggedInCompany = this.authService.getCompany();
+    const companyId = loggedInCompany?.id || loggedInCompany?._id;
+    
+    // Fallback logic for owner matching in case the populated objects differ
+    const bookingOwnerId = booking.ownerCompanyId?._id || booking.ownerCompanyId;
+    const isOwner = bookingOwnerId === companyId;
+
+    if (booking.status === 'Pending') {
+      if (isOwner) {
+        this.router.navigate(['/app/orders']);
+      } else {
+        this.errorMessage = 'This booking is pending. The equipment owner must accept it to start the negotiation.';
+        setTimeout(() => this.errorMessage = '', 5000);
+      }
+    } else if (booking.status === 'InNegotiation') {
+      this.router.navigate(['/app/negotiations']);
+    } else if (booking.status === 'Confirmed') {
+      this.errorMessage = 'This booking is already confirmed.';
+      setTimeout(() => this.errorMessage = '', 5000);
+    } else {
+      this.errorMessage = `This booking is ${booking.status}.`;
+      setTimeout(() => this.errorMessage = '', 5000);
+    }
   }
 
   // ✅ actually switches the view now (used with *ngIf in the template)
