@@ -42,7 +42,8 @@ export class NegotiationService {
   }
 
   acceptOffer(data: any): Observable<any> {
-    return this.http.patch(`${this.api}/${data.negotiationId}/accept`, data);
+    const headers = { 'x-idempotency-key': Date.now().toString() + '-' + Math.random().toString().slice(2) };
+    return this.http.patch(`${this.api}/${data.negotiationId}/accept`, data, { headers });
   }
 
   rejectOffer(data: any): Observable<any> {
