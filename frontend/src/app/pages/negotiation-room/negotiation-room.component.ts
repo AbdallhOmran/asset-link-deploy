@@ -14,9 +14,9 @@ export class NegotiationRoomComponent implements OnInit {
   currentOffer: any;
   currentBooking: any;
 
-  negotiationId = '';
-  bookingId = ''; 
-  companyId = '';
+  negotiationId: string = '';
+  bookingId: string = ''; 
+  companyId: string = '';
 
   constructor(
     private negotiationService: NegotiationService,
