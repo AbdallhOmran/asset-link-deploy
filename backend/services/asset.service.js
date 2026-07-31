@@ -200,7 +200,7 @@ const getRecommendedAssets = async (query) => {
   const priceType = (query.priceType || "daily").toLowerCase();
 
   const matchStage = {
-    status: { $in: ["Available", "Rented"] }
+    status: { $in: ["Available", "Booked"] }
   };
 
   if (maxPrice) {

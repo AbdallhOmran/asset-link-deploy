@@ -7,7 +7,7 @@ export interface VersionData {
   rentPrice: number;
   securityDeposit: number;
   rentalDuration: number;
-  durationUnit: 'Daily' | 'Weekly' | 'Monthly'; // TODO: confirm exact enum values against version.model.js
+  durationUnit: 'Day' | 'Week' | 'Month'; // matches version.model.js enum exactly
   notes?: string;
 }
 
