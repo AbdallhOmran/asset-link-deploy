@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const inspectionController = require("../controllers/inspection.controller");
+const authMiddleware = require("../middleware/auth.middleware");
 
 // NOTE: Auth middleware intentionally omitted for now (Known gap – security debt).
 // Will be added during production hardening. See Integration meeting notes.
 
 // List all inspections (supports ?status=Passed&assetId=xxx&bookingId=xxx)
-router.get("/", inspectionController.getAllInspections);
+router.get("/",authMiddleware,inspectionController.getAllInspections);
 
 // Get inspection by booking ID
 router.get("/booking/:bookingId", inspectionController.getInspectionByBooking);

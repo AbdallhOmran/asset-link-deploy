@@ -1,190 +1,473 @@
 <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden space-y-0">
 
-  <!-- Table Filter Header Bar -->
-  <div class="p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4 bg-slate-50/40">
+  <!-- Header -->
+  <div class="p-5 border-b border-slate-100 bg-slate-50/40 space-y-4">
 
-    <!-- Search Box -->
-    <div class="relative flex-1 min-w-[240px] max-w-md">
-      <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
-      <input
-        type="text"
-        [(ngModel)]="searchQuery"
-        (input)="onSearchInput()"
-        placeholder="Search by inspector, asset, or booking code..."
-        class="w-full pl-9 pr-4 py-2 text-xs border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder-slate-400"
-      />
+    <div class="flex flex-wrap items-center justify-between gap-4">
+
+      <!-- Search -->
+      <div class="relative flex-1 min-w-[240px] max-w-md">
+
+        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">
+          🔍
+        </span>
+
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (input)="onSearchInput()"
+          placeholder="Search by inspector, asset or booking..."
+          class="w-full pl-9 pr-4 py-2 text-xs border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+
+      </div>
+
+      <!-- Status Filter -->
+      <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+
+        <button
+          *ngFor="let s of ['all','Pending','Passed','Failed']"
+          (click)="onFilterStatus($any(s))"
+          class="px-3 py-1.5 text-xs font-bold rounded-lg transition-all"
+          [ngClass]="activeStatusFilter===s
+          ? 'bg-white text-slate-900 shadow-sm'
+          : 'text-slate-500 hover:text-slate-700'">
+
+          {{s==='all' ? 'All Status' : s}}
+
+        </button>
+
+      </div>
+
     </div>
 
-    <!-- Status Tabs -->
-    <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+    <!-- Inspection Type Filter -->
+
+    <div class="flex items-center gap-2">
+
       <button
-        *ngFor="let s of ['all', 'Passed', 'Failed']"
-        (click)="onFilterStatus($any(s))"
-        class="px-3 py-1.5 text-xs font-bold rounded-lg transition-all"
-        [ngClass]="activeStatusFilter === s ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
-      >
-        {{ s === 'all' ? 'All Records' : s }}
+        (click)="onFilterType('all')"
+        [ngClass]="activeTypeFilter==='all'
+        ?'bg-blue-600 text-white'
+        :'bg-white border border-slate-200 text-slate-600'"
+        class="px-4 py-2 rounded-xl text-xs font-semibold">
+
+        All
+
       </button>
+
+      <button
+        (click)="onFilterType('before_use')"
+        [ngClass]="activeTypeFilter==='before_use'
+        ?'bg-blue-600 text-white'
+        :'bg-white border border-slate-200 text-slate-600'"
+        class="px-4 py-2 rounded-xl text-xs font-semibold">
+
+        Before Rental
+
+      </button>
+
+      <button
+        (click)="onFilterType('after_return')"
+        [ngClass]="activeTypeFilter==='after_return'
+        ?'bg-blue-600 text-white'
+        :'bg-white border border-slate-200 text-slate-600'"
+        class="px-4 py-2 rounded-xl text-xs font-semibold">
+
+        After Rental
+
+      </button>
+
     </div>
+
   </div>
 
-  <!-- Loading State -->
+  <!-- Loading -->
+
   <div *ngIf="loading" class="px-6 py-16 text-center">
-    <div class="w-10 h-10 border-3 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-    <p class="text-sm font-semibold text-slate-500">Loading inspections...</p>
+
+    <div
+      class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4">
+    </div>
+
+    <p class="text-sm font-semibold text-slate-500">
+
+      Loading inspections...
+
+    </p>
+
   </div>
 
   <!-- Table -->
+
   <div *ngIf="!loading" class="overflow-x-auto">
-    <table class="w-full text-left" dir="ltr">
+
+    <table class="w-full text-left">
+
       <thead>
-        <tr class="bg-slate-50/80 border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-          <th class="px-5 py-3.5 text-left">ASSET</th>
-          <th class="px-5 py-3.5 text-left">BOOKING</th>
-          <th class="px-5 py-3.5 text-left">INSPECTOR</th>
-          <th class="px-5 py-3.5 text-left">SCORE</th>
-          <th class="px-5 py-3.5 text-left">STATUS</th>
-          <th class="px-5 py-3.5 text-left">DATE</th>
-          <th class="px-5 py-3.5 text-center">ACTIONS</th>
-        </tr>
+
+      <tr class="bg-slate-50 border-b border-slate-100 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+
+        <th class="px-5 py-3">Asset</th>
+
+        <th class="px-5 py-3">Booking</th>
+
+        <th class="px-5 py-3">Inspector</th>
+
+        <th class="px-5 py-3">Type</th>
+
+        <th class="px-5 py-3">Score</th>
+
+        <th class="px-5 py-3">Damage</th>
+
+        <th class="px-5 py-3">Damage Cost</th>
+
+        <th class="px-5 py-3">Status</th>
+
+        <th class="px-5 py-3">Date</th>
+
+        <th class="px-5 py-3 text-center">Actions</th>
+
+      </tr>
+
       </thead>
-      <tbody class="divide-y divide-slate-100 text-xs text-slate-700">
-        <ng-container *ngFor="let record of records">
-          <tr (click)="toggleRowExpand(record._id)" class="hover:bg-slate-50/80 transition-colors cursor-pointer group">
 
-            <!-- Asset -->
-            <td class="px-5 py-4">
-              <div class="flex items-center gap-2">
-                <span class="font-mono text-[11px] font-bold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md">
-                  {{ record.assetId?.assetCode || 'N/A' }}
-                </span>
-                <div>
-                  <p class="font-bold text-slate-900">{{ record.assetId?.assetName || 'Unknown Asset' }}</p>
-                </div>
-              </div>
-            </td>
+      <tbody class="divide-y divide-slate-100">
 
-            <!-- Booking -->
-            <td class="px-5 py-4">
-              <span class="font-mono text-[11px] font-semibold text-violet-600 bg-violet-50 border border-violet-100 px-2 py-0.5 rounded-md">
-                {{ record.bookingId?.bookingCode || 'N/A' }}
-              </span>
-            </td>
+      <ng-container *ngFor="let record of records">
 
-            <!-- Inspector -->
-            <td class="px-5 py-4">
-              <div class="flex items-center gap-2">
-                <div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-700">
-                  {{ (record.inspectorName || 'U').charAt(0) }}
-                </div>
-                <span>{{ record.inspectorName }}</span>
-              </div>
-            </td>
+        <tr
+          (click)="toggleRowExpand(record._id)"
+          class="hover:bg-slate-50 cursor-pointer transition">
 
-            <!-- Condition Score -->
-            <td class="px-5 py-4">
-              <span class="font-mono font-bold px-2.5 py-1 rounded-lg border text-xs" [ngClass]="getScoreColor(record.conditionScore)">
-                {{ record.conditionScore }}/100
-              </span>
-            </td>
+          <!-- Asset -->
 
-            <!-- Status -->
-            <td class="px-5 py-4">
+          <td class="px-5 py-4">
+
+            <div class="flex items-center gap-2">
+
               <span
-                class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-xl border"
-                [ngClass]="record.status === 'Passed'
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                  : 'bg-red-50 text-red-700 border-red-200'"
-              >
-                <span class="w-1.5 h-1.5 rounded-full" [ngClass]="record.status === 'Passed' ? 'bg-emerald-500' : 'bg-red-500'"></span>
-                {{ record.status }}
+                class="font-mono text-xs px-2 py-1 rounded bg-blue-50 border border-blue-100 text-blue-700">
+
+                {{record.assetId?.assetCode}}
+
               </span>
-            </td>
 
-            <!-- Date -->
-            <td class="px-5 py-4 font-mono font-medium text-slate-600">
-              {{ record.createdAt | date:'mediumDate' }}
-            </td>
+              <span class="font-semibold">
 
-            <!-- Actions -->
-            <td class="px-5 py-4 text-center">
-              <div class="flex items-center justify-center gap-2">
-                <button class="text-xs text-blue-600 font-bold hover:underline">
-                  {{ expandedRowId === record._id ? 'Hide ▲' : 'Details ▼' }}
-                </button>
-                <button
-                  (click)="onDelete($event, record)"
-                  class="text-xs text-red-500 font-bold hover:underline hover:text-red-700 transition-colors"
-                >
-                  Delete
-                </button>
-              </div>
-            </td>
-          </tr>
+                {{record.assetId?.assetName}}
 
-          <!-- Expanded Row Details -->
-          <tr *ngIf="expandedRowId === record._id" class="bg-slate-50/50">
-            <td colspan="7" class="px-6 py-4">
-              <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-inner space-y-4">
+              </span>
 
-                <!-- Checklist -->
-                <div>
-                  <span class="text-xs font-bold text-slate-800 uppercase tracking-wide">Checklist Results</span>
-                  <div class="flex flex-wrap gap-2 mt-2">
-                    <span
-                      *ngFor="let item of getChecklistItems(record.checklist)"
-                      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border"
-                      [ngClass]="item.passed
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                        : 'bg-red-50 text-red-700 border-red-200'"
-                    >
-                      {{ item.passed ? '✅' : '❌' }} {{ item.label }}
-                    </span>
-                  </div>
-                </div>
-
-                <!-- Notes -->
-                <div *ngIf="record.notes">
-                  <span class="text-xs font-bold text-slate-800 uppercase tracking-wide">Inspector Notes</span>
-                  <p class="text-xs text-slate-600 leading-relaxed mt-1">{{ record.notes }}</p>
-                </div>
-
-                <!-- Score Bar -->
-                <div class="flex items-center justify-between text-xs">
-                  <span class="font-bold text-slate-800">Condition Score</span>
-                  <div class="flex items-center gap-3">
-                    <div class="w-40 bg-slate-100 rounded-full h-2 overflow-hidden">
-                      <div
-                        class="h-2 rounded-full transition-all duration-500"
-                        [ngClass]="{
-                          'bg-emerald-500': record.conditionScore >= 70,
-                          'bg-amber-500': record.conditionScore >= 40 && record.conditionScore < 70,
-                          'bg-red-500': record.conditionScore < 40
-                        }"
-                        [style.width.%]="record.conditionScore"
-                      ></div>
-                    </div>
-                    <span class="font-mono font-bold" [ngClass]="getScoreColor(record.conditionScore)">{{ record.conditionScore }}%</span>
-                  </div>
-                </div>
-              </div>
-            </td>
-          </tr>
-        </ng-container>
-
-        <!-- Empty State -->
-        <tr *ngIf="!records || records.length === 0">
-          <td colspan="7" class="px-6 py-12 text-center">
-            <div class="max-w-xs mx-auto space-y-3">
-              <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-xl">
-                🔍
-              </div>
-              <p class="text-sm font-bold text-slate-800">No inspections found</p>
-              <p class="text-xs text-slate-400">No inspection records match your current filters. Create a new inspection to get started.</p>
             </div>
+
           </td>
+
+          <!-- Booking -->
+
+          <td class="px-5 py-4">
+
+            <span
+              class="font-mono text-xs px-2 py-1 rounded bg-violet-50 border border-violet-100 text-violet-700">
+
+              {{record.bookingId?.bookingCode}}
+
+            </span>
+
+          </td>
+
+          <!-- Inspector -->
+
+          <td class="px-5 py-4">
+
+            <div class="flex items-center gap-2">
+
+              <div
+                class="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold">
+
+                {{record.inspectorName.charAt(0)}}
+
+              </div>
+
+              {{record.inspectorName}}
+
+            </div>
+
+          </td>
+
+          <!-- Type -->
+
+          <td class="px-5 py-4">
+
+            <span
+              class="px-3 py-1 rounded-xl border text-xs font-semibold"
+              [ngClass]="getInspectionTypeClass(record.inspectionType)">
+
+              {{getInspectionTypeLabel(record.inspectionType)}}
+
+            </span>
+
+          </td>
+
+          <!-- Score -->
+
+          <td class="px-5 py-4">
+
+            <span
+              class="font-bold text-xs px-3 py-1 rounded-xl border"
+              [ngClass]="getScoreColor(record.conditionScore)">
+
+              {{record.conditionScore}} /100
+
+            </span>
+
+          </td>
+
+          <!-- Damage -->
+
+          <td class="px-5 py-4">
+
+            <span
+              class="px-3 py-1 rounded-xl border text-xs font-semibold"
+              [ngClass]="getDamageClass(record)">
+
+              {{getDamageBadge(record)}}
+
+            </span>
+
+          </td>
+
+          <!-- Damage Cost -->
+
+          <td class="px-5 py-4">
+
+            <span
+              *ngIf="record.hasDamage;else noCost"
+              class="font-bold text-red-600">
+
+              ${{record.damageCost}}
+
+            </span>
+
+            <ng-template #noCost>-</ng-template>
+
+          </td>
+
+          <!-- Status -->
+
+          <td class="px-5 py-4">
+
+            <span
+              class="inline-flex items-center gap-2 px-3 py-1 rounded-xl border text-xs font-semibold"
+              [ngClass]="getStatusClass(record.status)">
+
+              <span
+                class="w-2 h-2 rounded-full"
+                [ngClass]="getStatusDot(record.status)">
+              </span>
+
+              {{record.status}}
+
+            </span>
+
+          </td>
+
+          <!-- Date -->
+
+          <td class="px-5 py-4">
+
+            {{record.createdAt | date:'mediumDate'}}
+
+          </td>
+
+          <!-- Actions -->
+
+          <td class="px-5 py-4 text-center">
+
+            <button
+              class="text-blue-600 text-xs font-bold mr-3"
+              (click)="toggleRowExpand(record._id);$event.stopPropagation()">
+
+              {{expandedRowId===record._id ? 'Hide ▲' : 'Details ▼'}}
+
+            </button>
+
+            <button
+              class="text-red-500 text-xs font-bold"
+              (click)="onDelete($event,record)">
+
+              Delete
+
+            </button>
+
+          </td>
+
         </tr>
+
+        <!-- Details -->
+
+        <tr *ngIf="expandedRowId===record._id">
+
+          <td colspan="10" class="bg-slate-50 p-6">
+
+            <div class="space-y-5">
+
+              <div>
+
+                <h4 class="font-bold text-slate-800 mb-3">
+
+                  Checklist
+
+                </h4>
+
+                <div class="flex flex-wrap gap-2">
+
+                  <span
+                    *ngFor="let item of getChecklistItems(record.checklist)"
+                    class="px-3 py-1 rounded-xl border text-xs font-semibold"
+                    [ngClass]="item.passed
+                    ?'bg-emerald-50 border-emerald-200 text-emerald-700'
+                    :'bg-red-50 border-red-200 text-red-700'">
+
+                    {{item.passed ? '✅':'❌'}}
+
+                    {{item.label}}
+
+                  </span>
+
+                </div>
+
+              </div>
+
+              <div *ngIf="record.notes">
+
+                <h4 class="font-bold mb-2">
+
+                  Notes
+
+                </h4>
+
+                <p class="text-sm text-slate-600">
+
+                  {{record.notes}}
+
+                </p>
+
+              </div>
+
+              <div>
+
+                <div class="flex justify-between text-sm mb-2">
+
+                  <span class="font-bold">
+
+                    Condition Score
+
+                  </span>
+
+                  <span class="font-bold">
+
+                    {{record.conditionScore}}%
+
+                  </span>
+
+                </div>
+
+                <div class="h-2 rounded-full bg-slate-200 overflow-hidden">
+
+                  <div
+                    class="h-full rounded-full"
+                    [style.width.%]="record.conditionScore"
+                    [ngClass]="{
+                    'bg-emerald-500':record.conditionScore>=70,
+                    'bg-amber-500':record.conditionScore>=40 && record.conditionScore<70,
+                    'bg-red-500':record.conditionScore<40
+                  }">
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div *ngIf="record.inspectionType==='after_return'" class="border-t pt-5">
+
+                <div class="grid grid-cols-3 gap-4">
+
+                  <div>
+
+                    <p class="text-xs text-slate-500">
+
+                      Damage
+
+                    </p>
+
+                    <p class="font-semibold">
+
+                      {{record.hasDamage ? 'Detected' : 'None'}}
+
+                    </p>
+
+                  </div>
+
+                  <div>
+
+                    <p class="text-xs text-slate-500">
+
+                      Damage Level
+
+                    </p>
+
+                    <p class="font-semibold">
+
+                      {{record.damageLevel}}
+
+                    </p>
+
+                  </div>
+
+                  <div>
+
+                    <p class="text-xs text-slate-500">
+
+                      Estimated Cost
+
+                    </p>
+
+                    <p class="font-bold text-red-600">
+
+                      ${{record.damageCost}}
+
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+      </ng-container>
+
+      <tr *ngIf="!records || records.length===0">
+
+        <td colspan="10" class="py-16 text-center text-slate-500">
+
+          No inspection records found.
+
+        </td>
+
+      </tr>
+
       </tbody>
+
     </table>
+
   </div>
+
 </div>

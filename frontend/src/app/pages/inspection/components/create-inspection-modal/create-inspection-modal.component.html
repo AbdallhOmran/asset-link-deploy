@@ -1,192 +1,301 @@
 <app-modal
   [isOpen]="isOpen"
   title="Create Inspection Report"
-  subtitle="Perform pre-delivery inspection on an asset for a confirmed booking"
+  subtitle="Perform equipment inspection"
   icon="🔍"
   [showConfirmButton]="false"
   [showCancelButton]="false"
   (closed)="closeModal()"
 >
-  <form [formGroup]="inspectionForm" (ngSubmit)="onSubmit()" class="space-y-4" dir="ltr">
+  <form
+    [formGroup]="inspectionForm"
+    (ngSubmit)="onSubmit()"
+    class="space-y-4"
+    dir="ltr"
+  >
 
-    <!-- Booking Selection -->
+    <!-- Inspection Type -->
     <div>
       <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
-        Booking <span class="text-red-500">*</span>
+        Inspection Type
       </label>
+
+      <select
+        formControlName="inspectionType"
+        class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-white"
+      >
+        <option
+          *ngFor="let item of inspectionTypes"
+          [value]="item.value"
+        >
+          {{ item.label }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Booking -->
+    <div>
+      <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
+        Booking
+      </label>
+
       <select
         formControlName="bookingId"
         (change)="onBookingChange()"
-        class="w-full px-4 py-2.5 text-sm border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer transition-all"
-        [ngClass]="isFieldInvalid('bookingId') ? 'border-red-300 bg-red-50/20' : 'border-slate-200'"
+        class="w-full px-4 py-2.5 text-sm border rounded-xl"
       >
-        <option value="" disabled selected>Select booking...</option>
-        <option *ngFor="let booking of filteredBookings" [value]="booking._id">
-          {{ booking.bookingCode }} — {{ booking.assetId?.assetName || 'Asset' }} ({{ booking.status }})
+        <option value="">Select Booking</option>
+
+        <option
+          *ngFor="let booking of filteredBookings"
+          [value]="booking._id"
+        >
+          {{ booking.bookingCode }}
+          -
+          {{ booking.assetId?.assetName }}
+          ({{ booking.status }})
         </option>
       </select>
-      <p *ngIf="isFieldInvalid('bookingId')" class="text-[11px] text-red-500 mt-1">Booking selection is required.</p>
-      <p *ngIf="filteredBookings.length === 0" class="text-[11px] text-amber-600 mt-1">⚠ No bookings available for inspection. Bookings must be in Pending or Confirmed status.</p>
     </div>
 
-    <!-- Asset (auto-filled from booking) -->
+    <!-- Asset -->
     <div>
       <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
-        Asset <span class="text-red-500">*</span>
+        Asset
       </label>
+
       <select
         formControlName="assetId"
-        class="w-full px-4 py-2.5 text-sm border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer transition-all"
-        [ngClass]="isFieldInvalid('assetId') ? 'border-red-300 bg-red-50/20' : 'border-slate-200'"
+        class="w-full px-4 py-2.5 text-sm border rounded-xl"
       >
-        <option value="" disabled selected>Auto-filled from booking or select...</option>
-        <option *ngFor="let asset of assets" [value]="asset._id">
-          {{ asset.assetCode }} — {{ asset.assetName }}
+        <option value="">Select Asset</option>
+
+        <option
+          *ngFor="let asset of assets"
+          [value]="asset._id"
+        >
+          {{ asset.assetCode }} - {{ asset.assetName }}
         </option>
       </select>
-      <p *ngIf="isFieldInvalid('assetId')" class="text-[11px] text-red-500 mt-1">Asset is required.</p>
     </div>
 
-    <!-- Inspector Name & Condition Score -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Inspector + Score -->
+    <div class="grid grid-cols-2 gap-4">
+
       <div>
-        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
-          Inspector Name <span class="text-red-500">*</span>
+        <label class="block text-xs font-bold mb-1">
+          Inspector Name
         </label>
+
         <input
           type="text"
           formControlName="inspectorName"
-          placeholder="Enter inspector full name..."
-          class="w-full px-4 py-2.5 text-sm border rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          [ngClass]="isFieldInvalid('inspectorName') ? 'border-red-300 bg-red-50/20' : 'border-slate-200'"
+          class="w-full px-4 py-2 border rounded-xl"
         />
-        <p *ngIf="isFieldInvalid('inspectorName')" class="text-[11px] text-red-500 mt-1">Inspector name is required (min 2 chars).</p>
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
-          Condition Score <span class="text-red-500">*</span>
+        <label class="block text-xs font-bold mb-1">
+          Condition Score
         </label>
-        <div class="flex items-center gap-3">
-          <input
-            type="range"
-            formControlName="conditionScore"
-            min="0"
-            max="100"
-            class="flex-1 h-2 bg-slate-200 rounded-full appearance-none cursor-pointer accent-blue-600"
-          />
-          <span class="font-mono font-bold text-sm text-slate-900 min-w-[40px] text-right">
-            {{ inspectionForm.get('conditionScore')?.value }}
-          </span>
+
+        <input
+          type="range"
+          min="0"
+          max="100"
+          formControlName="conditionScore"
+          class="w-full"
+        />
+
+        <div class="text-center font-bold mt-1">
+          {{ inspectionForm.get('conditionScore')?.value }}
         </div>
-        <p *ngIf="isFieldInvalid('conditionScore')" class="text-[11px] text-red-500 mt-1">Score must be 0-100.</p>
       </div>
+
     </div>
 
-    <!-- Tax & Commercial Register -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Registers -->
+    <div class="grid grid-cols-2 gap-4">
+
       <div>
-        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
+        <label class="block text-xs font-bold mb-1">
           Tax Register
         </label>
+
         <input
           type="text"
           formControlName="taxRegister"
-          placeholder="e.g. 123-456-789"
-          class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="w-full px-4 py-2 border rounded-xl"
         />
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
+        <label class="block text-xs font-bold mb-1">
           Commercial Register
         </label>
+
         <input
           type="text"
           formControlName="commercialRegister"
-          placeholder="e.g. CR-987654"
-          class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="w-full px-4 py-2 border rounded-xl"
         />
       </div>
+
     </div>
 
-    <!-- Status & Photos -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
-          Result <span class="text-red-500">*</span>
-        </label>
-        <select
-          formControlName="status"
-          class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+    <!-- Status -->
+    <div>
+      <label class="block text-xs font-bold mb-1">
+        Inspection Result
+      </label>
+
+      <select
+        formControlName="status"
+        class="w-full px-4 py-2 border rounded-xl"
+      >
+        <option
+          *ngFor="let s of statuses"
+          [value]="s"
         >
-          <option value="Passed">✅ Passed — Asset Cleared</option>
-          <option value="Failed">❌ Failed — Booking Cancelled</option>
+          {{ s }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Damage Section -->
+    <div
+      *ngIf="inspectionForm.get('inspectionType')?.value==='after_return'"
+      class="space-y-3 border rounded-xl p-4 bg-red-50"
+    >
+
+      <label class="flex items-center gap-2">
+
+        <input
+          type="checkbox"
+          formControlName="hasDamage"
+        >
+
+        Asset has damage
+
+      </label>
+
+      <div *ngIf="inspectionForm.get('hasDamage')?.value">
+
+        <label class="block text-xs font-bold mb-1">
+          Damage Level
+        </label>
+
+        <select
+          formControlName="damageLevel"
+          class="w-full px-4 py-2 border rounded-xl"
+        >
+          <option
+            *ngFor="let d of damageLevels"
+            [value]="d"
+          >
+            {{ d }}
+          </option>
         </select>
+
       </div>
 
-      <div>
-        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
-          Photos (comma-separated URLs)
+      <div *ngIf="inspectionForm.get('hasDamage')?.value">
+
+        <label class="block text-xs font-bold mb-1">
+          Estimated Damage Cost
         </label>
+
         <input
-          type="text"
-          formControlName="photos"
-          placeholder="https://img1.jpg, https://img2.jpg"
-          class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          type="number"
+          formControlName="damageCost"
+          class="w-full px-4 py-2 border rounded-xl"
         />
+
       </div>
+
+    </div>
+
+    <!-- Photos -->
+    <div>
+
+      <label class="block text-xs font-bold mb-1">
+        Photos
+      </label>
+
+      <input
+        type="text"
+        formControlName="photos"
+        class="w-full px-4 py-2 border rounded-xl"
+        placeholder="url1,url2,url3"
+      />
+
     </div>
 
     <!-- Checklist -->
+
     <div>
-      <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">
-        Inspection Checklist
+
+      <label class="block text-xs font-bold mb-2">
+        Checklist
       </label>
+
       <div class="flex flex-wrap gap-3">
-        <label *ngFor="let item of ['brakes', 'engine', 'body', 'tires', 'lights']"
-          class="flex items-center gap-2 px-4 py-2.5 border rounded-xl cursor-pointer transition-all text-sm font-medium"
-          [ngClass]="inspectionForm.get(item)?.value
-            ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
-            : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'"
+
+        <label
+          *ngFor="let item of ['brakes','engine','body','tires','lights']"
+          class="flex items-center gap-2"
         >
-          <input type="checkbox" [formControlName]="item" class="hidden" />
-          <span>{{ inspectionForm.get(item)?.value ? '✅' : '⬜' }}</span>
-          <span class="capitalize">{{ item }}</span>
+
+          <input
+            type="checkbox"
+            [formControlName]="item"
+          >
+
+          {{ item }}
+
         </label>
+
       </div>
+
     </div>
 
     <!-- Notes -->
+
     <div>
-      <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
-        Inspection Notes
+
+      <label class="block text-xs font-bold mb-1">
+        Notes
       </label>
+
       <textarea
-        formControlName="notes"
         rows="3"
-        placeholder="Describe inspection findings, damages, or observations..."
-        class="w-full px-4 py-3 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+        formControlName="notes"
+        class="w-full px-4 py-2 border rounded-xl"
       ></textarea>
+
     </div>
 
-    <!-- Footer Actions -->
-    <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+    <!-- Buttons -->
+
+    <div class="flex justify-end gap-3 pt-4">
+
       <button
         type="button"
         (click)="closeModal()"
-        class="px-5 py-2.5 border border-slate-200 text-slate-700 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-colors"
+        class="px-5 py-2 border rounded-xl"
       >
         Cancel
       </button>
+
       <button
-        type="submit"
-        [disabled]="isSubmitting"
-        class="px-6 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 shadow-md shadow-blue-600/30 flex items-center gap-2 transition-all disabled:opacity-50"
-      >
-        <span *ngIf="isSubmitting" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-        <span>Submit Inspection Report</span>
-      </button>
+  type="button"
+  (click)="onSubmit()"
+  [disabled]="isSubmitting"
+  class="px-6 py-2 bg-blue-600 text-white rounded-xl"
+>
+  Submit Inspection
+</button>
+
     </div>
 
   </form>

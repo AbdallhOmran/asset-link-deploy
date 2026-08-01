@@ -16,43 +16,58 @@
 
   <!-- Inspector identity bar -->
   <div class="flex flex-wrap items-center justify-between p-5 bg-white rounded-xl shadow-sm border border-slate-100 gap-4">
-    <div class="flex items-center gap-4">
-      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white font-black text-sm shadow-md">
-        TB
-      </div>
-      <div>
-        <div class="flex items-center gap-2">
-          <h2 class="text-base font-bold text-slate-900">Tom Becker</h2>
-          <span class="flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">
-            <lucide-icon name="hard-hat" [size]="9"></lucide-icon> Inspector
-          </span>
-        </div>
-        <p class="text-xs text-slate-400">TerraEquip LLC · Field Operations</p>
-        <div class="flex items-center gap-3 mt-1">
-          <p class="text-[10px] text-slate-500"><span class="font-bold text-slate-700">Tax ID:</span> 123-456-789</p>
-          <p class="text-[10px] text-slate-500"><span class="font-bold text-slate-700">CR:</span> CR-987654</p>
-        </div>
-      </div>
-    </div>
-    <div class="flex items-center gap-6">
-      <div class="text-center">
-        <p class="text-2xl font-black tabular-nums text-blue-600">{{ inspectorStats.assignedToday }}</p>
-        <p class="text-[10px] text-slate-400 mt-0.5">Assigned Today</p>
-      </div>
-      <div class="text-center">
-        <p class="text-2xl font-black tabular-nums text-red-500">{{ inspectorStats.highPriority }}</p>
-        <p class="text-[10px] text-slate-400 mt-0.5">High Priority</p>
-      </div>
-      <div class="text-center">
-        <p class="text-2xl font-black tabular-nums text-slate-900">{{ (filteredInspections$ | async)?.length || 0 }}</p>
-        <p class="text-[10px] text-slate-400 mt-0.5">Total Pending</p>
-      </div>
-      <div class="text-center">
-        <p class="text-2xl font-black tabular-nums text-emerald-600">{{ inspectorStats.completedMtd }}</p>
-        <p class="text-[10px] text-slate-400 mt-0.5">Completed MTD</p>
-      </div>
-    </div>
+
+  <div>
+    <h2 class="text-xl font-bold text-slate-900">
+      Inspection Dashboard
+    </h2>
+
+    <p class="text-sm text-slate-500 mt-1">
+      Live inspection statistics
+    </p>
   </div>
+
+  <div class="flex items-center gap-8">
+
+    <div class="text-center">
+      <p class="text-3xl font-black text-blue-600">
+        {{ inspectionStats.total }}
+      </p>
+      <p class="text-xs text-slate-400 mt-1">
+        Total Inspections
+      </p>
+    </div>
+
+    <div class="text-center">
+      <p class="text-3xl font-black text-amber-500">
+        {{ inspectionStats.pending }}
+      </p>
+      <p class="text-xs text-slate-400 mt-1">
+        Pending
+      </p>
+    </div>
+
+    <div class="text-center">
+      <p class="text-3xl font-black text-emerald-600">
+        {{ inspectionStats.passed }}
+      </p>
+      <p class="text-xs text-slate-400 mt-1">
+        Passed
+      </p>
+    </div>
+
+    <div class="text-center">
+      <p class="text-3xl font-black text-red-500">
+        {{ inspectionStats.failed }}
+      </p>
+      <p class="text-xs text-slate-400 mt-1">
+        Failed
+      </p>
+    </div>
+
+  </div>
+
+</div>
 
   <!-- Toolbar -->
   <div class="flex flex-wrap items-center gap-3">
@@ -185,21 +200,21 @@
 
               <!-- Right: actions -->
               <div class="flex flex-col items-end gap-2 flex-shrink-0">
-                <button
-                  (click)="startInspection(insp._id)"
-                  class="flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white rounded-xl shadow-sm hover:opacity-90 transition-opacity"
-                  [style.background]="isStarted(insp._id) ? '#22C55E' : '#2563EB'">
-                  <lucide-icon name="clipboard-check" [size]="13"></lucide-icon>
-                  {{ isStarted(insp._id) ? 'Continue' : 'Start Inspection' }}
-                </button>
-                <button
+               <button
+  (click)="toggleExpand(insp._id)"
+  class="flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white rounded-xl shadow-sm bg-blue-600 hover:bg-blue-700"
+>
+  <lucide-icon name="clipboard-check" [size]="13"></lucide-icon>
+  View Report
+</button>
+                <!-- <button
                   (click)="toggleExpand(insp._id)"
                   class="text-[10px] font-semibold text-slate-400 hover:text-blue-600 transition-colors flex items-center gap-1">
                   {{ isExpanded(insp._id) ? 'Hide details' : 'View details' }}
                   <lucide-icon name="chevron-down" [size]="10"
                     [ngClass]="isExpanded(insp._id) ? 'rotate-180' : ''"
                     class="transition-transform duration-200"></lucide-icon>
-                </button>
+                </button> -->
               </div>
             </div>
 

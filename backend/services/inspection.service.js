@@ -1,5 +1,7 @@
 const Inspection = require("../models/inspection.model");
 const Booking = require("../models/booking.model");
+const Asset = require("../models/asset.model");
+const Company = require("../models/company.model");
 
 const ACTIVE_BOOKING_STATUSES = ["Pending", "Confirmed", "InNegotiation"];
 
@@ -10,9 +12,10 @@ const createInspection = async (data) => {
     throw new Error("Booking not found");
   }
 
+  // Prevent duplicate inspection of the same type
   const existingInspection = await Inspection.findOne({
     bookingId: data.bookingId,
-    inspectionType: data.inspectionType || 'before_use'
+    inspectionType: data.inspectionType || "before_use",
   });
 
   if (existingInspection) {
@@ -28,33 +31,75 @@ const createInspection = async (data) => {
     checklist: data.checklist,
     conditionScore: data.conditionScore,
     status: data.status,
-    inspectionType: data.inspectionType || 'before_use',
-    damageLevel: data.damageLevel || 'none',
+    inspectionType: data.inspectionType || "before_use",
+    damageLevel: data.damageLevel || "none",
     damageCost: data.damageCost || 0,
-    hasDamage: data.hasDamage || false
+    hasDamage: data.hasDamage || false,
   });
 
-  if (data.status === "Failed") {
-    booking.status = "Cancelled";
-    booking.cancelReason = "Inspection failed";
-    await booking.save();
+  // ==========================================
+  // BEFORE RENTAL INSPECTION
+  // ==========================================
+  if (inspection.inspectionType === "before_use") {
+
+    if (inspection.status === "Passed") {
+
+      booking.status = "Confirmed";
+      booking.cancelReason = "";
+
+      await booking.save();
+      
+await Asset.findByIdAndUpdate(
+    inspection.assetId,
+    {
+        status: "Booked",
+        healthScore: inspection.conditionScore,
+    }
+);
+
+    } else {
+
+      booking.status = "Cancelled";
+      booking.cancelReason = "Inspection failed";
+
+      await booking.save();
+
+      await Asset.findByIdAndUpdate(inspection.assetId, {
+        status: "Available",
+      });
+
+    }
+
   }
 
-  if (data.status === "Passed") {
-    booking.status = "Confirmed";
+  // ==========================================
+  // AFTER RENTAL INSPECTION
+  // ==========================================
+  else {
+
+    booking.status = "Completed";
     await booking.save();
-    
-    // Update asset status to In Rental
-    const Asset = require("../models/asset.model");
-    if (data.inspectionType === 'before_use') {
-        await Asset.findByIdAndUpdate(data.assetId, { status: "In Rental" });
+
+    if (inspection.hasDamage) {
+
+      await Asset.findByIdAndUpdate(inspection.assetId, {
+        status: "Maintenance",
+      });
+
+    } else {
+
+      await Asset.findByIdAndUpdate(inspection.assetId, {
+        status: "Available",
+      });
+
     }
+
   }
 
   return inspection;
 };
+const getAllInspections = async (filters = {}, user) => {
 
-const getAllInspections = async (filters = {}) => {
   const query = {};
 
   if (filters.status) {
@@ -67,6 +112,55 @@ const getAllInspections = async (filters = {}) => {
 
   if (filters.bookingId) {
     query.bookingId = filters.bookingId;
+  }
+
+  if (filters.inspectionType) {
+    query.inspectionType = filters.inspectionType;
+  }
+
+  // ===============================
+  // Filter inspections by company
+  // ===============================
+
+  if (user) {
+
+    const company = await Company.findById(user.id);
+
+    if (!company) {
+      throw new Error("Company not found");
+    }
+
+    let bookingQuery = {};
+
+    switch (company.companyType) {
+
+      case "Owner":
+        bookingQuery.ownerCompanyId = company._id;
+        break;
+
+      case "Renter":
+        bookingQuery.companyId = company._id;
+        break;
+
+      case "Both":
+        bookingQuery.$or = [
+          { ownerCompanyId: company._id },
+          { companyId: company._id },
+        ];
+        break;
+
+      default:
+        bookingQuery.companyId = company._id;
+    }
+
+    const bookings = await Booking.find(
+      bookingQuery,
+      "_id"
+    );
+
+    query.bookingId = {
+      $in: bookings.map((b) => b._id),
+    };
   }
 
   const inspections = await Inspection.find(query)
@@ -116,8 +210,6 @@ const updateInspection = async (id, data) => {
     throw new Error("Inspection not found");
   }
 
-  // Only allow updating notes, photos, checklist, conditionScore
-  // Status change is a significant business action, only allow if explicitly provided
   if (data.notes !== undefined) {
     inspection.notes = data.notes;
   }
@@ -144,43 +236,105 @@ const updateInspection = async (id, data) => {
   if (data.inspectionType !== undefined) {
     inspection.inspectionType = data.inspectionType;
   }
+
   if (data.damageLevel !== undefined) {
     inspection.damageLevel = data.damageLevel;
   }
+
   if (data.damageCost !== undefined) {
     inspection.damageCost = data.damageCost;
   }
+
   if (data.hasDamage !== undefined) {
     inspection.hasDamage = data.hasDamage;
   }
 
-  if (data.status !== undefined && data.status !== inspection.status) {
+  if (data.status !== undefined) {
     if (!["Passed", "Failed"].includes(data.status)) {
       throw new Error("Invalid inspection status. Must be 'Passed' or 'Failed'");
     }
 
     inspection.status = data.status;
 
-    // Update booking status accordingly
     const booking = await Booking.findById(inspection.bookingId);
+
     if (booking) {
-      if (data.status === "Failed") {
-        booking.status = "Cancelled";
-        booking.cancelReason = "Inspection failed";
-        await booking.save();
-      } else if (data.status === "Passed") {
-        booking.status = "Confirmed";
+
+      // ==========================================
+      // BEFORE RENTAL INSPECTION
+      // ==========================================
+      if (inspection.inspectionType === "before_use") {
+
+        if (inspection.status === "Passed") {
+
+          booking.status = "Confirmed";
+          booking.cancelReason = "";
+
+          await booking.save();
+
+          await Asset.findByIdAndUpdate(
+            inspection.assetId,
+            {
+              status: "Booked",
+              healthScore: inspection.conditionScore,
+            }
+          );
+
+        } else {
+
+          booking.status = "Cancelled";
+          booking.cancelReason = "Inspection failed";
+
+          await booking.save();
+
+          await Asset.findByIdAndUpdate(
+            inspection.assetId,
+            {
+              status: "Available",
+              healthScore: inspection.conditionScore,
+            }
+          );
+
+        }
+
+      }
+
+      // ==========================================
+      // AFTER RENTAL INSPECTION
+      // ==========================================
+      else {
+
+        booking.status = "Completed";
         await booking.save();
 
-        const Asset = require("../models/asset.model");
-        if (inspection.inspectionType === 'before_use') {
-            await Asset.findByIdAndUpdate(inspection.assetId, { status: "In Rental" });
+        if (inspection.hasDamage) {
+
+          await Asset.findByIdAndUpdate(
+            inspection.assetId,
+            {
+              status: "Maintenance",
+              healthScore: inspection.conditionScore,
+            }
+          );
+
+        } else {
+
+          await Asset.findByIdAndUpdate(
+            inspection.assetId,
+            {
+              status: "Available",
+              healthScore: inspection.conditionScore,
+            }
+          );
+
         }
+
       }
     }
   }
 
   await inspection.save();
+
   return inspection;
 };
 

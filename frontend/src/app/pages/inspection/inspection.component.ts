@@ -3,7 +3,6 @@ import { Observable } from 'rxjs';
 import { InspectionService } from './services/inspection.service';
 import {
   InspectionRecord,
-  InspectionStats,
   InspectionStatus,
   CreateInspectionPayload,
 } from './models/inspection.model';
@@ -15,7 +14,7 @@ import {
 })
 export class InspectionComponent implements OnInit {
   filteredInspections$: Observable<InspectionRecord[]>;
-  stats$: Observable<InspectionStats>;
+  
   loading$: Observable<boolean>;
   error$: Observable<string | null>;
 
@@ -24,6 +23,29 @@ export class InspectionComponent implements OnInit {
 
   assets: any[] = [];
   bookings: any[] = [];
+  inspectionStats = {
+  total: 0,
+  pending: 0,
+  passed: 0,
+  failed: 0,
+};
+private calculateStats(inspections: InspectionRecord[]): void {
+  this.inspectionStats = {
+    total: inspections.length,
+
+    pending: inspections.filter(
+      (i) => i.status === 'Pending'
+    ).length,
+
+    passed: inspections.filter(
+      (i) => i.status === 'Passed'
+    ).length,
+
+    failed: inspections.filter(
+      (i) => i.status === 'Failed'
+    ).length,
+  };
+}
 
   // Delete confirmation
   showDeleteConfirm = false;
@@ -69,15 +91,19 @@ export class InspectionComponent implements OnInit {
 
   constructor(private inspectionService: InspectionService) {
     this.filteredInspections$ = this.inspectionService.filteredInspections$;
-    this.stats$ = this.inspectionService.stats$;
+   
     this.loading$ = this.inspectionService.loading$;
     this.error$ = this.inspectionService.error$;
   }
 
   ngOnInit(): void {
-    this.inspectionService.loadInspections();
-    this.loadDropdownData();
-  }
+  this.inspectionService.loadInspections();
+  this.loadDropdownData();
+
+  this.filteredInspections$.subscribe((inspections) => {
+    this.calculateStats(inspections);
+  });
+}
 
   setPhaseFilter(phase: 'all' | 'Pre-Rental' | 'Post-Rental'): void {
     this.activeFilter = phase;

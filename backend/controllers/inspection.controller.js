@@ -25,15 +25,24 @@ const getAllInspections = async (req, res) => {
       status: req.query.status,
       assetId: req.query.assetId,
       bookingId: req.query.bookingId,
+      inspectionType: req.query.inspectionType,
     };
-    const inspections = await inspectionService.getAllInspections(filters);
+
+    const inspections = await inspectionService.getAllInspections(
+      filters,
+      req.user
+    );
+
     return res.status(200).json({
       success: true,
       count: inspections.length,
       data: inspections,
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
 };
 

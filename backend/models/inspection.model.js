@@ -69,6 +69,7 @@
             required: true,
             default: 'before_use'
         },
+        
 
         damageLevel: {
             type: String,
@@ -86,8 +87,8 @@
 
         status: {
             type: String,
-            enum: ["Passed", "Failed", "pending", "completed"],
-            required: true
+             enum: ["Pending", "Passed", "Failed"],
+            default: "Pending"
         }
 
     }, {
